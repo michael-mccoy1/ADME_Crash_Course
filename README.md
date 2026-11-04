@@ -12,6 +12,8 @@ Interactive lessons on quantitative DMPK for working DMPK scientists. Every less
 
 Tab 01, hepatic clearance from in vitro data, has eight steps. Source data: Obach (1999), Drug Metab Dispos 27:1350, Tables 2 and 3 (`tools/check_obach1999.py` reproduces the published accuracy values in Tables 4 and 5); the AstraZeneca in vitro DMPK deposit in ChEMBL (CHEMBL3301361, CC BY-SA 3.0) for the microsome and hepatocyte comparison; Varma et al. (2015), Pharm Res 32:3785, for the extended clearance classification system.
 
+Tab 02, distribution, has seven steps. Source data: Obach et al. (2008), Drug Metab Dispos 36:1385, human intravenous PK for 670 drugs, via the ChEMBL deposit (CC BY-SA 3.0), joined to measured logD and pKa from the AstraZeneca deposit where available. The Oie-Tozer constants and the tissue binding equation are as stated in Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0).
+
 ## Run locally
 
 ```

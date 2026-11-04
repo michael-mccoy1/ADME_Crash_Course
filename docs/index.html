@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ADME Crash Course | Quantitative DMPK</title>
-<link rel="stylesheet" href="css/site.css?v=a3">
+<link rel="stylesheet" href="css/site.css?v=a5">
 </head>
 <body>
 <div id="bar"></div>
@@ -14,21 +14,25 @@
   <button class="pill" id="animtoggle" type="button" aria-pressed="false">Animations on</button>
 </div></header>
 <nav class="tabs"><div class="in" id="tabs">
-<div class="tg"><span class="tl">Clearance</span>
+<div class="tg"><span class="tl">Disposition</span>
 <button type="button" data-tab="hep" aria-selected="true"><b>01</b>Hepatic clearance</button>
+<button type="button" data-tab="dist" aria-selected="false"><b>02</b>Distribution</button>
 </div>
 </div></nav>
 <main>
   <div class="lesson" id="lesson-hep"></div>
+  <div class="lesson" id="lesson-dist" hidden></div>
 </main>
-<footer class="site"><div>Data: Obach (1999), Drug Metab Dispos 27:1350, 29 drugs. AstraZeneca in vitro DMPK data deposited in ChEMBL (CHEMBL3301361), CC BY-SA 3.0. Extended clearance classification system: Varma et al. (2015), Pharm Res 32:3785. Every calculation runs in your browser. No data leave the page.</div></footer>
-<script src="js/core.js?v=a3"></script>
-<script src="js/guide.js?v=a3"></script>
-<script src="js/obach99.js?v=a3"></script>
-<script src="js/az_clint.js?v=a3"></script>
-<script src="js/hepatic.js?v=a3"></script>
-<script src="js/hepatic2.js?v=a3"></script>
-<script src="js/hepatic3.js?v=a3"></script>
-<script src="js/main.js?v=a3"></script>
+<footer class="site"><div>Data: Obach (1999), Drug Metab Dispos 27:1350, 29 drugs. Obach et al. (2008), Drug Metab Dispos 36:1385, human intravenous PK for 670 drugs, via ChEMBL (CC BY-SA 3.0). Oie-Tozer constants and the tissue binding equation as stated in Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0). AstraZeneca in vitro DMPK data deposited in ChEMBL (CHEMBL3301361), CC BY-SA 3.0. Extended clearance classification system: Varma et al. (2015), Pharm Res 32:3785. Every calculation runs in your browser. No data leave the page.</div></footer>
+<script src="js/core.js?v=a5"></script>
+<script src="js/guide.js?v=a5"></script>
+<script src="js/obach99.js?v=a5"></script>
+<script src="js/az_clint.js?v=a5"></script>
+<script src="js/hepatic.js?v=a5"></script>
+<script src="js/hepatic2.js?v=a5"></script>
+<script src="js/hepatic3.js?v=a5"></script>
+<script src="js/obach08.js?v=a5"></script>
+<script src="js/distribution.js?v=a5"></script>
+<script src="js/main.js?v=a5"></script>
 </body>
 </html>
