@@ -10,7 +10,7 @@ Interactive lessons on quantitative DMPK for working DMPK scientists. Every less
 
 ## Status
 
-Tab 01, hepatic clearance from microsomal data, has four steps. Source data: Obach (1999), Drug Metab Dispos 27:1350, Tables 2 and 3. `tools/check_obach1999.py` reproduces the published accuracy values (Tables 4 and 5).
+Tab 01, hepatic clearance from in vitro data, has eight steps. Source data: Obach (1999), Drug Metab Dispos 27:1350, Tables 2 and 3 (`tools/check_obach1999.py` reproduces the published accuracy values in Tables 4 and 5); the AstraZeneca in vitro DMPK deposit in ChEMBL (CHEMBL3301361, CC BY-SA 3.0) for the microsome and hepatocyte comparison; Varma et al. (2015), Pharm Res 32:3785, for the extended clearance classification system.
 
 ## Run locally
 
