@@ -16,6 +16,8 @@ Tab 02, distribution, has seven steps. Source data: Obach et al. (2008), Drug Me
 
 Tab 03, absorption and bioavailability, has six steps. Source data: Obach (1999) for the hepatic first-pass limit; Hou et al. (2007) human intestinal absorption (578 compounds), Wang et al. (2016) Caco-2 permeability (910 compounds) and AqSolDB (Sorkun et al., 2019), all through Therapeutics Data Commons (CC BY 4.0), with descriptors calculated by RDKit.
 
+The quiz has 49 questions on tabs 01 to 03. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+
 ## Run locally
 
 ```
