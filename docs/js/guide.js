@@ -2,6 +2,7 @@
 /* Lesson objectives, what to notice in each step, and a pop quiz question with a hidden answer. */
 var GUIDE = {
   intro: {
+    abs: { goals: ['Write oral bioavailability as Fa x Fg x Fh and bound it with the hepatic first-pass limit.', 'Relate dose, solubility and pH to the dose number.', 'Score property rules for absorption against the baseline of calling every compound absorbed.'] },
     dist: { goals: ['Divide the volume of distribution into plasma, extracellular and tissue terms with the Oie-Tozer equation.', 'Back-calculate tissue binding from observed volumes and test a predictive equation for it, by ionization class.', 'Propagate errors in clearance and volume to the half-life, and convert between blood and plasma clearance.'] },
     hep: { goals: ['Predict hepatic blood clearance from microsomal intrinsic clearance, and score the prediction against observed values.', 'Apply scaling factors, binding corrections and an extraction model, and state how each changes the prediction.', 'Identify which drugs a prediction method gets wrong, and why.'] }
   },
@@ -20,6 +21,12 @@ var GUIDE = {
     'dist/Ionization class': { notice: 'The median differs between the groups for each variable.', q: 'Why is the group with no pKa reported not a neutral class?', a: 'No reported pKa can mean no ionizable group in the measured range or no measurement. The group is a mixture.' },
     'dist/Half-life from CL and Vss': { notice: 'With independent errors, the half-life error is larger than the error of either input.', q: 'Why does a positive correlation between the CL and Vss errors lower the half-life error?', a: 'The half-life depends on the ratio Vss / CL. Errors that move in the same direction cancel in the ratio.' },
     'dist/Blood to plasma ratio': { notice: 'The shift between the two comparisons is largest for the drugs with the lowest blood to plasma ratio.', q: 'How is plasma clearance converted to blood clearance?', a: 'Divide by the blood to plasma ratio.' },
-    'dist/Sensitivity of Vss': { notice: 'fup and fut dominate when tissue binding is strong.', q: 'How does Vss change when fut doubles and the tissue term dominates?', a: 'It falls about 2-fold, because the tissue term is inversely proportional to fut.' }
+    'dist/Sensitivity of Vss': { notice: 'fup and fut dominate when tissue binding is strong.', q: 'How does Vss change when fut doubles and the tissue term dominates?', a: 'It falls about 2-fold, because the tissue term is inversely proportional to fut.' },
+    'abs/Bioavailability as a product': { notice: 'The three terms multiply, so each loss acts on what the previous stage left.', q: 'What is F when Fa, Fg and Fh are each 0.7?', a: '0.34, because 0.7 x 0.7 x 0.7 = 0.343.' },
+    'abs/Hepatic first-pass limit': { notice: 'The limit depends on clearance relative to blood flow and not on clearance alone.', q: 'What is Fh for a drug with a blood clearance of 10.5 mL/min/kg when the blood flow is 21?', a: '0.5, because Fh = 1 - 10.5 / 21.' },
+    'abs/Solubility and dose': { notice: 'The share of compounds with D0 above 1 rises with the dose and falls with the volume.', q: 'What does a dose number above 1 indicate?', a: 'The dose cannot dissolve in the volume of fluid given, so dissolution can limit absorption.' },
+    'abs/pH-dependent solubility': { notice: 'The weak base loses solubility as the pH rises and the weak acid gains it.', q: 'Why can acid suppression lower the absorption of a weak base?', a: 'A higher gastric pH lowers the solubility of the base, so less of the dose dissolves in the stomach and more can reach the intestine undissolved.' },
+    'abs/Permeability descriptors': { notice: 'The median line falls as the polar surface area and the donor count increase.', q: 'Does a Spearman correlation of -0.63 mean that TPSA predicts permeability closely?', a: 'No. It means that a higher TPSA tends to go with a lower permeability. The spread of permeability at any TPSA is wide.' },
+    'abs/Property rules': { notice: 'The accuracy has to be read against the baseline of 86.5 percent.', q: 'Why is accuracy a poor summary of a rule on this set?', a: 'Most compounds are well absorbed, so calling every compound good already scores 86.5 percent. The fractions of poor compounds caught and good compounds flagged show what the rule does.' }
   }
 };

@@ -14,6 +14,8 @@ Tab 01, hepatic clearance from in vitro data, has eight steps. Source data: Obac
 
 Tab 02, distribution, has seven steps. Source data: Obach et al. (2008), Drug Metab Dispos 36:1385, human intravenous PK for 670 drugs, via the ChEMBL deposit (CC BY-SA 3.0), joined to measured logD and pKa from the AstraZeneca deposit where available. The Oie-Tozer constants and the tissue binding equation are as stated in Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0).
 
+Tab 03, absorption and bioavailability, has six steps. Source data: Obach (1999) for the hepatic first-pass limit; Hou et al. (2007) human intestinal absorption (578 compounds), Wang et al. (2016) Caco-2 permeability (910 compounds) and AqSolDB (Sorkun et al., 2019), all through Therapeutics Data Commons (CC BY 4.0), with descriptors calculated by RDKit.
+
 ## Run locally
 
 ```
