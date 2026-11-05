@@ -84,8 +84,6 @@ function hepDetail(r, o){
 
 /* ---------- step 1 ---------- */
 HEP.add({ short: 'Predicted against observed', level: 'foundations', title: 'Predicted against observed clearance',
-  change: 'Select a point. Change the extraction model and the binding corrections.',
-  watch: 'Each point is one drug from Obach (1999). The predicted hepatic blood clearance is calculated from the human liver microsomal intrinsic clearance, scaled with 45 mg of microsomal protein per g of liver and 20 g of liver per kg. The observed value is the nonrenal blood clearance from intravenous studies (for chlorpromazine, from an intramuscular dose). The shaded band marks agreement within 2-fold. Three numbers summarize the 29 drugs: the count within 2-fold, the average fold error (the geometric mean of the absolute fold difference, 1.0 being perfect) and the bias (the geometric mean of predicted divided by observed). The same three numbers score every prediction against observation in tabs 04 to 06. Tab 03 introduces them.',
   build: function(api){
     var o = { model: 'pt', bind: 'both', sf: 1 }, sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="620" height="470" style="width:620px;height:470px;cursor:pointer"></canvas>' + hepLegend()), cvs = qs('canvas', pn);
@@ -99,8 +97,6 @@ HEP.add({ short: 'Predicted against observed', level: 'foundations', title: 'Pre
 
 /* ---------- step 2 ---------- */
 HEP.add({ short: 'Scaling to the liver', level: 'foundations', title: 'Scaling from microsomes to liver',
-  change: 'Move the two scaling sliders. Read where the average fold error reaches its minimum.',
-  watch: 'Microsomal clearance is scaled to the whole liver with the microsomal protein content per g of liver (MPPGL) and the liver weight per kg of body weight. Obach (1999) used 45 mg per g and 20 g per kg. The left plot recalculates the predictions with the values set below. The right plot gives the average fold error and the bias of the whole set as a function of the combined scaling factor, which multiplies CLint. For the parallel-tube model with both binding corrections and the published scalars (factor 1.0), the bias is 0.48, so predictions average about half the observed values, and 16 of 29 drugs are within 2-fold. The average fold error is lowest, 1.60, at a factor of about 3.2, and the bias reaches 1.0 at about 2.6.',
   build: function(api){
     var o = { model: 'pt', bind: 'both', sf: 1 }, mp = HMP0, lw = HLW0;
     var pn = api.el('pn', 'left:28px;top:16px;width:440px;height:508px;padding:8px', '<canvas width="424" height="470" style="width:424px;height:470px"></canvas>'), cvs = qs('canvas', pn);
@@ -129,8 +125,6 @@ HEP.add({ short: 'Scaling to the liver', level: 'foundations', title: 'Scaling f
 
 /* ---------- step 3 ---------- */
 HEP.add({ short: 'Extraction models', level: 'foundations', title: 'Hepatic extraction models',
-  change: 'Move the blood flow and dispersion sliders. Select a drug to read its predictions under each model.',
-  watch: 'The well-stirred model treats the liver as one mixed compartment. The parallel-tube model treats each sinusoid as a plug-flow tube. The dispersion model lies between them and is controlled by the dispersion number Dn: the plug-flow result is reached as Dn approaches 0 and the well-stirred result as Dn becomes large. The curves give the hepatic extraction ratio against the intrinsic clearance expressed relative to blood flow. At the same intrinsic clearance, the well-stirred extraction ratio is 9 percent lower than the parallel-tube value when the parallel-tube value is 0.2, and 18 percent lower when it is 0.5. The points are the Obach drugs, placed at their binding-corrected intrinsic clearance and at their observed extraction ratio.',
   build: function(api){
     var q = HQ, dn = 0.2, sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:600px;height:508px;padding:8px', '<canvas width="584" height="470" style="width:584px;height:470px;cursor:pointer"></canvas>'), cvs = qs('canvas', pn);
@@ -163,8 +157,6 @@ HEP.add({ short: 'Extraction models', level: 'foundations', title: 'Hepatic extr
 
 /* ---------- step 4 ---------- */
 HEP.add({ short: 'Binding assumptions', level: 'applied', title: 'Binding assumptions',
-  change: 'Switch the extraction model and the form of fu(blood). Read which drugs are predicted worst.',
-  watch: 'Three treatments of binding are compared: none, the unbound fraction in blood only, and the unbound fraction in blood together with the unbound fraction in the microsomal incubation. The bars give the average fold error for each compound class. Correcting only for binding in blood lowers the predicted clearance of highly bound drugs and over-corrects, because the nonspecific binding in the incubation lowers the measured CLint as well. Which treatment is best depends on the class: for the bases in this set no binding correction gives the lowest error, and for the acids the correction with both fractions does. The table lists the five drugs with the largest fold error for the settings selected.',
   build: function(api){
     var o = { model: 'pt', plasma: false };
     var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="470" style="width:544px;height:470px"></canvas>'), cvs = qs('canvas', pn);

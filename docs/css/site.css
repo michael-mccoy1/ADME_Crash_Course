@@ -393,3 +393,5 @@ nav.tabs button.qzt b,nav.tabs button.qzt[aria-selected="true"] b{color:inherit}
 .intro dl.nt{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:8px 0 0;font-size:.88rem;line-height:1.45}
 .intro dl.nt dt{font-weight:700;color:var(--dred)}.intro dl.nt dd{margin:0}
 @media(max-width:760px){.intro dl.nt{grid-template-columns:minmax(0,1fr)}.intro dl.nt dd{margin-bottom:4px}}
+
+.legend{margin:8px 0 0;max-width:62rem;font-size:.84rem;line-height:1.5;color:var(--mid)}.legend b{color:var(--char)}

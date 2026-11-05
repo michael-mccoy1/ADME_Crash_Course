@@ -28,3 +28,13 @@ Sentence case, noun phrases, six words or fewer, no colons, no questions.
 * Try lines: one or two imperative sentences naming the control.
 * Notice lines: one factual statement about the figure.
 * Quiz questions: one precise question with a short precise answer.
+
+## Scientific register (applies to all lesson text)
+
+* Write as in the methods and results of a pharmacokinetics paper: impersonal, precise, equation first. Define each symbol once. State assumptions explicitly.
+* Each step has four parts. Theory states the model, the equation, the assumptions and the quantitative result with n and source (60 to 110 words). The figure legend describes what is plotted and nothing else. Controls list the parameters varied and the outputs. The observation is one factual statement, with a number where possible.
+* Do not describe the figure in the theory text ("the plot gives..."). Put it in the legend.
+* No contrast constructions ("X is not Y. It is Z."), no repeated sentence openings ("A drug that..."), no rhetorical build-up, no roadmap prose ("In this step...").
+* Quantify degree words (large, wide, strong, high, low) or omit them. State "most" with the count.
+* Give numbers with units, n and the source or the calculation. Report a recalculated value as such. State the limits of a data set where they affect the result.
+* Check questions state a calculation or a relation, and the answer gives the working.

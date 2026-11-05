@@ -17,8 +17,6 @@
 
   /* ===== tab 01, step 1: concentration and effect ===== */
   WHY.add({ short: 'Concentration and effect', level: 'foundations', ord: 10, title: 'Dose, concentration and effect',
-    change: 'Set the EC50, the steepness, the dose and the clearance. Read the effect at the peak and the time above the EC50.',
-    watch: 'A drug acts when its concentration at the target is high enough to occupy enough of the target. ADME determines that concentration. In the simplest model the effect is E = Emax x C^h / (EC50^h + C^h), where Emax is the maximal effect, EC50 is the concentration that gives half of it and h sets the steepness. Here the plasma concentration stands for the concentration at the target. The right plot gives the plasma concentration after an intravenous bolus of the dose set, and the shaded part marks the time during which the concentration is above the EC50. Because the concentration falls exponentially, doubling the dose raises the peak twofold but lengthens the time above the EC50 by one half-life only.',
     build: function(api){
       var lec = 0, h = 1, D = 100, CL = 10, V = 50;
       var pn = api.el('pn', 'left:28px;top:16px;width:440px;height:508px;padding:8px', '<canvas width="424" height="440" style="width:424px;height:440px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('canvas', pn);
@@ -46,8 +44,6 @@
 
   /* ===== tab 01, step 3: exposure measures ===== */
   WHY.add({ short: 'Exposure measures', level: 'foundations', ord: 30, title: 'Measures of exposure',
-    change: 'Choose a measure. Set the absorption rate constant and the clearance.',
-    watch: 'A concentration-time profile is summarized by a few numbers. Cmax is the highest concentration and tmax is the time at which it occurs. The AUC, the area under the curve, measures the total exposure. The half-life describes the terminal fall, and the trough is the concentration at the end of a dosing interval. Which number matters depends on the effect. Toxicity linked to the peak follows Cmax. Efficacy that needs the concentration to stay above a threshold follows the trough or the time above the EC50. The plot gives an oral dose of 100 mg with F = 0.6 and V = 60 L, and the measure chosen is highlighted.',
     build: function(api){
       var F = 0.6, V = 60, D = 100, CL = 8, ka = 1.2, sel = 'cmax';
       var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -74,8 +70,6 @@
 
   /* ===== tab 02, step 1: units and conversions ===== */
   UNITS.add({ short: 'Units and conversions', level: 'foundations', ord: 10, title: 'Units and conversions',
-    change: 'Set the molecular weight, a concentration, a dose, a body weight and a clearance.',
-    watch: 'The same quantity appears in different units in assays, in the literature and in the clinic. A concentration in micromolar converts to mass units through the molecular weight: mg/L = micromolar x MW / 1000, and ng/mL is the same as microgram/L, so ng/mL = micromolar x MW. A dose in mg converts to micromoles as dose / MW x 1000. A clearance per kg of body weight converts to the whole body as L/h = mL/min/kg x weight x 60 / 1000. The panels give each conversion for the values set. A mistake in one of these conversions produces an error of a factor of 10, 60 or 1000 that can be mistaken for a real difference between compounds.',
     build: function(api){
       var mw = 400, lc = 0, dose = 100, wt = 70, clk = 5;
       var pn = api.el('pn', 'left:28px;top:16px;width:440px;height:508px;overflow:auto', '<h4>Concentration and dose</h4><div class="a"></div>');
@@ -94,8 +88,6 @@
 
   /* ===== tab 02, step 2: concentration is amount over volume ===== */
   UNITS.add({ short: 'Amount and volume', level: 'foundations', ord: 20, title: 'Amount, concentration and volume',
-    change: 'Select a drug. Read the volume it appears to occupy against the volumes of the body.',
-    watch: 'The concentration of a drug in plasma is the amount in the body divided by a volume: C = A / V. The volume of distribution is not a physical volume. It is the volume that would hold the amount of drug in the body at the concentration measured in plasma. A drug that stays in plasma has a volume near the plasma volume, 3.05 L in a 70 kg adult. A drug that spreads through extracellular fluid has a volume near 13.6 L, and one that spreads through all body water near 40.2 L. A drug that binds to tissue has a plasma concentration low enough for the volume to exceed the body itself. Of 667 drugs, 415 have a volume above 40.2 L for a 70 kg adult, and the range is 2.5 L to 49,000 L.',
     build: function(api){
       var named = OBACH08.filter(function(d){ return d.name && d.vss > 0; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; }), cur = 'Warfarin', D = 100;
       var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="330" style="width:624px;height:330px"></canvas><div class="ro" style="font-size:13px;margin-top:8px;line-height:1.5"></div>'), cvs = qs('canvas', pn);
@@ -119,8 +111,6 @@
 
   /* ===== tab 02, step 3: bound and unbound drug ===== */
   UNITS.add({ short: 'Bound and unbound drug', level: 'foundations', ord: 30, title: 'Bound and unbound drug',
-    change: 'Select a drug and set the total plasma concentration. Read the unbound concentration.',
-    watch: 'Drug in plasma is partly bound to proteins, mainly albumin and alpha-1 acid glycoprotein. The fraction unbound, fu, is the unbound concentration divided by the total: fu = Cu / C. In the models used in this course only the unbound drug crosses membranes, is cleared and reaches the target, so the unbound concentration is Cu = fu x C. Two drugs at the same total concentration can have unbound concentrations that differ by orders of magnitude. For the 554 drugs of Obach et al. (2008) with a reported fu, the median is 0.25 and the quartiles are 0.06 and 0.70. For 179 drugs fu is below 0.1, and for 41 it is below 0.01.',
     build: function(api){
       var fus = OBACH08.filter(function(d){ return d.name && d.fu; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; }), cur = 'Warfarin', lt = 0, all = OBACH08.filter(function(d){ return d.fu; });
       var pn = api.el('pn', 'left:28px;top:16px;width:420px;height:508px;padding:14px', '<div class="bars"></div><div class="ro" style="font-size:13px;margin-top:14px;line-height:1.5"></div>');
@@ -140,8 +130,6 @@
 
   /* ===== tab 03, step 1: first-order elimination ===== */
   ELIM.add({ short: 'First-order elimination', level: 'foundations', ord: 10, title: 'First-order elimination',
-    change: 'Set the half-life. Read the amount remaining after each half-life and the elimination rate.',
-    watch: 'For most drugs at therapeutic doses the body removes drug at a rate proportional to the amount present: rate = k x A, where k is the elimination rate constant. This is first-order elimination. The consequence is that a constant fraction of the drug is removed in each interval, and not a constant amount. The time to remove half of the drug, the half-life, is the same whether 100 mg or 1 mg is present, and k = 0.693 / half-life. The plot gives the amount remaining from a 100 mg dose. After one half-life 50 mg remains, after two 25 mg, and after five about 3 mg. The elimination rate in mg/h falls in the same proportion as the amount.',
     build: function(api){
       var th = 6, A0 = 100;
       var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -162,8 +150,6 @@
 
   /* ===== tab 03, step 2: clearance defined ===== */
   ELIM.add({ short: 'Clearance', level: 'foundations', ord: 20, title: 'Clearance',
-    change: 'Set the concentration and the volume. Compare two drugs with different clearances.',
-    watch: 'The rate constant k relates the elimination rate to the amount in the body. Concentration is what is measured, so it is convenient to relate the rate to the concentration. The amount is A = V x C, so the rate is k x V x C. The product k x V is the clearance: rate of elimination = CL x C. Clearance is the proportionality constant. It has the units of a flow, and it is the volume of plasma from which the drug is completely removed per unit time. The plot gives the elimination rate against the concentration for two drugs. The slope of each line is its clearance, and the rate constant follows from k = CL / V.',
     build: function(api){
       var C0 = 2, CLa = 10, CLb = 25, V = 50;
       var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -183,8 +169,6 @@
 
   /* ===== tab 04, step 2: bioavailability from the areas ===== */
   ORAL.add({ short: 'Bioavailability from AUCs', level: 'foundations', ord: 20, title: 'Bioavailability from the areas',
-    change: 'Set the two doses and the two areas. Read the bioavailability.',
-    watch: 'Absolute bioavailability is measured by giving the drug by both routes and comparing the areas under the curve per unit dose: F = (AUC oral / dose oral) / (AUC intravenous / dose intravenous). An intravenous dose has F = 1 by definition, because the whole dose enters the circulation. The method assumes that the clearance is the same on both occasions and does not depend on dose, because AUC = F x dose / CL. The bars give the dose-normalized area for each route, and F is the ratio of the two bars. With 50 mg intravenous and 100 mg oral, an oral area of 8 against an intravenous area of 10 mg x h/L gives F = 0.4.',
     build: function(api){
       var Di = 50, Dp = 100, Ai = 10, Ap = 8;
       var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -209,8 +193,6 @@
     { k: 'hyd', name: 'Hydrolysis', enz: 'Esterases and amidases, in plasma and in liver.', what: 'Splits an ester or amide bond.', sys: 'Hepatocytes, plasma or liver S9 fractions.', cov: 'Not predicted in this course.' },
     { k: 'oth', name: 'Other routes', enz: 'Aldehyde oxidase, in the liver cytosol, and monoamine oxidase, in mitochondria.', what: 'Oxidizes aldehydes and some nitrogen-containing heterocycles, or amines.', sys: 'Cytosol or S9 fractions, or hepatocytes.', cov: 'Not measured by a microsomal incubation, because the enzyme is not in the microsomal fraction.' }];
   MET.add({ short: 'Metabolic routes', level: 'foundations', ord: 10, title: 'Routes of metabolism',
-    change: 'Select a route. Read the enzymes, the in vitro system that covers it and whether the microsomal prediction does.',
-    watch: 'Metabolism converts a drug to more polar compounds that are easier to excrete. It is carried out by groups of enzymes, and each group acts on different structural features and sits in a different part of the cell. The in vitro system used to measure a route has to contain the enzyme and its cofactor. Liver microsomes are fragments of the endoplasmic reticulum, so they contain the cytochrome P450 enzymes and UDP-glucuronosyltransferases and, with NADPH added, support oxidation by cytochrome P450. Hepatocytes contain the hepatic enzymes of all of these routes. Tab 07 predicts clearance from a microsomal incubation with NADPH, so it covers oxidation and does not cover the other routes.',
     build: function(api){
       var sel = 'ox';
       var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:10px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');
@@ -226,8 +208,6 @@
 
   /* ===== tab 05, step 2: enzyme kinetics ===== */
   MET.add({ short: 'Enzyme kinetics', level: 'foundations', ord: 20, title: 'Enzyme kinetics and intrinsic clearance',
-    change: 'Set Vmax, Km and the substrate concentration. Compare the curve with its low-concentration slope.',
-    watch: 'An enzyme has a limited capacity. The Michaelis-Menten equation gives the rate of reaction as v = Vmax x S / (Km + S), where S is the substrate concentration, Vmax is the maximal rate and Km is the concentration at which the rate is half of Vmax. At concentrations well below Km the rate is proportional to the concentration: v is close to (Vmax / Km) x S. The ratio Vmax / Km is the intrinsic clearance, CLint. With Vmax in pmol/min/mg of microsomal protein and Km in micromolar, CLint is in microL/min/mg. At higher concentrations the enzyme saturates and the rate rises more slowly than the concentration, so the clearance v / S falls. A first-order approximation at S = 0.1 x Km overstates the rate by 10 percent, and at S = Km by 100 percent.',
     build: function(api){
       var Vm = 200, lk = 1, ls = 0;
       var pn = api.el('pn', 'left:28px;top:16px;width:452px;height:508px;padding:8px', '<canvas class="a" width="436" height="440" style="width:436px;height:440px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('.a', pn);
@@ -250,8 +230,6 @@
 
   /* ===== tab 05, step 3: the depletion assay ===== */
   MET.add({ short: 'Depletion assay', level: 'foundations', ord: 30, title: 'The substrate depletion assay',
-    change: 'Set the in vitro half-life and the protein concentration. Follow the conversion to a scaled clearance.',
-    watch: 'A depletion assay incubates the compound at a low concentration with liver microsomes and follows its loss. At a concentration well below Km the loss is first order, so the concentration falls exponentially and the plot of its logarithm against time is a straight line with slope -k, where k = 0.693 / in vitro half-life. The intrinsic clearance per mg of microsomal protein is CLint = k / protein concentration, with k in 1/min and protein in mg/mL, times 1000 for microL/mL. Scaling to the body multiplies by 45 mg of microsomal protein per g of liver and 20 g of liver per kg, and divides by 1000. For chlorpromazine in Obach (1999), a half-life of 25 min at 1 mg/mL gives a scaled CLint of 25 mL/min/kg.',
     build: function(api){
       var th = 25, prot = 1;
       var pn = api.el('pn', 'left:28px;top:16px;width:452px;height:508px;padding:8px', '<canvas class="a" width="436" height="440" style="width:436px;height:440px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('.a', pn);
@@ -275,8 +253,6 @@
 
   /* ===== tab 05, step 5: total clearance and routes ===== */
   MET.add({ short: 'Total clearance', level: 'foundations', ord: 50, title: 'Total clearance and routes',
-    change: 'Set the hepatic, renal and other clearances and the fraction unbound. Read the fraction excreted unchanged.',
-    watch: 'Clearances by separate organs add, because each removes drug from the same blood: CL = CLh + CLr + CLother. The fraction of the dose excreted unchanged in urine is fe = CLr / CL. Renal clearance is the net result of three processes: filtration of unbound drug, active secretion into the urine and reabsorption back into blood. With a glomerular filtration rate of 120 mL/min (7.2 L/h), filtration alone gives CLr = fu x 7.2 L/h. A renal clearance above that value shows net secretion and one below it shows net reabsorption. The exposure after a given dose is inversely proportional to the total clearance, so the loss of a route that carries a fraction s of the clearance multiplies the exposure by 1 / (1 - s).',
     build: function(api){
       var CLh = 6, CLr = 2, CLo = 0, fu = 0.5, GFR = 7.2, D = 100;
       var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -306,8 +282,6 @@
     { k: 'caco', name: 'Caco-2 permeability', meas: 'Rate of appearance of the compound across a monolayer of intestinal cells.', par: 'Apparent permeability, Papp, in cm/s.', link: 'Compared with reference compounds to estimate the fraction absorbed.', use: 'Tab 09' },
     { k: 'sol', name: 'Solubility', meas: 'Concentration of dissolved compound at equilibrium in buffer, at a stated pH.', par: 'Solubility S in mg/mL or mol/L.', link: 'With the dose and the volume of fluid gives the dose number.', use: 'Tab 09' }];
   VITRO.add({ short: 'What an assay measures', level: 'foundations', ord: 10, title: 'What an in vitro assay measures',
-    change: 'Select an assay. Read what is measured, the parameter and how it links to the clinic.',
-    watch: 'An in vitro assay measures one property of the compound under controlled conditions. The value is not a clinical quantity until it is converted. Each conversion has the same form: a measured parameter, a scaling step that puts it on the scale of the body, and a model that combines it with other parameters. The panel gives six common assays, the parameter each one yields and where the course uses it. The following step carries one drug through the whole chain from a microsomal assay to a predicted clearance. The tabs after it test how well such chains predict observed values.',
     build: function(api){
       var sel = 'mic';
       var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:10px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');

@@ -24,8 +24,6 @@ function aRows(items){ return items.map(function(t){ return '<div style="display
 
 /* ---------- step 1 ---------- */
 ORAL.add({ short: 'Bioavailability as a product', level: 'foundations', ord: 30, title: 'Bioavailability as a product',
-  change: 'Set the fraction absorbed, the fraction escaping the gut wall and the hepatic clearance.',
-  watch: 'Oral bioavailability is the product F = Fa x Fg x Fh. Fa is the fraction of the dose that crosses the apical membrane of the intestine, Fg the fraction that escapes metabolism in the gut wall, and Fh the fraction that escapes the liver on the first pass. The hepatic term follows from the blood clearance and liver blood flow: Fh = 1 - CLh / Q, where CLh is the hepatic blood clearance. The bars give the fraction of the dose that remains after each stage. The terms multiply, so a drug with three terms of 0.7 has F = 0.34.',
   build: function(api){
     var fa = 0.9, fg = 0.8, cl = 8, q = 21;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -45,8 +43,6 @@ ORAL.add({ short: 'Bioavailability as a product', level: 'foundations', ord: 30,
 
 /* ---------- step 2 ---------- */
 ABS.add({ short: 'Hepatic first-pass limit', level: 'foundations', title: 'Hepatic first-pass limit',
-  change: 'Change the liver blood flow. Select a bar to read the drug.',
-  watch: 'For a drug that is absorbed completely and escapes the gut wall (Fa = Fg = 1), the bioavailability is the hepatic term alone. The bars give Fh = 1 - CLb / Q for the 29 drugs of Obach (1999), calculated from the observed nonrenal blood clearance CLb with the blood flow set below, which assumes that nonrenal clearance is hepatic. This is an upper bound on oral bioavailability. With the blood flow at 21 mL/min/kg, 11 of the 29 drugs have an upper bound below 0.5, 5 below 0.2, and 8 are at 0.9 or above.',
   build: function(api){
     var q = 21, sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="450" style="width:624px;height:450px;cursor:pointer"></canvas>' + hepLegend()), cvs = qs('canvas', pn);
@@ -74,8 +70,6 @@ ABS.add({ short: 'Hepatic first-pass limit', level: 'foundations', title: 'Hepat
 
 /* ---------- step 3 ---------- */
 ABS.add({ short: 'Solubility and dose', level: 'applied', title: 'Solubility and dose number',
-  change: 'Set the dose and the volume of fluid. Read the share of compounds whose dose exceeds their solubility.',
-  watch: 'The dose number is the dose divided by the volume of fluid and by the solubility: D0 = (dose / volume) / S. A dose number above 1 means that the dose cannot dissolve in the volume given. The histogram gives log10 D0 for the 9,980 compounds of AqSolDB, with solubility converted from mol/L to mg/mL by the molecular weight. AqSolDB is a curated set of aqueous solubilities of chemicals in general, not of drugs, and the values are not at a controlled intestinal pH. For a 100 mg dose in 250 mL, 4,712 of the 9,980 compounds have D0 above 1. The result shows the range of solubility that a dose has to cover and not the dose number of any drug.',
   build: function(api){
     var ld = 2, vol = 250;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="450" style="width:624px;height:450px"></canvas><div class="ro" style="font-size:12.5px;margin-top:6px"></div>'), cvs = qs('canvas', pn);
@@ -100,8 +94,6 @@ ABS.add({ short: 'Solubility and dose', level: 'applied', title: 'Solubility and
 
 /* ---------- step 4 ---------- */
 ABS.add({ short: 'pH-dependent solubility', level: 'applied', title: 'Solubility and pH',
-  change: 'Choose an acid, a base or a neutral compound. Move the pKa, the intrinsic solubility and the gastric and intestinal pH.',
-  watch: 'For a monoprotic acid the solubility is S = S0 x (1 + 10^(pH - pKa)). For a monoprotic base it is S = S0 x (1 + 10^(pKa - pH)). S0 is the intrinsic solubility of the neutral form. The equations ignore salt solubility limits and micellar solubilization, so the solubility at low pH for a base is an upper limit and not a value reached in practice. The plot gives the dose number against pH for the dose and volume set below. A weak base is most soluble at the gastric pH and loses solubility as the pH rises. A higher gastric pH, for example during acid suppression, raises the dose number in the stomach. The dose number at the intestinal pH indicates whether the dose can stay dissolved there.',
   build: function(api){
     var typ = 'base', pka = 5, ls0 = -2, dose = 100, gp = 1.2, ip = 6.5, vol = 250;
     var pn = api.el('pn', 'left:28px;top:16px;width:600px;height:508px;padding:8px', '<canvas width="584" height="490" style="width:584px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -129,8 +121,6 @@ ABS.add({ short: 'pH-dependent solubility', level: 'applied', title: 'Solubility
 
 /* ---------- step 5 ---------- */
 ABS.add({ short: 'Permeability descriptors', level: 'applied', title: 'Permeability and structure',
-  change: 'Switch the descriptor on the horizontal axis. Select a point to read the compound.',
-  watch: 'The plot gives the Caco-2 apparent permeability (log10 of Papp in cm/s, as given in the data set of Wang et al., 2016) against one calculated descriptor for 910 compounds. The line joins the median permeability of equal-count bins. Permeability falls with polar surface area (Spearman correlation -0.63) and with the hydrogen-bond donor count (-0.65). The correlation with molecular weight is weaker (-0.38) and the correlation with Crippen logP is positive and weak (0.28). No single descriptor orders the compounds closely. Wang et al. built their model from 30 descriptors selected together.',
   build: function(api){
     var dk = 'tpsa', sel = null, L = { tpsa: ['Topological polar surface area (A^2)', 0, 320], hbd: ['Hydrogen-bond donors', 0, 14], mw: ['Molecular weight (Da)', 0, 1200], logp: ['Crippen logP', -6, 10], hba: ['Hydrogen-bond acceptors', 0, 24] };
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px;cursor:pointer"></canvas>'), cvs = qs('canvas', pn);
@@ -151,8 +141,6 @@ ABS.add({ short: 'Permeability descriptors', level: 'applied', title: 'Permeabil
 
 /* ---------- step 6 ---------- */
 ABS.add({ short: 'Property rules', level: 'advanced', title: 'Property rules for absorption',
-  change: 'Choose a preset or edit the thresholds. Compare each rule with the baseline of calling every compound absorbed.',
-  watch: 'A property rule flags a compound as poorly absorbed when it breaks enough thresholds. The rule of five (Lipinski) flags molecular weight above 500, logP above 5, more than 5 donors and more than 10 acceptors. The Veber rules flag more than 10 rotatable bonds and a polar surface area above 140 A^2. The rules are scored on the 578 compounds of Hou et al. (2007), of which 78 have a fraction absorbed of 30 percent or less (poor) and 500 are above 30 percent (good). Calling every compound good is correct for 500 of 578 (86.5 percent), so the accuracy of a rule has to be read against that baseline: the rule of five with one violation scores 86.7 percent. The right plot gives the area under the ROC curve of each descriptor for separating poor from good. The area for Crippen logP is 0.27. A value below 0.5 means that the poorly absorbed compounds have the lower logP values.',
   build: function(api){
     var T = { mw: [true, 500], logp: [true, 5], hbd: [true, 5], hba: [true, 10], tpsa: [false, 140], rb: [false, 10] }, need = 1, sel = 'lip1';
     var PRE = { lip1: ['Rule of five, 1 violation', { mw: 1, logp: 1, hbd: 1, hba: 1, tpsa: 0, rb: 0 }, 1], lip2: ['Rule of five, 2 violations', { mw: 1, logp: 1, hbd: 1, hba: 1, tpsa: 0, rb: 0 }, 2], veb: ['Veber, 1 violation', { mw: 0, logp: 0, hbd: 0, hba: 0, tpsa: 1, rb: 1 }, 1], tp: ['TPSA above 140 only', { mw: 0, logp: 0, hbd: 0, hba: 0, tpsa: 1, rb: 0 }, 1], hd: ['More than 5 donors only', { mw: 0, logp: 0, hbd: 1, hba: 0, tpsa: 0, rb: 0 }, 1] };

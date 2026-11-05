@@ -3,8 +3,6 @@
 
 /* ---------- step 7 ---------- */
 HEP.add({ short: 'Microsomes against hepatocytes', level: 'advanced', title: 'Microsomes against hepatocytes',
-  change: 'Move the scaling sliders. Select a point to read its two measurements.',
-  watch: 'Each point is a compound measured in both human liver microsomes and human hepatocytes in the AstraZeneca data set deposited in ChEMBL. The microsomal value (uL/min/mg) is scaled with the protein content per g of liver and the hepatocyte value (uL/min/10^6 cells) with the hepatocellularity, both with the liver weight per kg. A compound on the dashed line has the same scaled clearance in both systems. Compounds above the line clear faster in hepatocytes. The plot shows the ratio and not its cause. Differences can reflect enzymes that a NADPH-supplemented microsomal incubation does not cover, uptake into the cell, binding, and the choice of scalars, which are the sliders here. Only compounds with uncensored values in both assays are shown, 96 of the 187 that have both. With 45 mg/g, 120 x 10^6 cells/g and 20 g/kg, 62 of the 96 lie above the line and the median ratio is 1.22. The hepatocellularity is an assumed value and the slider shows how much the result depends on it.',
   build: function(api){
     var mp = 45, hp = 120, lw = 20, sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:600px;height:508px;padding:8px', '<canvas width="584" height="470" style="width:584px;height:470px;cursor:pointer"></canvas>'), cvs = qs('canvas', pn);
@@ -49,8 +47,6 @@ var ECCS = {
   '4': ['Renal clearance', 'Low-permeability bases and neutrals.', false]
 };
 HEP.add({ short: 'Choosing a method by class', level: 'advanced', title: 'Choosing a method by class',
-  change: 'Select a point on the map or use the sliders. Switch between acids or zwitterions and bases or neutrals.',
-  watch: 'The extended clearance classification system (ECCS; Varma et al., 2015) assigns a compound to a class from its ionization at pH 7, its molecular weight and its passive permeability, and predicts the rate-determining clearance mechanism. The permeability cut-off is an apparent permeability of 5 x 10^-6 cm/s in a low-efflux MDCK cell line, and the molecular weight cut-off for acids and zwitterions is 400 Da. The authors report that the scheme gave the correct mechanism for about 92 percent of 307 compounds with a single mechanism contributing 70 percent or more of systemic clearance. The microsomal scaling in steps 1 to 4 measures metabolism. It applies to the metabolism classes, 1A and 2, and not to the uptake and renal classes.',
   build: function(api){
     var acid = true, mw = 350, papp = 10, ppb = 95;
     var pn = api.el('pn', 'left:28px;top:16px;width:520px;height:508px;padding:8px', '<canvas width="504" height="490" style="width:504px;height:490px;cursor:crosshair"></canvas>'), cvs = qs('canvas', pn);

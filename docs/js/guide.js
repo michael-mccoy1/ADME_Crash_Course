@@ -1,12 +1,9 @@
 "use strict";
-/* Lesson overviews, objectives, notation and sources; what to notice in each step; and a pop quiz question with a hidden answer. */
+/* Lesson scope, learning outcomes, notation and sources; for each step an observation and a check question with its answer. */
 var GUIDE = {
   "intro": {
     "why": {
-      "overview": [
-        "This course predicts how much of a drug reaches its target and for how long. This tab starts from the reason: the effect of a drug depends on its concentration at the target, and ADME determines that concentration. The first step links dose, concentration and effect. The second maps the stages a dose passes through. The third names the numbers that summarize a concentration-time profile.",
-        "The tabs that follow take the concepts in order. Tab 02 sets out amount, concentration and volume. Tab 03 covers elimination. Tab 04 covers getting a drug in. Tab 05 covers metabolism and excretion. Tab 06 shows how in vitro assays are turned into predictions and how predictions are scored. Tabs 07 to 09 then predict hepatic clearance, volume of distribution and absorption from public data."
-      ],
+      "scope": "Drug effect depends on the concentration at the target, and absorption, distribution, metabolism and excretion (ADME) determine that concentration over time. Dose, concentration and effect are related by a concentration-effect curve, the stages of an oral dose are mapped, and the measures that summarize a concentration-time profile are defined. Tabs 02 to 06 define amount, concentration and volume, elimination, oral dosing, metabolism and excretion, and the conversion of in vitro data to predictions. Tabs 07 to 09 predict hepatic clearance, volume of distribution and absorption from public data.",
       "goals": [
         "Relate dose, concentration and effect with a concentration-effect curve.",
         "Name the stages an oral dose passes through, and the assay and quantity that go with each.",
@@ -47,10 +44,7 @@ var GUIDE = {
       ]
     },
     "units": {
-      "overview": [
-        "This tab sets out the three quantities that every later tab uses: the amount of drug, its concentration and the volume that relates them. Step 1 gives the units and the conversions between them. Step 2 shows the volume of distribution as the ratio of an amount to a concentration, and compares real drugs with the volumes of the body. Step 3 separates the drug in plasma into bound and unbound parts, because only the unbound drug is available in the models used here.",
-        "The values come from the Obach et al. (2008) data set of human intravenous pharmacokinetics."
-      ],
+      "scope": "The amount of a drug, its concentration and the volume that relates them underlie every later calculation. Units and conversions are set, the apparent volume of distribution is defined and compared with body volumes for 667 drugs, and bound and unbound concentration are defined.",
       "goals": [
         "Convert between mass and molar concentrations and between per-kg and whole-body clearances.",
         "Explain the volume of distribution as an apparent volume and compare it with body volumes.",
@@ -84,10 +78,7 @@ var GUIDE = {
       ]
     },
     "elim": {
-      "overview": [
-        "This tab covers how the body removes a drug. Step 1 starts with first-order elimination, in which the rate of removal is proportional to the amount present, and derives the half-life. Step 2 defines clearance from the same relation, written in terms of concentration. Steps 3 and 4 give the intravenous profile and show how volume and clearance together set the half-life. Step 5 gives repeat dosing, in which the drug accumulates until elimination matches the dose. Step 6 checks the relations against 667 measured drugs.",
-        "The model is a single well-mixed compartment. Distribution is treated in tab 08, and the processes that make up clearance are treated in tab 05."
-      ],
+      "scope": "Elimination is treated in a one-compartment model: first-order kinetics and half-life, the definition of clearance, the intravenous profile, the dependence of half-life on volume and clearance, accumulation on repeat dosing, and a consistency check of these relations on 667 measured drugs. Distribution is treated in tab 08 and the processes that make up clearance in tab 05.",
       "goals": [
         "State what first-order elimination means and calculate the half-life from the rate constant.",
         "Define clearance and relate it to the volume and the rate constant.",
@@ -129,10 +120,7 @@ var GUIDE = {
       ]
     },
     "oral": {
-      "overview": [
-        "This tab covers dosing by mouth. After an oral dose the drug has to be absorbed before it can be eliminated, so the profile is lower and later than after an intravenous dose, and not all of the dose may arrive. Step 1 gives the oral profile and its dependence on bioavailability and the absorption rate. Step 2 shows how bioavailability is measured from the areas under the curve after oral and intravenous doses. Step 3 divides bioavailability into the fractions absorbed, escaping the gut wall and escaping the liver.",
-        "Tab 09 treats absorption in more detail: the hepatic limit on bioavailability, solubility and the public absorption data."
-      ],
+      "scope": "After oral administration a drug must be absorbed before it is eliminated. The oral profile, the measurement of bioavailability from oral and intravenous areas under the curve, and the decomposition of bioavailability into Fa, Fg and Fh are given. Tab 09 treats the hepatic limit on bioavailability, solubility and public absorption data.",
       "goals": [
         "Explain how bioavailability and the absorption rate shape the oral profile.",
         "Calculate bioavailability from oral and intravenous areas under the curve.",
@@ -161,10 +149,7 @@ var GUIDE = {
       ]
     },
     "met": {
-      "overview": [
-        "This tab covers the two main routes by which the body removes a drug: metabolism and excretion. Step 1 names the metabolic routes, the enzymes and the in vitro systems that cover them. Step 2 gives the enzyme kinetics that define intrinsic clearance. Step 3 shows how a depletion assay yields it, with the unit conversions. Step 4 relates organ clearance to blood flow and extraction. Step 5 adds the routes together and shows how renal clearance is judged.",
-        "These steps prepare tab 07, which predicts hepatic clearance from microsomal data."
-      ],
+      "scope": "Metabolism and excretion are treated through metabolic routes and the in vitro systems that cover them, Michaelis-Menten kinetics and intrinsic clearance, the depletion assay and its unit conversions, organ clearance as the product of blood flow and extraction, and the addition of clearance routes. It prepares tab 07.",
       "goals": [
         "Name the main metabolic routes and say which in vitro systems measure them.",
         "Define intrinsic clearance from Vmax and Km, and state when the first-order approximation holds.",
@@ -202,10 +187,7 @@ var GUIDE = {
       ]
     },
     "vitro": {
-      "overview": [
-        "This tab connects the laboratory to the clinic. Step 1 lists common in vitro assays, the parameter each yields and how it is linked to a clinical quantity. Step 2 carries one drug through the whole chain, from a microsomal assay value to a predicted blood clearance, one stage at a time. Steps 3 to 5 introduce the numbers used to score a prediction: the fold error, the average fold error and bias, and the reason for the logarithmic scale.",
-        "Tabs 07 to 09 report these numbers wherever a prediction is compared with data."
-      ],
+      "scope": "In vitro measurements are connected to clinical quantities. Common assays and the parameters they yield are tabulated, one drug is followed from a microsomal assay value to a predicted blood clearance, and the measures used to score predictions are defined: fold error, average fold error, bias and the logarithmic scale. Tabs 07 to 09 report these measures.",
       "goals": [
         "State what each common in vitro assay measures and how its result is converted.",
         "Follow a microsomal CLint to a predicted blood clearance.",
@@ -234,10 +216,7 @@ var GUIDE = {
       ]
     },
     "hep": {
-      "overview": [
-        "This tab follows one prediction from a microsomal stability assay to a human hepatic blood clearance. A depletion assay gives the intrinsic clearance of a drug in liver microsomes. Scaling that value to the whole liver, correcting it for binding and passing it through a model of hepatic extraction gives a predicted blood clearance. The prediction can be compared with the clearance observed after intravenous dosing.",
-        "The comparison set is 29 drugs for which Obach (1999) measured microsomal CLint and for which intravenous clearance has been published. Each step changes one assumption and reports the effect on the same three numbers, which makes the effects comparable. Tab 06 followed one drug through the calculation. Steps 1 to 4 set up the scoreboard, the scaling, the extraction models and the binding terms. Steps 5 to 8 test the method: a fitted scalar, the assay detection limit, the comparison with hepatocytes, and the clearance mechanisms that a microsomal assay does not cover."
-      ],
+      "scope": "Human hepatic blood clearance is predicted from the microsomal CLint of 29 drugs (Obach, 1999) and scored against intravenous clearance. Each step varies one assumption (scaling, extraction model, binding, fitted scalar, assay limit, hepatocyte data, clearance mechanism) and reports the effect on the same three measures: number within 2-fold, average fold error and bias.",
       "goals": [
         "Predict hepatic blood clearance from microsomal intrinsic clearance, and score the prediction against observed values.",
         "Apply scaling factors, binding corrections and an extraction model, and state how each changes the prediction.",
@@ -284,10 +263,7 @@ var GUIDE = {
       ]
     },
     "dist": {
-      "overview": [
-        "This tab covers the volume of distribution at steady state, Vss: the amount of drug in the body divided by the plasma concentration. A drug that binds to tissue has a Vss larger than the water volume of the body. A drug that binds mainly to plasma proteins has a small one. Step 1 shows what Vss measures with a two-term example.",
-        "The Oie-Tozer equation divides Vss into plasma, extracellular and tissue terms. It needs two inputs for each drug: the fraction unbound in plasma (fup) and in tissue (fut). The first is measured. The second is not, so it is back-calculated from an observed Vss or predicted. Steps 2 and 3 introduce the terms and back-calculate fut for the Obach (2008) drugs. Steps 4 and 5 predict fut and group the drugs by ionization class. Steps 6 and 7 cover the half-life that follows from clearance and Vss, and the conversion between blood and plasma clearance. Step 8 gives the sensitivity of the prediction to each input."
-      ],
+      "scope": "The volume of distribution at steady state (Vss) is expressed through fup and fut by the Oie-Tozer equation. Fut is not measured, so it is back-calculated from observed Vss for the drugs of Obach et al. (2008) and predicted from logD, pKa and fup. Further steps cover the dependence on ionization class, the half-life that follows from CL and Vss, the conversion between blood and plasma clearance, and the sensitivity of Vss to its inputs.",
       "goals": [
         "Divide the volume of distribution into plasma, extracellular and tissue terms with the Oie-Tozer equation.",
         "Back-calculate tissue binding from observed volumes and test a predictive equation for it, by ionization class.",
@@ -334,10 +310,7 @@ var GUIDE = {
       ]
     },
     "abs": {
-      "overview": [
-        "This tab covers oral bioavailability, F, in more detail than tab 04. F is the product of the fraction absorbed (Fa), the fraction that escapes the gut wall (Fg) and the fraction that escapes the liver (Fh). Step 1 gives the upper bound that hepatic clearance sets on F, calculated from observed clearance.",
-        "Steps 2 and 3 cover dissolution: the dose number, and the effect of pH on the solubility of acids and bases. Steps 4 and 5 use public absorption data to ask how far permeability and simple structural rules identify poorly absorbed compounds. Gut-wall metabolism, food effects and intestinal transporters are not covered, because no public per-compound data were available for them."
-      ],
+      "scope": "Oral bioavailability is treated further than in tab 04: the upper bound that hepatic clearance sets on it, the dose number and the effect of pH on solubility. Public Caco-2, absorption and solubility data test how far permeability and structural rules identify poorly absorbed compounds. Gut-wall metabolism, food effects and intestinal transporters are not covered; no public per-compound data were used for them.",
       "goals": [
         "Bound oral bioavailability with the hepatic first-pass limit.",
         "Relate dose, solubility and pH to the dose number.",
@@ -380,235 +353,235 @@ var GUIDE = {
     }
   },
   "steps": {
+    "why/Concentration and effect": {
+      "notice": "Doubling the dose doubles the peak and extends the time above the EC50 by one half-life.",
+      "q": "By how much does doubling an intravenous dose extend the time above the EC50?",
+      "a": "By ln 2 / k, one half-life: C0 doubles and C then falls exponentially."
+    },
+    "why/Path of an oral dose": {
+      "notice": "Each stage has one ADME category, one assay and one parameter.",
+      "q": "Which parameter quantifies the fraction of an oral dose that escapes hepatic first-pass extraction?",
+      "a": "Fh = 1 - CLh / Q."
+    },
+    "why/Exposure measures": {
+      "notice": "Cmax, tmax, AUC, half-life and trough are read from different parts of one profile.",
+      "q": "Which measure quantifies total exposure?",
+      "a": "The AUC, the area under the concentration-time curve."
+    },
+    "units/Units and conversions": {
+      "notice": "Each conversion is a fixed factor set by MW or body weight.",
+      "q": "What is the relation between ng/mL and ug/L?",
+      "a": "They are identical: 1 ng/mL = 1 ug/L."
+    },
+    "units/Amount and volume": {
+      "notice": "Vss exceeds 40.2 L for 415 of 667 drugs.",
+      "q": "Can V exceed the volume of the body?",
+      "a": "Yes. V = A / C is an apparent volume. Tissue binding lowers C at a given A and raises V."
+    },
+    "units/Bound and unbound drug": {
+      "notice": "At a given total concentration, Cu is proportional to fu.",
+      "q": "At fu = 0.02 and C = 5 mg/L, what is Cu?",
+      "a": "0.1 mg/L (Cu = fu x C)."
+    },
+    "elim/First-order elimination": {
+      "notice": "A constant fraction, not a constant amount, is eliminated per unit time.",
+      "q": "What mass of a 100 mg dose remains after three half-lives?",
+      "a": "12.5 mg."
+    },
+    "elim/Clearance": {
+      "notice": "The slope of each line is CL.",
+      "q": "What is the elimination rate at C = 2 mg/L with CL = 10 L/h?",
+      "a": "20 mg/h (rate = CL x C)."
+    },
+    "elim/Intravenous profile": {
+      "notice": "On the log10 axis the profile is linear.",
+      "q": "How does t1/2 change when V doubles at constant CL?",
+      "a": "It doubles (t1/2 = 0.693 V / CL)."
+    },
+    "elim/Volume and half-life": {
+      "notice": "At equal dose and CL the AUC is independent of V.",
+      "q": "Why does a larger V lengthen t1/2 at constant CL?",
+      "a": "The same clearance removes a smaller fraction of the amount in the body per unit time."
+    },
+    "elim/Repeat dosing": {
+      "notice": "Css,avg depends on CL and not on V.",
+      "q": "What is R when tau equals t1/2?",
+      "a": "2, from R = 1 / (1 - 0.5)."
+    },
+    "elim/Checking a record": {
+      "notice": "The calculated MRT agrees with the reported MRT, and 0.693 x MRT is below t1/2 for most drugs.",
+      "q": "Why is 0.693 x MRT below the reported t1/2 for most drugs?",
+      "a": "Disposition is multiphasic, and the reported t1/2 is the terminal value, which exceeds the one-compartment value."
+    },
+    "oral/Oral profile": {
+      "notice": "The oral AUC is F times the intravenous AUC.",
+      "q": "What is the oral AUC for a 100 mg dose with F = 0.4 and CL = 20 L/h?",
+      "a": "2.0 mg x h/L (F x Dose / CL)."
+    },
+    "oral/Bioavailability from AUCs": {
+      "notice": "F is the ratio of the dose-normalized AUCs.",
+      "q": "An oral dose of 100 mg gives an AUC of 8 and an intravenous dose of 50 mg gives 10 mg x h/L. What is F?",
+      "a": "0.4."
+    },
+    "oral/Bioavailability as a product": {
+      "notice": "Each loss acts on the fraction remaining from the previous stage.",
+      "q": "What is F when Fa, Fg and Fh are each 0.7?",
+      "a": "0.34."
+    },
+    "met/Metabolic routes": {
+      "notice": "An NADPH-supplemented microsomal incubation measures P450 oxidation only.",
+      "q": "Why is aldehyde oxidase activity not measured in such an incubation?",
+      "a": "The enzyme is cytosolic and absent from the microsomal fraction."
+    },
+    "met/Enzyme kinetics": {
+      "notice": "The clearance v / S is highest at low S and falls as the enzyme saturates.",
+      "q": "What is v at S = Km?",
+      "a": "Vmax / 2."
+    },
+    "met/Depletion assay": {
+      "notice": "ln(percent remaining) is linear in time with slope -k.",
+      "q": "What is the scaled CLint for t1/2 = 25 min at 1 mg/mL?",
+      "a": "25 mL/min/kg."
+    },
+    "met/Clearance and extraction": {
+      "notice": "CL cannot exceed Q.",
+      "q": "What is CL for Q = 21 mL/min/kg and E = 0.4?",
+      "a": "8.4 mL/min/kg."
+    },
+    "met/Total clearance": {
+      "notice": "Loss of a route that carries a fraction s of CL multiplies the AUC by 1 / (1 - s).",
+      "q": "What is fe for CLh = 6 L/h and CLr = 2 L/h with no other route?",
+      "a": "0.25."
+    },
+    "vitro/What an assay measures": {
+      "notice": "Each assay yields one parameter that needs scaling or a model before it predicts an in vivo value.",
+      "q": "What does a microsomal stability assay yield before scaling?",
+      "a": "The in vitro half-life, converted to CLint in uL/min/mg protein."
+    },
+    "vitro/From assay to clearance": {
+      "notice": "Each stage uses only the values of the earlier stages.",
+      "q": "Which two quantities enter the extraction model?",
+      "a": "The binding-corrected CLint and Q."
+    },
+    "vitro/Fold error": {
+      "notice": "Equal fold errors above and below the observed value are equal errors on the ratio scale.",
+      "q": "A prediction of 5 against an observed 20: what is the fold error?",
+      "a": "A 4-fold under-prediction."
+    },
+    "vitro/Average fold error and bias": {
+      "notice": "For the starting values the bias is 1.12 and the arithmetic mean ratio is 1.50.",
+      "q": "Can the bias be 1.0 when the average fold error is 2.0?",
+      "a": "Yes. Ratios of 0.5 and 2 cancel in the bias and add in the average fold error."
+    },
+    "vitro/Why the log scale": {
+      "notice": "The 2-fold band has constant width only on logarithmic axes.",
+      "q": "Why are clearances averaged as logarithms?",
+      "a": "Errors are multiplicative, so fold errors above and below the observed value must carry equal weight."
+    },
     "hep/Predicted against observed": {
-      "notice": "Points above the dashed line are over-predicted and points below it are under-predicted.",
+      "notice": "Points above the identity line are over-predicted and points below it are under-predicted.",
       "q": "What does an average fold error of 2.0 mean?",
-      "a": "Predictions differ from the observed values by a factor of 2 on average, in either direction. It is the geometric mean of the absolute fold difference, so 1.0 is a perfect prediction."
+      "a": "Predictions differ from observations by a factor of 2 on average, in either direction (the geometric mean of the absolute fold difference)."
     },
     "hep/Scaling to the liver": {
-      "notice": "The factor that gives the lowest average fold error is larger than 1 for this set.",
+      "notice": "The scaling factor that minimizes the average fold error exceeds 1 for this set.",
       "q": "What does a bias of 0.5 indicate?",
-      "a": "Predictions average half the observed values, which is a systematic under-prediction. The average fold error alone does not show the direction of the error."
+      "a": "Predictions average half the observed values: systematic under-prediction."
     },
     "hep/Extraction models": {
-      "notice": "The curves are close at low extraction and separate as extraction rises.",
-      "q": "When do the well-stirred and parallel-tube models give nearly the same extraction ratio?",
-      "a": "At low intrinsic clearance relative to blood flow. As intrinsic clearance rises, the parallel-tube extraction ratio rises faster and approaches 1."
+      "notice": "The models agree at low extraction and diverge as extraction rises.",
+      "q": "When do the well-stirred and parallel-tube models give nearly equal extraction?",
+      "a": "At low CL' / Q. At higher values the parallel-tube extraction rises faster toward 1."
     },
     "hep/Binding assumptions": {
       "notice": "The ranking of the three treatments differs between bases, neutrals and acids.",
-      "q": "Why does correcting for binding in blood alone give poor predictions?",
-      "a": "It lowers the predicted clearance of highly bound drugs. The measured microsomal CLint already includes binding in the incubation, so the prediction falls too far for highly bound drugs unless the incubation binding is also corrected."
+      "q": "Why does fu(blood) alone worsen the predictions?",
+      "a": "Measured CLint already reflects binding in the incubation. Applying fu(blood) alone lowers the prediction for highly bound drugs without correcting that."
     },
     "hep/Empirical scalars": {
-      "notice": "The fitted factor varies more between resamples when fewer drugs are used to fit it.",
-      "q": "Why does the spread of the fitted factor widen as the fitting set shrinks?",
-      "a": "The factor is estimated from fewer drugs. Of the 29 drugs, 27 are under-predicted by up to 11-fold and 2 are over-predicted by up to 1.35-fold, so the average of the log ratios depends strongly on which drugs are in the fitting set."
+      "notice": "The spread of the fitted factor increases as the fitting set shrinks.",
+      "q": "Why does the spread increase?",
+      "a": "The factor is estimated from fewer drugs. Of the 29, 27 are under-predicted, by up to 11-fold, and 2 are over-predicted, by up to 1.35-fold."
     },
     "hep/Low-turnover compounds": {
-      "notice": "The shaded band marks losses that the assay cannot separate from its own variability.",
-      "q": "Why is a prediction made from a limit value an upper bound?",
-      "a": "The true CLint lies below the reported limit, so the true predicted clearance is lower than the value calculated at the limit."
+      "notice": "The shaded region marks losses that cannot be distinguished from assay variability.",
+      "q": "Why is a prediction from a limit value an upper bound?",
+      "a": "The true CLint lies below the limit, so the true predicted clearance is lower."
     },
     "hep/Microsomes against hepatocytes": {
-      "notice": "The points scatter on both sides of the dashed line. The number above it depends on the scalars.",
-      "q": "What does a compound above the dashed line indicate?",
-      "a": "Its scaled clearance is higher in hepatocytes than in microsomes. The plot does not identify the cause, which can be an enzyme absent from the microsomal incubation, uptake into the cell, binding, or the scalars."
+      "notice": "Points fall on both sides of identity, and the number above it depends on the scalars.",
+      "q": "What does a point above identity indicate?",
+      "a": "A higher scaled clearance in hepatocytes. The cause can be an enzyme absent from the microsomal incubation, cellular uptake, binding or the scalars."
     },
     "hep/Choosing a method by class": {
       "notice": "Only classes 1A and 2 are metabolism classes.",
       "q": "Which ECCS classes can a microsomal prediction cover?",
-      "a": "Classes 1A and 2, where metabolism is the predicted rate-determining mechanism. In the other classes the rate-determining step is hepatic uptake or renal clearance, which a microsomal incubation does not measure."
+      "a": "Classes 1A and 2. In the others the rate-determining step is hepatic uptake or renal clearance."
+    },
+    "dist/What Vss measures": {
+      "notice": "Vss exceeds the body water volume when Kp is above 1.",
+      "q": "What is Vss at Kp = 1?",
+      "a": "Vp + Vt = 0.57 L/kg, about 40 L for 70 kg."
     },
     "dist/Volume from binding": {
-      "notice": "The tissue term is the only term that grows without limit as fut falls.",
-      "q": "What is Vss when fup and fut are both 1?",
-      "a": "0.57 L/kg, the sum of Vp (0.0436), Ve (0.151) and Vr (0.38)."
+      "notice": "Only the tissue term increases without limit as fut decreases.",
+      "q": "What is Vss at fup = fut = 1?",
+      "a": "0.57 L/kg (Vp + Ve + Vr)."
     },
     "dist/Implied tissue binding": {
-      "notice": "Points below the fut = 1 curve imply a fut above 1, which cannot occur.",
+      "notice": "Points below the fut = 1 curve imply fut above 1.",
       "q": "What does an implied fut above 1 indicate?",
-      "a": "The observed Vss is below the value the equation gives with no tissue binding. The equation constants, the fup value or the Vss value do not describe that drug."
+      "a": "The observed Vss is below the equation value for fut = 1. The constants, the fup or the Vss do not fit that drug."
     },
     "dist/Predicting tissue binding": {
-      "notice": "The average fold error and the bias differ between the ionization classes.",
-      "q": "Why is the equation scored by ionization class and not only overall?",
-      "a": "The overall error combines classes in which the equation performs differently, and it hides the classes in which it fails."
+      "notice": "The average fold error and the bias differ between ionization classes.",
+      "q": "Why is the equation scored by class?",
+      "a": "The pooled error combines classes in which the equation performs differently."
     },
     "dist/Ionization class": {
-      "notice": "The median differs between the groups for each variable.",
-      "q": "Why is the group with no pKa reported not a neutral class?",
-      "a": "No reported pKa can mean no ionizable group in the measured range or no measurement. The group is a mixture."
+      "notice": "The medians of Vss, fup and logD differ between groups.",
+      "q": "Why is 'no pKa reported' not a neutral class?",
+      "a": "A missing value can reflect no ionizable group in range, a pKa outside the range, or no measurement."
     },
     "dist/Half-life from CL and Vss": {
-      "notice": "With independent errors, the half-life error is larger than the error of either input.",
-      "q": "Why does a positive correlation between the CL and Vss errors lower the half-life error?",
-      "a": "The half-life depends on the ratio Vss / CL. Errors that move in the same direction cancel in the ratio."
+      "notice": "With independent errors the half-life error exceeds the error of either input.",
+      "q": "Why does positive correlation of the CL and Vss errors reduce the half-life error?",
+      "a": "t1/2 depends on Vss / CL, and errors in the same direction cancel in the ratio."
     },
     "dist/Blood to plasma ratio": {
-      "notice": "The shift between the two comparisons is largest for the drugs with the lowest blood to plasma ratio.",
+      "notice": "The two comparisons differ most for drugs with the lowest B:P.",
       "q": "How is plasma clearance converted to blood clearance?",
-      "a": "Divide by the blood to plasma ratio."
+      "a": "Divide by B:P."
     },
     "dist/Sensitivity of Vss": {
       "notice": "fup and fut dominate when tissue binding is strong.",
-      "q": "How does Vss change when fut doubles and the tissue term dominates?",
-      "a": "It falls about 2-fold, because the tissue term is inversely proportional to fut."
+      "q": "What is the effect on Vss of doubling fut when the tissue term dominates?",
+      "a": "Vss falls about 2-fold, because the tissue term is inversely proportional to fut."
     },
     "abs/Hepatic first-pass limit": {
-      "notice": "The limit depends on clearance relative to blood flow and not on clearance alone.",
-      "q": "What is Fh for a drug with a blood clearance of 10.5 mL/min/kg when the blood flow is 21?",
-      "a": "0.5, because Fh = 1 - 10.5 / 21."
+      "notice": "The limit depends on CLb relative to Q and not on CLb alone.",
+      "q": "What is Fh for CLb = 10.5 mL/min/kg and Q = 21 mL/min/kg?",
+      "a": "0.5."
     },
     "abs/Solubility and dose": {
-      "notice": "The share of compounds with D0 above 1 rises with the dose and falls with the volume.",
+      "notice": "The share of compounds with D0 above 1 rises with dose and falls with volume.",
       "q": "What does a dose number above 1 indicate?",
-      "a": "The dose cannot dissolve in the volume of fluid given, so dissolution can limit absorption."
+      "a": "The dose cannot dissolve in the volume given, so dissolution can limit absorption."
     },
     "abs/pH-dependent solubility": {
-      "notice": "The weak base loses solubility as the pH rises and the weak acid gains it.",
-      "q": "Why can acid suppression lower the absorption of a weak base?",
-      "a": "A higher gastric pH lowers the solubility of the base, so less of the dose dissolves in the stomach and more can reach the intestine undissolved."
+      "notice": "The solubility of a base falls, and that of an acid rises, as pH increases.",
+      "q": "Why can acid suppression reduce the absorption of a weak base?",
+      "a": "A higher gastric pH lowers its solubility, so less dissolves in the stomach and more can reach the intestine undissolved."
     },
     "abs/Permeability descriptors": {
-      "notice": "The median line falls as the polar surface area and the donor count increase.",
-      "q": "Does a Spearman correlation of -0.63 mean that TPSA predicts permeability closely?",
-      "a": "No. It means that a higher TPSA tends to go with a lower permeability. The spread of permeability at any TPSA is wide."
+      "notice": "The median line decreases with TPSA and with donor count.",
+      "q": "Does rho = -0.63 mean that TPSA predicts permeability closely?",
+      "a": "No. It describes a tendency, and the spread at any TPSA is wide."
     },
     "abs/Property rules": {
-      "notice": "The accuracy has to be read against the baseline of 86.5 percent.",
+      "notice": "Accuracy must be read against the baseline of 86.5%.",
       "q": "Why is accuracy a poor summary of a rule on this set?",
-      "a": "Most compounds are well absorbed, so calling every compound good already scores 86.5 percent. The fractions of poor compounds caught and good compounds flagged show what the rule does."
-    },
-    "dist/What Vss measures": {
-      "notice": "Vss exceeds the body water volume once Kp exceeds 1.",
-      "q": "What is Vss when Kp = 1?",
-      "a": "The sum of the plasma and tissue volumes, 0.57 L/kg, or about 40 L for a 70 kg adult."
-    },
-    "why/Concentration and effect": {
-      "notice": "Doubling the dose doubles the peak and adds one half-life to the time above the EC50.",
-      "q": "Why does doubling the dose lengthen the time above the EC50 by one half-life only?",
-      "a": "The concentration falls exponentially. A doubled peak takes one half-life to fall back to the original peak, and the course after that is unchanged."
-    },
-    "why/Path of an oral dose": {
-      "notice": "Each stage has one letter of ADME and one quantity that links the assay to the clinic.",
-      "q": "Which quantity describes the fraction of a dose that escapes the liver on the first pass?",
-      "a": "Fh."
-    },
-    "why/Exposure measures": {
-      "notice": "Each measure is read from a different part of the same curve.",
-      "q": "Which measure follows the total exposure?",
-      "a": "The AUC, the area under the concentration-time curve."
-    },
-    "units/Units and conversions": {
-      "notice": "Dose, concentration and clearance each need their own conversion.",
-      "q": "What is the relation between ng/mL and micrograms per liter?",
-      "a": "They are equal: 1 ng/mL = 1 microgram/L."
-    },
-    "units/Amount and volume": {
-      "notice": "Most of the 667 drugs have a volume above the body water volume.",
-      "q": "Can a volume of distribution exceed the volume of the body?",
-      "a": "Yes. It is an apparent volume. Binding to tissue lowers the plasma concentration for a given amount, so the volume rises."
-    },
-    "units/Bound and unbound drug": {
-      "notice": "At one total concentration, the unbound concentration depends only on fu.",
-      "q": "A drug has fu = 0.02 and a total plasma concentration of 5 mg/L. What is the unbound concentration?",
-      "a": "0.1 mg/L, because Cu = fu x C."
-    },
-    "elim/First-order elimination": {
-      "notice": "The fraction removed per hour is constant, and the amount removed per hour falls.",
-      "q": "How much of a 100 mg dose remains after three half-lives?",
-      "a": "12.5 mg."
-    },
-    "elim/Clearance": {
-      "notice": "The slope of each line is the clearance.",
-      "q": "What is the elimination rate at a concentration of 2 mg/L when the clearance is 10 L/h?",
-      "a": "20 mg/h, because rate = CL x C."
-    },
-    "elim/Intravenous profile": {
-      "notice": "On the logarithmic axis the curve is a straight line.",
-      "q": "How does the half-life change when the volume of distribution doubles at constant clearance?",
-      "a": "It doubles, because t1/2 = 0.693 x V / CL."
-    },
-    "elim/Volume and half-life": {
-      "notice": "Equal clearance and equal dose give equal areas under the curve, whatever the volume.",
-      "q": "Why does a larger volume lengthen the half-life at constant clearance?",
-      "a": "The same clearance removes a smaller fraction of the drug in the body per hour."
-    },
-    "elim/Repeat dosing": {
-      "notice": "The average steady-state concentration depends on the clearance and not on the volume.",
-      "q": "What is the accumulation ratio when the dosing interval equals the half-life?",
-      "a": "2, because R = 1 / (1 - 0.5)."
-    },
-    "elim/Checking a record": {
-      "notice": "The calculated MRT matches the reported MRT, and 0.693 x MRT falls below the half-life.",
-      "q": "Why is 0.693 x MRT below the reported half-life for most drugs?",
-      "a": "Most drugs have more than one disposition phase. The reported half-life is the terminal one, which is longer than a one-compartment value."
-    },
-    "oral/Oral profile": {
-      "notice": "The oral and intravenous curves differ in shape, and the oral area is F times the intravenous area.",
-      "q": "What is the AUC after a 100 mg oral dose with F = 0.4 and CL = 20 L/h?",
-      "a": "2.0 mg x h/L, because AUC = F x dose / CL = 0.4 x 100 / 20."
-    },
-    "oral/Bioavailability from AUCs": {
-      "notice": "F is the ratio of the two dose-normalized areas.",
-      "q": "An oral dose of 100 mg gives an AUC of 8 mg x h/L and an intravenous dose of 50 mg gives 10. What is F?",
-      "a": "0.4, because (8 / 100) / (10 / 50) = 0.4."
-    },
-    "oral/Bioavailability as a product": {
-      "notice": "The three terms multiply, so each loss acts on what the previous stage left.",
-      "q": "What is F when Fa, Fg and Fh are each 0.7?",
-      "a": "0.34, because 0.7 x 0.7 x 0.7 = 0.343."
-    },
-    "met/Metabolic routes": {
-      "notice": "A microsomal incubation with NADPH covers oxidation and not the other routes.",
-      "q": "Why does a microsomal incubation with NADPH not measure aldehyde oxidase activity?",
-      "a": "The enzyme is in the cytosol, which is not part of the microsomal fraction."
-    },
-    "met/Enzyme kinetics": {
-      "notice": "The clearance v / S is highest at low concentration and falls as the enzyme saturates.",
-      "q": "What is the rate at S = Km?",
-      "a": "Half of Vmax."
-    },
-    "met/Depletion assay": {
-      "notice": "The logarithmic plot is a straight line with slope -k.",
-      "q": "What is the scaled CLint for an in vitro half-life of 25 min at 1 mg/mL?",
-      "a": "25 mL/min/kg: k = 0.0277 per min, CLint = 27.7 microL/min/mg, and scaling multiplies by 45 x 20 / 1000."
-    },
-    "met/Clearance and extraction": {
-      "notice": "Clearance cannot exceed the blood flow.",
-      "q": "What is the clearance of an organ with a blood flow of 21 mL/min/kg and an extraction ratio of 0.4?",
-      "a": "8.4 mL/min/kg, because CL = Q x E."
-    },
-    "met/Total clearance": {
-      "notice": "Removing a route that carries a fraction s of the clearance multiplies the AUC by 1 / (1 - s).",
-      "q": "A drug has CLh 6, CLr 2 and no other route, in L/h. What is the fraction excreted unchanged?",
-      "a": "0.25, because fe = CLr / CL = 2 / 8."
-    },
-    "vitro/What an assay measures": {
-      "notice": "Each assay yields one parameter that needs scaling or a model before it predicts a clinical value.",
-      "q": "Which parameter does a microsomal stability assay yield before scaling?",
-      "a": "The in vitro half-life, converted to CLint in microL/min/mg of protein."
-    },
-    "vitro/From assay to clearance": {
-      "notice": "Each stage uses only the values of the stages before it.",
-      "q": "Which two quantities does the extraction model use?",
-      "a": "The binding-corrected CLint and the hepatic blood flow Q."
-    },
-    "vitro/Fold error": {
-      "notice": "A 4-fold over-prediction and a 4-fold under-prediction are equally large errors on the ratio scale.",
-      "q": "A predicted value is 5 and the observed value is 20. What is the fold error?",
-      "a": "A 4-fold under-prediction."
-    },
-    "vitro/Average fold error and bias": {
-      "notice": "For the starting values the bias is 1.12 and the arithmetic mean of the ratios is 1.50.",
-      "q": "Can the bias be 1.0 when the average fold error is 2.0?",
-      "a": "Yes. Equal over- and under-predictions on the log scale cancel in the bias and add in the average fold error."
-    },
-    "vitro/Why the log scale": {
-      "notice": "The 2-fold band has a constant width on logarithmic axes only.",
-      "q": "Why are clearances averaged as logarithms?",
-      "a": "Errors are multiplicative, so equal fold errors above and below the observed value should count equally."
+      "a": "Most compounds are well absorbed, so calling every compound good already scores 86.5%. The numbers of poor compounds caught and good compounds flagged describe the rule."
     }
   }
 };

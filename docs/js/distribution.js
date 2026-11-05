@@ -46,8 +46,6 @@ function dDrugDetail(d){
 
 /* ---------- step 1 ---------- */
 DIS.add({ short: 'Volume from binding', level: 'foundations', title: 'Volume from plasma and tissue binding',
-  change: 'Move the fraction unbound in plasma (fup) and in tissue (fut). Read the share of each term.',
-  watch: 'The Oie-Tozer equation divides the steady-state volume of distribution into plasma, extracellular and tissue terms: Vss = Vp + fup x Ve + Re/i x Vp x (1 - fup) + Vr x fup / fut. The constants in the form used here are Vp 0.0436 L/kg (plasma), Ve 0.151 L/kg (extracellular fluid outside plasma) and Vr 0.38 L/kg (the remaining volume the drug distributes to). Re/i is 1.4, the ratio of binding proteins in extracellular fluid to those in plasma. The tissue term is the only one that grows without limit as fut falls. With fup and fut both at 1.0, the volume is 0.57 L/kg. The plot gives Vss against fut at the chosen fup.',
   build: function(api){
     var lf = -1.5, lt = -1;
     var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -70,8 +68,6 @@ DIS.add({ short: 'Volume from binding', level: 'foundations', title: 'Volume fro
 
 /* ---------- step 2 ---------- */
 DIS.add({ short: 'Implied tissue binding', level: 'foundations', title: 'Implied tissue binding',
-  change: 'Select a point to read the drug. Compare the points with the fut curves.',
-  watch: 'Each point is a drug from the Obach (2008) human intravenous data set with a reported fraction unbound, placed at its fup and its observed Vss. The curves are the Oie-Tozer prediction at fixed fut. A point on a curve implies that fut for the drug. The implied fut is Vr x fup divided by (Vss - Vp - fup x Ve - Re/i x Vp x (1 - fup)). The implied value is undefined for drugs whose Vss is below the sum of the plasma and extracellular terms, and it exceeds 1 for drugs below the fut = 1 curve. Of 554 drugs, 26 are undefined and 76 exceed 1. Over the 528 drugs with a defined value, the median implied fut is 0.09.',
   build: function(api){
     var sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:620px;height:508px;padding:8px', '<canvas width="604" height="470" style="width:604px;height:470px;cursor:pointer"></canvas>'), cvs = qs('canvas', pn);
@@ -89,8 +85,6 @@ DIS.add({ short: 'Implied tissue binding', level: 'foundations', title: 'Implied
 
 /* ---------- step 3 ---------- */
 DIS.add({ short: 'Predicting tissue binding', level: 'applied', title: 'Predicting tissue binding',
-  change: 'Switch the source of fut. Read the scoreboard by ionization class.',
-  watch: 'A prediction needs fut before the drug is studied. Three sources are compared on the 163 Obach drugs that have fup and a measured logD at pH 7.4 in the AstraZeneca data: no tissue binding (fut = 1), the Lombardo equation as stated by Coutinho et al. (2024), log fut = 0.0080 - 0.2294 logD - 0.9311 fi + 0.8885 log fup, and one constant, the median implied fut of these drugs. The fraction ionized at pH 7.4 (fi) is calculated from the AstraZeneca pKa values, and a drug with no pKa reported is treated as unionized. In that paper the equation is applied with logP to drugs that are neutral at pH 7.4. Here it is applied with logD to every class, and the table shows how it performs in each. The constant is fitted on the same drugs it is scored on.',
   build: function(api){
     var src = 'lomb', sel = null, med;
     var im = DSET.map(otImplied).filter(function(v){ return v !== null; }).sort(function(a, b){ return a - b; }); med = im[Math.floor(im.length / 2)];
@@ -114,8 +108,6 @@ DIS.add({ short: 'Predicting tissue binding', level: 'applied', title: 'Predicti
 
 /* ---------- step 4 ---------- */
 DIS.add({ short: 'Ionization class', level: 'applied', title: 'Ionization class and distribution',
-  change: 'Switch the variable on the vertical axis. Select a point to read the drug.',
-  watch: 'The 172 Obach drugs with a measured logD in the AstraZeneca data are grouped by the pKa values reported there: acids, bases, zwitterions, and drugs for which no pKa is reported. The bar in each column is the median. The medians are 0.19, 2.2, 1.7 and 1.3 L/kg for Vss, 0.05, 0.36, 0.75 and 0.15 for the fraction unbound in plasma, and 0.31, 1.67, -0.35 and 1.47 for logD, in the order acids, bases, zwitterions and no pKa reported. A drug with no pKa reported may be neutral or may have a pKa outside the range measured, so that column is a mixture and not a class.',
   build: function(api){
     var yv = 'vss', sel = null, lab = { vss: ['Vss (L/kg)', -1.5, 1.7], fu: ['Fraction unbound in plasma', -4, 0.2], logd: ['logD at pH 7.4', -3, 6] };
     var pn = api.el('pn', 'left:28px;top:16px;width:620px;height:508px;padding:8px', '<canvas width="604" height="470" style="width:604px;height:470px;cursor:pointer"></canvas>'), cvs = qs('canvas', pn);
@@ -145,8 +137,6 @@ DIS.add({ short: 'Ionization class', level: 'applied', title: 'Ionization class 
 /* ---------- step 5 ---------- */
 function dRandn(r){ var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2831853 * v); }
 DIS.add({ short: 'Half-life from CL and Vss', level: 'applied', title: 'Half-life from clearance and volume',
-  change: 'Set the fold error of the clearance and volume predictions and the correlation between them.',
-  watch: 'For a one-compartment disposition, the half-life is 0.693 x Vss / CL. The left plot compares this value with the reported terminal half-life for 667 drugs in the Obach data. The two differ when disposition is multi-exponential. Across the set, 554 of 667 drugs are within 2-fold, the average fold error is 1.51 and the bias is 0.68, so the one-compartment value is shorter than the reported half-life on average. The right plot propagates prediction errors. Clearance and volume are each given a log-normal error with the fold error set below, and the histogram gives the resulting fold error of the half-life over 4000 draws. Independent errors add in quadrature on the log scale, so the half-life error is larger than either input error. A positive correlation between the two errors reduces it, because the errors cancel in the ratio.',
   build: function(api){
     var fc = 2, fv = 2, rho = 0;
     var pn = api.el('pn', 'left:28px;top:16px;width:452px;height:508px;padding:8px', '<canvas class="a" width="436" height="430" style="width:436px;height:430px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('.a', pn);
@@ -175,8 +165,6 @@ DIS.add({ short: 'Half-life from CL and Vss', level: 'applied', title: 'Half-lif
 /* ---------- step 6 ---------- */
 var CLP99 = { Chlorpromazine: 8.6, Propafenone: 13, Verapamil: 15, Diphenhydramine: 6.2, Lorcainide: 14, Diltiazem: 12, Amitriptyline: 10, Desipramine: 12, Imipramine: 13, Ketamine: 16, Quinidine: 2.5, Clozapine: 2.5, Dexamethasone: 3.5, Prednisone: 4.1, Diazepam: 0.4, Midazolam: 4.6, Methoxsalen: 12, Alprazolam: 0.59, Triazolam: 2.9, Zolpidem: 4.3, Diclofenac: 4.2, Ibuprofen: 0.8, Tolbutamide: 0.2, Warfarin: 0.045, Tenidap: 0.058, Tenoxicam: 0.02, Amobarbital: 0.53, Hexobarbital: 3.6, Methohexital: 11 };
 DIS.add({ short: 'Blood to plasma ratio', level: 'applied', title: 'Blood to plasma ratio',
-  change: 'Switch the observed value used for comparison. Select a point to read its blood to plasma ratio.',
-  watch: 'Hepatic clearance predicted from in vitro data is a blood clearance, and clearance is often reported as plasma clearance. The two differ by the blood to plasma ratio (B:P): CL(blood) = CL(plasma) / B:P. The 29 drugs of Obach (1999) have B:P from 0.53 to 1.5. The plot scores the parallel-tube prediction with both binding corrections, from step 4 of tab 07, against the observed nonrenal clearance expressed as blood clearance and as plasma clearance. Comparing the blood prediction with the plasma value shifts every drug by its B:P, and the shift is largest for drugs with the lowest B:P, which include most of the acids in this set (B:P near 0.55). Against blood clearance the average fold error is 2.14 and the bias 0.48. Against plasma clearance the average fold error is 1.93 and the bias 0.64. The score improves because the method under-predicts and the plasma value is higher than the blood value when B:P is below 1. The improvement offsets one error with another and does not show a better prediction.',
   build: function(api){
     var use = 'blood', sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:620px;height:508px;padding:8px', '<canvas width="604" height="470" style="width:604px;height:470px;cursor:pointer"></canvas>' + hepLegend()), cvs = qs('canvas', pn);
@@ -203,8 +191,6 @@ DIS.add({ short: 'Blood to plasma ratio', level: 'applied', title: 'Blood to pla
 
 /* ---------- step 7 ---------- */
 DIS.add({ short: 'Sensitivity of Vss', level: 'advanced', title: 'Sensitivity of volume of distribution',
-  change: 'Set fup and fut. Change the size of the perturbation applied to each input.',
-  watch: 'The bars give the change in the predicted Vss when each input of the Oie-Tozer equation is multiplied and divided by the perturbation factor, one at a time. When tissue binding is strong, the tissue term Vr x fup / fut is most of the volume, and Vss is proportional to fup and inversely proportional to fut, so a 2-fold change in either changes Vss 2-fold. The plasma, extracellular and protein-ratio constants then have a small effect. At fup = fut = 0.03 the tissue term is 78 percent of Vss. A 2-fold change in Ve changes Vss by 1 percent or less, in Re/i by 6 to 12 percent and in Vp by 10 to 21 percent. When the drug is weakly bound in tissue, the constants contribute a larger share. The constants are the same for every drug, so their effect on a prediction depends only on where the drug sits on the fup and fut axes.',
   build: function(api){
     var lf = -1.5, lt = -1.5, f = 2;
     var pn = api.el('pn', 'left:28px;top:16px;width:620px;height:508px;padding:8px', '<canvas width="604" height="490" style="width:604px;height:490px"></canvas>'), cvs = qs('canvas', pn);
