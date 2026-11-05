@@ -188,10 +188,10 @@
 
   /* ===== tab 05, step 1: routes of metabolism ===== */
   var ROUTES = [
-    { k: 'ox', name: 'Oxidation', enz: 'Cytochrome P450 enzymes, in the endoplasmic reticulum of liver cells (microsomes). Others include flavin-containing monooxygenases.', what: 'Adds an oxygen atom, or removes an alkyl group, which usually makes the compound more polar.', sys: 'Liver microsomes with NADPH, or hepatocytes.', cov: 'The tab 07 predictions use this route: a microsomal incubation with NADPH measures it.' },
-    { k: 'conj', name: 'Conjugation', enz: 'UDP-glucuronosyltransferases and sulfotransferases.', what: 'Attaches a polar group, such as glucuronic acid or sulfate, to the compound or to a metabolite.', sys: 'Liver microsomes with UDP-glucuronic acid for glucuronidation, or hepatocytes.', cov: 'Not measured by a microsomal incubation that contains NADPH only.' },
-    { k: 'hyd', name: 'Hydrolysis', enz: 'Esterases and amidases, in plasma and in liver.', what: 'Splits an ester or amide bond.', sys: 'Hepatocytes, plasma or liver S9 fractions.', cov: 'Not predicted in this course.' },
-    { k: 'oth', name: 'Other routes', enz: 'Aldehyde oxidase, in the liver cytosol, and monoamine oxidase, in mitochondria.', what: 'Oxidizes aldehydes and some nitrogen-containing heterocycles, or amines.', sys: 'Cytosol or S9 fractions, or hepatocytes.', cov: 'Not measured by a microsomal incubation, because the enzyme is not in the microsomal fraction.' }];
+    { k: 'ox', name: 'Oxidation', enz: 'Cytochrome P450 (endoplasmic reticulum); flavin-containing monooxygenases.', what: 'Oxygen insertion or dealkylation.', sys: 'Liver microsomes with NADPH; hepatocytes.', cov: 'Covered by the tab 07 prediction.' },
+    { k: 'conj', name: 'Conjugation', enz: 'UDP-glucuronosyltransferases; sulfotransferases.', what: 'Attachment of glucuronic acid or sulfate.', sys: 'Microsomes with UDP-glucuronic acid (glucuronidation); hepatocytes.', cov: 'Not measured by an NADPH-only microsomal incubation.' },
+    { k: 'hyd', name: 'Hydrolysis', enz: 'Esterases and amidases (plasma, liver).', what: 'Cleavage of ester and amide bonds.', sys: 'Hepatocytes; plasma; liver S9.', cov: 'Not predicted here.' },
+    { k: 'oth', name: 'Other routes', enz: 'Aldehyde oxidase (cytosol); monoamine oxidase (mitochondria).', what: 'Oxidation of aldehydes and N-heterocycles; oxidative deamination.', sys: 'Cytosol or S9; hepatocytes.', cov: 'Not measured by microsomes (the enzyme is not in the microsomal fraction).' }];
   MET.add({ short: 'Metabolic routes', level: 'foundations', ord: 10, title: 'Routes of metabolism',
     build: function(api){
       var sel = 'ox';
@@ -275,12 +275,12 @@
 
   /* ===== tab 06, step 1: what an assay measures ===== */
   var ASSAYS = [
-    { k: 'mic', name: 'Microsomal stability', meas: 'Loss of the compound over time in liver microsomes with NADPH.', par: 'In vitro half-life, converted to CLint in microL/min/mg protein.', link: 'Scaled by 45 mg protein per g liver and 20 g liver per kg to CLint in mL/min/kg.', use: 'Tab 07' },
-    { k: 'hep', name: 'Hepatocyte stability', meas: 'Loss of the compound over time in intact liver cells.', par: 'CLint in microL/min/10^6 cells.', link: 'Scaled by cells per g of liver and 20 g of liver per kg.', use: 'Tab 07, the comparison with microsomes' },
-    { k: 'ppb', name: 'Plasma protein binding', meas: 'Distribution of the compound between plasma and buffer, for example by equilibrium dialysis.', par: 'Fraction unbound in plasma, fu.', link: 'Corrects clearance and drives the volume of distribution. Divided by B:P for blood.', use: 'Tabs 07 and 08' },
-    { k: 'bp', name: 'Blood to plasma ratio', meas: 'Concentration in whole blood divided by concentration in plasma.', par: 'B:P.', link: 'Converts plasma clearance to blood clearance and fu(plasma) to fu(blood).', use: 'Tabs 07 and 08' },
-    { k: 'caco', name: 'Caco-2 permeability', meas: 'Rate of appearance of the compound across a monolayer of intestinal cells.', par: 'Apparent permeability, Papp, in cm/s.', link: 'Compared with reference compounds to estimate the fraction absorbed.', use: 'Tab 09' },
-    { k: 'sol', name: 'Solubility', meas: 'Concentration of dissolved compound at equilibrium in buffer, at a stated pH.', par: 'Solubility S in mg/mL or mol/L.', link: 'With the dose and the volume of fluid gives the dose number.', use: 'Tab 09' }];
+    { k: 'mic', name: 'Microsomal stability', meas: 'Loss of compound in liver microsomes with NADPH.', par: 'In vitro half-life; CLint (uL/min/mg protein).', link: 'x 45 mg/g x 20 g/kg: CLint in mL/min/kg.', use: 'Tab 07' },
+    { k: 'hep', name: 'Hepatocyte stability', meas: 'Loss of compound in hepatocytes.', par: 'CLint (uL/min/10^6 cells).', link: 'x cells per g liver x 20 g/kg.', use: 'Tab 07' },
+    { k: 'ppb', name: 'Plasma protein binding', meas: 'Plasma and buffer partition (for example equilibrium dialysis).', par: 'fu.', link: 'Corrects CLint; divided by B:P for blood; enters the fut prediction.', use: 'Tabs 07 and 08' },
+    { k: 'bp', name: 'Blood to plasma ratio', meas: 'Whole-blood over plasma concentration.', par: 'B:P.', link: 'Converts plasma to blood clearance and fu(plasma) to fu(blood).', use: 'Tabs 07 and 08' },
+    { k: 'caco', name: 'Caco-2 permeability', meas: 'Flux across a Caco-2 monolayer.', par: 'Papp (cm/s).', link: 'Related to Fa through reference compounds.', use: 'Tab 09' },
+    { k: 'sol', name: 'Solubility', meas: 'Equilibrium solubility at a stated pH.', par: 'S (mg/mL or mol/L).', link: 'With dose and fluid volume gives D0.', use: 'Tab 09' }];
   VITRO.add({ short: 'What an assay measures', level: 'foundations', ord: 10, title: 'Quantities measured by in vitro assays',
     build: function(api){
       var sel = 'mic';

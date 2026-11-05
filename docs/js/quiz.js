@@ -76,6 +76,6 @@ function qzFinish(){
 var LQ = new Lesson('quiz', 'Quiz');
 LQ.custom = function(root){
   QZ.root = root; root.classList.add('qz');
-  root.innerHTML = '<div class="qpage"><div class="qwrap"><div class="qcard qintro"><div class="qtopic">Quiz</div><h3 class="qtext">Question set</h3><p>Each round draws 10 questions at random from ' + QZ.bank.length + ' on tabs 01 to 09. The question types are multiple choice, select all that apply, numeric answer and ordering. Every question has a schematic. Numeric answers are accepted within the stated tolerance.</p><div class="qact"><button type="button" class="btn" data-start>Start</button></div></div></div></div>';
+  root.innerHTML = '<div class="qpage"><div class="qwrap"><div class="qcard qintro"><div class="qtopic">Quiz</div><h3 class="qtext">Question set</h3><p>Ten questions per round, drawn at random from ' + QZ.bank.length + ' (tabs 01 to 09): multiple choice, select all, numeric (within the stated tolerance) and ordering.</p><div class="qact"><button type="button" class="btn" data-start>Start</button></div></div></div></div>';
   qs('[data-start]', root).addEventListener('click', function(){ qzDraw(); qzRender(); window.scrollTo({ top: 0 }); });
 };

@@ -75,7 +75,7 @@ document.addEventListener('click', function(e){ if (e.target.closest && e.target
 function introHTML(ig){
   var html = '<div class="ig">';
   if (ig.scope) html += '<div class="isec"><div class="ol">Scope</div><p>' + esc(ig.scope) + '</p></div>';
-  html += '<div class="isec"><div class="ol">Learning outcomes</div><ul>' + ig.goals.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>';
+  
   if (ig.notation) html += '<details class="idet" open><summary>Notation</summary><dl class="nt">' + ig.notation.map(function(n){ return '<dt>' + esc(n[0]) + '</dt><dd>' + esc(n[1]) + '</dd>'; }).join('') + '</dl></details>';
   if (ig.data) html += '<details class="idet" open><summary>Data and sources</summary><ul>' + ig.data.map(function(d){ return '<li>' + esc(d) + '</li>'; }).join('') + '</ul></details>';
   return html + '</div>';
@@ -118,7 +118,7 @@ function buildStep(L, s, idx, total, parent){ var tx = window.STEPTEXT && STEPTE
   sec.innerHTML = '<div class="shead"><i class="tick"></i><div><div class="eyebrow">' + (s.bench ? 'WORKBENCH' : 'STEP ' + (idx + 1)) + '</div><h2>' + s.title + '</h2></div></div>' +
     '<p class="lead">' + s.watch + '</p><p class="try"><b>Controls</b> ' + s.change + '</p>' +
     '<div class="stagewrap"><div class="screen"><div class="inner"></div></div>' + (s.bench ? '' : '<div class="sbar"><button type="button" class="btn sm ghost" data-play>Walk through</button><span class="sx"></span></div>') + '</div>' + (s.legend ? '<p class="legend"><b>Figure.</b> ' + s.legend + '</p>' : '');
-  var gd = window.GUIDE && GUIDE.steps[L.id + '/' + s.short]; if (gd) sec.insertAdjacentHTML('beforeend', '<div class="guide"><p class="gn"><b>Observation</b>' + esc(gd.notice) + '</p><details class="gq"><summary>Check: ' + esc(gd.q) + '</summary><p>' + esc(gd.a) + '</p></details></div>');
+  var gd = window.GUIDE && GUIDE.steps[L.id + '/' + s.short]; if (gd) sec.insertAdjacentHTML('beforeend', '<div class="guide"><p class="gn"><b>Observation</b>' + esc(gd.notice) + '</p></div>');
   parent.appendChild(sec);
   var screen = qs('.screen', sec), inner = qs('.inner', sec), sbar = qs('.sbar', sec) || h('div', 'sbar'), sx = qs('.sx', sec) || h('span', 'sx');
   var cap = h('div', 'cap'), busy = h('div', 'busy', '<div class="bs"><i></i><span></span></div>'), stale = h('div', 'stalebadge'); inner.appendChild(cap); inner.appendChild(stale); inner.appendChild(busy);
