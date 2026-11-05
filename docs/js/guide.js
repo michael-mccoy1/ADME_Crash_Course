@@ -854,6 +854,62 @@ var GUIDE = {
         "data": [
               "Meng F, Xi Y, Huang J, Ayers PW (2021), Sci Data 8:289: B3DB, 7,805 of 7,807 structures parsed (CC0 1.0), 1,058 with a measured logBB; github.com/theochem/B3DB. Molecular weight, TPSA, donors and Crippen logP were calculated here with RDKit."
         ]
+  },
+    "pbpk": {
+        "scope": "Physiologically based pharmacokinetic (PBPK) models built from organ volumes, blood flows and tissue to plasma partition coefficients: a single flow-limited organ, a minimal model of blood, liver and the rest of the body, and population variability in intrinsic clearance for low- and high-extraction compounds. The models use round reference values set by the sliders. No per-compound data are analyzed, and absorption, permeability-limited uptake and drug-drug interaction modules are not covered.",
+        "notation": [
+              [
+                    "Q",
+                    "blood flow through an organ, L/h; Qh is hepatic blood flow, 90 L/h."
+              ],
+              [
+                    "V",
+                    "organ volume, L."
+              ],
+              [
+                    "Kp",
+                    "tissue to plasma partition coefficient at equilibrium."
+              ],
+              [
+                    "tau",
+                    "time constant of equilibration, Kp V / Q."
+              ],
+              [
+                    "Vss",
+                    "volume of distribution at steady state, Vb + Vl Kp,l + Vr Kp,r."
+              ],
+              [
+                    "CL",
+                    "clearance, the volume of plasma cleared of drug per unit time."
+              ],
+              [
+                    "CLh",
+                    "hepatic clearance."
+              ],
+              [
+                    "CLr",
+                    "renal clearance."
+              ],
+              [
+                    "CLint",
+                    "intrinsic hepatic clearance of unbound drug."
+              ],
+              [
+                    "fu",
+                    "fraction unbound in plasma."
+              ],
+              [
+                    "CV",
+                    "coefficient of variation, the standard deviation divided by the mean."
+              ],
+              [
+                    "AUC",
+                    "area under the plasma concentration-time curve."
+              ]
+        ],
+        "data": [
+              "No data set. Organ volumes (blood 3 L, liver 1.8 L, rest of body 40 L) and flows (cardiac output 300 L/h, liver 90 L/h) are round values for a 70 kg adult, set in the code and held fixed."
+        ]
   }
   },
   "steps": {
@@ -1072,6 +1128,15 @@ var GUIDE = {
     },
     "bbb/Combined property rule": {
       "notice": "Adding donors and MW to a TPSA rule of 90 A^2 lowers the accuracy from 0.746 to 0.725 here."
+    },
+    "pbpk/Flow-limited organ": {
+      "notice": "Tripling Kp triples the time constant at the same flow and volume."
+    },
+    "pbpk/Minimal whole-body model": {
+      "notice": "The two curves have the same AUC, dose / CL, and the same mean residence time, Vss / CL; they differ in shape."
+    },
+    "pbpk/Variability in clearance": {
+      "notice": "At the same CV of CLint, the high-extraction compound has the narrower AUC distribution."
     }
   }
 };

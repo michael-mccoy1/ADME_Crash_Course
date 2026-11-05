@@ -360,5 +360,20 @@ var STEPTEXT = {
   "watch": "Rules built from descriptors are applied in sequence: TPSA at most a cutoff, then also donors at most a number, then also MW at most a limit. Each added condition removes some BBB- compounds and also some BBB+ compounds. With TPSA at most 90 A^2, donors at most 3 and MW at most 450 Da, the accuracy is 0.725 (sensitivity 0.73, specificity 0.72), below the 0.746 of the TPSA rule alone.",
   "legend": "Accuracy (dark), sensitivity (teal) and specificity (orange) of four nested rules; the first is calling every compound BBB+.",
   "change": "TPSA, donors, MW cutoffs; hover a group for its counts; export as an image (PNG) and a table (CSV). Outputs: accuracy of the full rule, compounds called BBB+, baseline."
+ },
+ "pbpk/Flow-limited organ": {
+  "watch": "In a flow-limited (perfusion-limited) organ, the tissue equilibrates with the arterial blood as fast as blood arrives: V dCt/dt = Q (Ca - Ct / Kp). For a constant arterial concentration Ca, Ct(t) = Kp Ca (1 - exp(-Q t / (Kp V))). The time constant is tau = Kp V / Q, and 90 percent of equilibrium is reached at 2.303 tau.",
+  "legend": "Tissue concentration relative to the arterial concentration against time; the dashed line is the equilibrium ratio Kp and the marked point is tau. Grey dashed curves are pinned settings.",
+  "change": "Q, V, Kp; drag the point on the curve to set Q; hover for values; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: tau, time to 90 percent of equilibrium."
+ },
+ "pbpk/Minimal whole-body model": {
+  "watch": "Blood (3 L), liver (1.8 L, flow 90 L/h) and the rest of the body (40 L, flow 210 L/h) exchange drug by flow-limited distribution. In the liver, V dC/dt = Q (Cb - C / Kp) - fu CLint C / Kp; the kidney removes CLr x Cb from blood. The model has Vss = Vb + Vl Kp,l + Vr Kp,r and, at steady flow, CL = CLh + CLr with CLh = Q fu CLint / (Q + fu CLint) (the well-stirred model of tab 07). The equations are integrated numerically.",
+  "legend": "Blood concentration after an intravenous dose of 100 mg for the three-compartment model (teal) and for a one-compartment model with the same Vss and CL (grey dashed).",
+  "change": "Kp of liver, Kp of the rest of body, fu, CLint, CLr, axis; hover for both curves; Pin keeps up to two; export as an image (PNG) and a table (CSV). Outputs: Vss, CLh, CL, half-life, AUC."
+ },
+ "pbpk/Variability in clearance": {
+  "watch": "Interindividual variability in CLint is represented by a log-normal distribution with a coefficient of variation (CV). The AUC of an intravenous dose is dose / (CLh + CLr), with CLh = Q fu CLint / (Q + fu CLint). When extraction is low, CLh is proportional to CLint and the variability passes into the AUC; when extraction is high, CLh approaches Q and the AUC varies little. For a log-normal distribution the 95th to 5th percentile ratio is exp(2 x 1.645 x sigma), with sigma^2 = ln(1 + CV^2).",
+  "legend": "AUC in 3,000 simulated subjects for a low-extraction and a high-extraction compound with the same CV of CLint (fu 0.2, CLr 1 L/h, Q 90 L/h).",
+  "change": "CV, CLint of each compound; hover for bin counts; export as an image (PNG) and a table (CSV). Outputs: median and 5th to 95th percentile of AUC, 95th to 5th ratio, hepatic extraction."
  }
 };

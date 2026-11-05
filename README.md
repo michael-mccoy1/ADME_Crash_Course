@@ -28,7 +28,9 @@ Tab 13, human pharmacokinetics and dose, has five steps: dose, interval and stea
 
 Tab 14, brain penetration, has five steps: total and unbound brain exposure (Kp, logBB, Kp,uu), efflux and Kp,uu, the measured logBB of 1,058 compounds, polar surface area and penetration, and a combined property rule. Source data: B3DB, Meng et al., Sci Data 8:289 (2021), file B3DB_classification.tsv from github.com/theochem/B3DB (CC0 1.0): 7,805 of 7,807 structures parsed, labeled BBB+ or BBB-, 1,058 with a measured logBB. Molecular weight, TPSA, hydrogen-bond donors and Crippen logP were calculated with RDKit. The first two steps use equations only.
 
-The quiz (tab 15) has 130 questions on tabs 01 to 14. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+Tab 15, PBPK basics, has three steps: a flow-limited organ and its time constant, a minimal whole-body model (blood, liver, rest of body) compared with a one-compartment model of the same Vss and CL, and the effect of interindividual variability in intrinsic clearance on AUC for low- and high-extraction compounds. No data set is used; organ volumes and flows are round reference values set in the code.
+
+The quiz (tab 16) has 138 questions on tabs 01 to 15. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally
 
