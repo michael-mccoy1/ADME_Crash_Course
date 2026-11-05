@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 04: hepatic clearance from microsomal data. Data: Obach (1999), 29 drugs. Hepatic blood flow Q = 21 mL/min/kg as in that paper. */
+/* Tab 07: hepatic clearance from microsomal data. Data: Obach (1999), 29 drugs. Hepatic blood flow Q = 21 mL/min/kg as in that paper. */
 var HEP = new Lesson('hep', 'Hepatic clearance');
 HEP.noOpts = true;
 HEP.hint = 'Hepatic clearance from in vitro data';

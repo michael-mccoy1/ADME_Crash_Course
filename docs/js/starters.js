@@ -1,10 +1,10 @@
 "use strict";
-/* The first step of tabs 04 and 05: one worked example, with every quantity shown, before any scoreboard. */
+/* A worked single-drug step in tab 06 and the first step of tab 08: one worked example, with every quantity shown, before any scoreboard. */
 
-/* ---------- tab 04: from assay to clearance for one drug ---------- */
-HEP.add({ short: 'From assay to clearance', level: 'foundations', ord: 0, title: 'From assay to clearance',
+/* ---------- tab 06: from assay to clearance for one drug ---------- */
+VITRO.add({ short: 'From assay to clearance', level: 'foundations', ord: 20, title: 'From assay to clearance',
   change: 'Select a drug and an extraction model. Use Next to reveal each stage in turn.',
-  watch: 'A microsomal depletion assay gives an intrinsic clearance, which is the clearance the enzymes would give if neither blood flow nor binding limited it. Six quantities lead from that value to a predicted blood clearance. The scaled CLint of each drug is taken from Obach (1999). It is corrected for binding in blood and in the incubation, and the result goes into a model of hepatic extraction together with the hepatic blood flow Q of 21 mL/min/kg. The prediction is then compared with the blood clearance observed after intravenous dosing. Each box gives the formula and the value for the selected drug. Later steps in this tab change one stage at a time and score the effect on all 29 drugs.',
+  watch: 'A microsomal depletion assay gives an intrinsic clearance, which is the clearance the enzymes would give if neither blood flow nor binding limited it. Six quantities lead from that value to a predicted blood clearance. The scaled CLint of each drug is taken from Obach (1999). It is corrected for binding in blood and in the incubation, and the result goes into a model of hepatic extraction together with the hepatic blood flow Q of 21 mL/min/kg. The prediction is then compared with the blood clearance observed after intravenous dosing. Each box gives the formula and the value for the selected drug. Tab 07 changes one stage at a time and scores the effect on all 29 drugs.',
   build: function(api){
     var cur = 'Verapamil', model = 'pt', shown = 1, Q = HQ;
     var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px"></div><div class="say" style="margin-top:14px;font-size:13.5px;line-height:1.5"></div>');
@@ -30,7 +30,7 @@ HEP.add({ short: 'From assay to clearance', level: 'foundations', ord: 0, title:
     return { render: draw };
   } });
 
-/* ---------- tab 05: what volume of distribution measures ---------- */
+/* ---------- tab 08: what volume of distribution measures ---------- */
 DIS.add({ short: 'What Vss measures', level: 'foundations', ord: 0, title: 'What volume of distribution measures',
   change: 'Move the tissue to plasma concentration ratio Kp. Read where the dose sits.',
   watch: 'The volume of distribution at steady state is the amount of drug in the body divided by the plasma concentration. In a two-term form the body has a plasma volume Vp and a tissue volume Vt, and the drug reaches a concentration Kp times the plasma concentration in the tissue: Vss = Vp + Kp x Vt. For a 70 kg adult, Vp is 3.05 L (0.0436 L/kg) and Vt is 37.2 L (the 0.151 L/kg of extracellular fluid outside plasma and the 0.38 L/kg of remaining volume used in the Oie-Tozer equation in the next steps). A drug that stays in body water at the plasma concentration has Kp = 1 and Vss of 40 L, or 0.57 L/kg. A Kp of 10 gives 375 L. The bars give the share of a 100 mg dose in plasma and in tissue at equilibrium.',

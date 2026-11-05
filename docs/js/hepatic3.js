@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 04, steps 8 and 9: microsomes against hepatocytes, and the extended clearance classification system. Uses the helpers in hepatic.js. */
+/* Tab 07, steps 7 and 8: microsomes against hepatocytes, and the extended clearance classification system. Uses the helpers in hepatic.js. */
 
 /* ---------- step 7 ---------- */
 HEP.add({ short: 'Microsomes against hepatocytes', level: 'advanced', title: 'Microsomes against hepatocytes',
@@ -50,7 +50,7 @@ var ECCS = {
 };
 HEP.add({ short: 'Choosing a method by class', level: 'advanced', title: 'Choosing a method by class',
   change: 'Select a point on the map or use the sliders. Switch between acids or zwitterions and bases or neutrals.',
-  watch: 'The extended clearance classification system (ECCS; Varma et al., 2015) assigns a compound to a class from its ionization at pH 7, its molecular weight and its passive permeability, and predicts the rate-determining clearance mechanism. The permeability cut-off is an apparent permeability of 5 x 10^-6 cm/s in a low-efflux MDCK cell line, and the molecular weight cut-off for acids and zwitterions is 400 Da. The authors report that the scheme gave the correct mechanism for about 92 percent of 307 compounds with a single mechanism contributing 70 percent or more of systemic clearance. The microsomal scaling in steps 2 to 5 measures metabolism. It applies to the metabolism classes, 1A and 2, and not to the uptake and renal classes.',
+  watch: 'The extended clearance classification system (ECCS; Varma et al., 2015) assigns a compound to a class from its ionization at pH 7, its molecular weight and its passive permeability, and predicts the rate-determining clearance mechanism. The permeability cut-off is an apparent permeability of 5 x 10^-6 cm/s in a low-efflux MDCK cell line, and the molecular weight cut-off for acids and zwitterions is 400 Da. The authors report that the scheme gave the correct mechanism for about 92 percent of 307 compounds with a single mechanism contributing 70 percent or more of systemic clearance. The microsomal scaling in steps 1 to 4 measures metabolism. It applies to the metabolism classes, 1A and 2, and not to the uptake and renal classes.',
   build: function(api){
     var acid = true, mw = 350, papp = 10, ppb = 95;
     var pn = api.el('pn', 'left:28px;top:16px;width:520px;height:508px;padding:8px', '<canvas width="504" height="490" style="width:504px;height:490px;cursor:crosshair"></canvas>'), cvs = qs('canvas', pn);

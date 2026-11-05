@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 06: absorption and bioavailability. Data: Obach (1999) for the hepatic first-pass limit; Hou (2007) human intestinal absorption,
+/* Tab 09: absorption and bioavailability. Data: Obach (1999) for the hepatic first-pass limit; Hou (2007) human intestinal absorption,
    Wang (2016) Caco-2 permeability and AqSolDB (2019), all via Therapeutics Data Commons, with RDKit descriptors. */
 var ABS = new Lesson('abs', 'Absorption');
 ABS.noOpts = true;
@@ -23,7 +23,7 @@ function aAUC(pos, neg){ var all = pos.concat(neg), r = aRank(all), sp = 0, i; f
 function aRows(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:3px 0;font-size:12px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
 
 /* ---------- step 1 ---------- */
-ABS.add({ short: 'Bioavailability as a product', level: 'foundations', title: 'Bioavailability as a product',
+ORAL.add({ short: 'Bioavailability as a product', level: 'foundations', ord: 30, title: 'Bioavailability as a product',
   change: 'Set the fraction absorbed, the fraction escaping the gut wall and the hepatic clearance.',
   watch: 'Oral bioavailability is the product F = Fa x Fg x Fh. Fa is the fraction of the dose that crosses the apical membrane of the intestine, Fg the fraction that escapes metabolism in the gut wall, and Fh the fraction that escapes the liver on the first pass. The hepatic term follows from the blood clearance and liver blood flow: Fh = 1 - CLh / Q, where CLh is the hepatic blood clearance. The bars give the fraction of the dose that remains after each stage. The terms multiply, so a drug with three terms of 0.7 has F = 0.34.',
   build: function(api){

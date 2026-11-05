@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 04, steps 6 and 7: empirical scalars and low-turnover compounds. Uses the helpers in hepatic.js. */
+/* Tab 07, steps 5 and 6: empirical scalars and low-turnover compounds. Uses the helpers in hepatic.js. */
 
 /* ---------- step 5 ---------- */
 function hepFit(S, o){

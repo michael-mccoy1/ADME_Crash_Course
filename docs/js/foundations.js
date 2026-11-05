@@ -1,9 +1,6 @@
 "use strict";
 /* Tabs 01 to 03: the foundations. 01 The path of a drug, 02 Pharmacokinetic parameters, 03 Scoring predictions.
    Standard one-compartment relations; real values from Obach (2008) and Obach (1999). */
-var PATH = new Lesson('path', 'The path of a drug'); PATH.noOpts = true;
-var PKP = new Lesson('pk', 'Pharmacokinetic parameters'); PKP.noOpts = true;
-var SCR = new Lesson('score', 'Scoring predictions'); SCR.noOpts = true;
 
 function fRows(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:4px 0;font-size:12.5px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
 function fTile(label, value, sub){ return '<div class="score" style="margin-bottom:8px"><b>' + label + '</b><div class="v" style="font-size:1.5rem">' + value + '</div>' + (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>'; }
@@ -11,16 +8,16 @@ function fMarks(g, x, ts, labels, col){ ts.forEach(function(t, i){ x.strokeStyle
 
 /* =========================== tab 01: the path of a drug =========================== */
 var PATHN = [
-  { k: 'dis', label: 'Dissolution', letter: 'A', what: 'The dose dissolves in gastric and intestinal fluid. The solubility of the compound and the volume of fluid set how much of the dose can dissolve.', assay: 'Solubility at several pH values', qty: 'Dose number, D0', where: 'Tab 06, the steps on solubility' },
-  { k: 'perm', label: 'Gut wall permeation', letter: 'A', what: 'Dissolved drug crosses the intestinal membrane into the gut wall. Passive permeability and efflux transporters control the fraction absorbed, Fa.', assay: 'Caco-2 or PAMPA permeability', qty: 'Fa', where: 'Tab 06, permeability and property rules' },
-  { k: 'gutm', label: 'Gut wall metabolism', letter: 'M', what: 'Enzymes in the gut wall can metabolize the drug before it reaches the portal vein. The fraction that escapes is Fg.', assay: 'Intestinal microsomes or S9', qty: 'Fg', where: 'Named in tab 06 only. No public per-compound data were used.' },
-  { k: 'liver', label: 'Liver, first pass', letter: 'M and E', what: 'All drug in the portal vein passes through the liver. Metabolism, and biliary excretion where it occurs, remove part of it. The fraction that escapes is Fh.', assay: 'Liver microsomes or hepatocytes', qty: 'CLint, CLh, Fh', where: 'Tab 04, and the hepatic first-pass limit in tab 06' },
-  { k: 'blood', label: 'Blood and plasma', letter: 'D', what: 'Drug in the systemic circulation binds to plasma proteins and may partition into red cells. In the simple models used here, only unbound drug is cleared or distributes into tissue.', assay: 'Plasma protein binding, blood to plasma ratio', qty: 'fu, B:P', where: 'Tab 05' },
-  { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Drug distributes from blood into tissues, where it can bind. The extent of distribution is the volume of distribution.', assay: 'Tissue binding, or Vss from animal or human data', qty: 'Vss, fut', where: 'Tab 05' },
-  { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Drug leaves the body unchanged in urine and bile, or as metabolites. Renal and biliary clearance add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance, transporter assays', qty: 'CLr, CLbile', where: 'Named by the ECCS in tab 04. Not covered otherwise.' }];
-PATH.add({ short: 'Path of an oral dose', level: 'foundations', title: 'The path of an oral dose',
+  { k: 'dis', label: 'Dissolution', letter: 'A', what: 'The dose dissolves in gastric and intestinal fluid. The solubility of the compound and the volume of fluid set how much of the dose can dissolve.', assay: 'Solubility at several pH values', qty: 'Dose number, D0', where: 'Tab 09, the steps on solubility' },
+  { k: 'perm', label: 'Gut wall permeation', letter: 'A', what: 'Dissolved drug crosses the intestinal membrane into the gut wall. Passive permeability and efflux transporters control the fraction absorbed, Fa.', assay: 'Caco-2 or PAMPA permeability', qty: 'Fa', where: 'Tab 09, permeability and property rules' },
+  { k: 'gutm', label: 'Gut wall metabolism', letter: 'M', what: 'Enzymes in the gut wall can metabolize the drug before it reaches the portal vein. The fraction that escapes is Fg.', assay: 'Intestinal microsomes or S9', qty: 'Fg', where: 'Named in tab 04 only. No public per-compound data were used.' },
+  { k: 'liver', label: 'Liver, first pass', letter: 'M and E', what: 'All drug in the portal vein passes through the liver. Metabolism, and biliary excretion where it occurs, remove part of it. The fraction that escapes is Fh.', assay: 'Liver microsomes or hepatocytes', qty: 'CLint, CLh, Fh', where: 'Tab 05 for the principles, tab 07 for prediction, and the hepatic first-pass limit in tab 09' },
+  { k: 'blood', label: 'Blood and plasma', letter: 'D', what: 'Drug in the systemic circulation binds to plasma proteins and may partition into red cells. In the simple models used here, only unbound drug is cleared or distributes into tissue.', assay: 'Plasma protein binding, blood to plasma ratio', qty: 'fu, B:P', where: 'Tab 02 for the principles, tab 08 for prediction' },
+  { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Drug distributes from blood into tissues, where it can bind. The extent of distribution is the volume of distribution.', assay: 'Tissue binding, or Vss from animal or human data', qty: 'Vss, fut', where: 'Tab 02 for the principles, tab 08 for prediction' },
+  { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Drug leaves the body unchanged in urine and bile, or as metabolites. Renal and biliary clearance add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance, transporter assays', qty: 'CLr, CLbile', where: 'Routes are described in tab 05. The ECCS in tab 07 names them. Not predicted.' }];
+WHY.add({ short: 'Path of an oral dose', level: 'foundations', ord: 20, title: 'The path of an oral dose',
   change: 'Select a stage. Read what happens there, how it is measured and where the course covers it.',
-  watch: 'Absorption, distribution, metabolism and excretion describe what the body does to a drug. After an oral dose the drug passes through seven stages before and after it reaches the systemic circulation. Each stage has a letter, a typical in vitro assay and a quantity that links the assay to the clinic. Most of the quantities in this course appear in the table on the right. The later tabs take them in turn: tab 04 predicts hepatic clearance, tab 05 covers distribution and tab 06 covers absorption. Gut-wall metabolism, renal clearance and biliary clearance are named here and not covered, because no public per-compound data were used for them.',
+  watch: 'Absorption, distribution, metabolism and excretion describe what the body does to a drug. After an oral dose the drug passes through seven stages before and after it reaches the systemic circulation. Each stage has a letter, a typical in vitro assay and a quantity that links the assay to the clinic. Most of the quantities in this course appear in the panel below. Tabs 02 to 05 build them up one at a time. Tabs 07 to 09 then predict hepatic clearance, volume of distribution and absorption. Gut-wall metabolism, renal clearance and biliary clearance are named here and not predicted, because no public per-compound data were used for them.',
   build: function(api){
     var sel = 'dis';
     var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:8px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');
@@ -35,7 +32,7 @@ PATH.add({ short: 'Path of an oral dose', level: 'foundations', title: 'The path
   } });
 
 function ivPts(D, V, CL, T, step){ var k = CL / V, pts = [], t; for (t = 0; t <= T + 1e-9; t += step) pts.push([t, D / V * Math.exp(-k * t)]); return pts; }
-PATH.add({ short: 'Intravenous profile', level: 'foundations', title: 'Concentration after an intravenous dose',
+ELIM.add({ short: 'Intravenous profile', level: 'foundations', ord: 30, title: 'Concentration after an intravenous dose',
   change: 'Set the dose, volume and clearance. Switch the vertical axis between concentration and its logarithm.',
   watch: 'After an intravenous bolus the drug is in the circulation at once. In a one-compartment model the concentration starts at C0 = dose / V, where V is the volume of distribution, and falls exponentially with the rate constant k = CL / V, where CL is the clearance. The half-life is 0.693 / k = 0.693 x V / CL, the time in which the concentration halves. The area under the curve is AUC = dose / CL. On a logarithmic axis the curve is a straight line with slope -k. The markers give one, two and three half-lives, at which 50, 25 and 12.5 percent of the starting concentration remain.',
   build: function(api){
@@ -56,9 +53,9 @@ PATH.add({ short: 'Intravenous profile', level: 'foundations', title: 'Concentra
     return { render: draw };
   } });
 
-PATH.add({ short: 'Oral profile', level: 'foundations', title: 'Concentration after an oral dose',
+ORAL.add({ short: 'Oral profile', level: 'foundations', ord: 10, title: 'Concentration after an oral dose',
   change: 'Set the bioavailability, clearance, volume and absorption rate constant.',
-  watch: 'After an oral dose the drug has to be absorbed first. With first-order absorption of rate constant ka, the concentration rises, reaches a maximum Cmax at time tmax and then falls at the elimination rate. The area under the curve is AUC = F x dose / CL, where F is the oral bioavailability. Bioavailability scales the exposure directly and clearance scales it inversely. The plot gives the oral curve and the curve for the same dose given intravenously. The oral curve is lower and later, and its area is F times the intravenous area. Tab 06 breaks F into its three terms.',
+  watch: 'After an oral dose the drug has to be absorbed first. With first-order absorption of rate constant ka, the concentration rises, reaches a maximum Cmax at time tmax and then falls at the elimination rate. The area under the curve is AUC = F x dose / CL, where F is the oral bioavailability. Bioavailability scales the exposure directly and clearance scales it inversely. The plot gives the oral curve and the curve for the same dose given intravenously. The oral curve is lower and later, and its area is F times the intravenous area. The steps that follow break F into its three terms.',
   build: function(api){
     var F = 0.5, CL = 10, V = 50, ka = 1, D = 100;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -77,7 +74,7 @@ PATH.add({ short: 'Oral profile', level: 'foundations', title: 'Concentration af
   } });
 
 /* =========================== tab 02: pharmacokinetic parameters =========================== */
-PKP.add({ short: 'Clearance and extraction', level: 'foundations', title: 'Clearance, flow and extraction',
+MET.add({ short: 'Clearance and extraction', level: 'foundations', ord: 40, title: 'Clearance, flow and extraction',
   change: 'Set the blood flow and the extraction ratio, or take both from a drug in the Obach (1999) set.',
   watch: 'Clearance is the volume of blood that is cleared of drug per unit time. For an eliminating organ with blood flow Q, the drug concentration falls from Cin at the inlet to Cout at the outlet, and the extraction ratio is E = (Cin - Cout) / Cin. The organ clearance is CL = Q x E, so clearance cannot exceed the blood flow. For the liver, a drug absorbed from the gut reaches the circulation with the fraction Fh = 1 - E. The bars give the inlet and outlet concentrations for the values set. Selecting a drug sets the extraction ratio to its observed nonrenal blood clearance divided by a hepatic blood flow of 21 mL/min/kg.',
   build: function(api){
@@ -100,7 +97,7 @@ PKP.add({ short: 'Clearance and extraction', level: 'foundations', title: 'Clear
     return { render: draw };
   } });
 
-PKP.add({ short: 'Volume and half-life', level: 'foundations', title: 'Volume of distribution and half-life',
+ELIM.add({ short: 'Volume and half-life', level: 'foundations', ord: 40, title: 'Volume of distribution and half-life',
   change: 'Set the clearance and the two volumes. Compare the half-lives of the two drugs.',
   watch: 'The half-life is not an independent property of a drug. It follows from the volume of distribution and the clearance: t1/2 = 0.693 x V / CL. The plot gives two drugs with the same clearance and different volumes, given the same intravenous dose. The drug with the larger volume has a lower starting concentration and a longer half-life, because the same clearance removes a smaller fraction of the drug in the body per hour. The areas under the curves are equal, since AUC = dose / CL and the clearance and dose are equal.',
   build: function(api){
@@ -119,7 +116,7 @@ PKP.add({ short: 'Volume and half-life', level: 'foundations', title: 'Volume of
     return { render: draw };
   } });
 
-PKP.add({ short: 'Repeat dosing', level: 'foundations', title: 'Accumulation on repeat dosing',
+ELIM.add({ short: 'Repeat dosing', level: 'foundations', ord: 50, title: 'Accumulation on repeat dosing',
   change: 'Set the dosing interval, the clearance and the volume. Read the accumulation ratio.',
   watch: 'When doses are repeated before the previous dose has been eliminated, the drug accumulates until the amount eliminated in one interval equals the dose. The plot gives repeated intravenous bolus doses of 100 mg at the interval set. The average steady-state concentration is Css,avg = dose / (CL x interval) for an intravenous dose and F x dose / (CL x interval) for an oral dose, whatever the volume. The accumulation ratio is R = 1 / (1 - exp(-k x interval)), where k = CL / V, and the peak concentration at steady state is R times the first peak. Steady state is about 90 percent reached after 3.3 half-lives.',
   build: function(api){
@@ -140,7 +137,7 @@ PKP.add({ short: 'Repeat dosing', level: 'foundations', title: 'Accumulation on 
     return { render: draw };
   } });
 
-PKP.add({ short: 'Checking a record', level: 'foundations', title: 'Checking a pharmacokinetic record',
+ELIM.add({ short: 'Checking a record', level: 'foundations', ord: 60, title: 'Checking a pharmacokinetic record',
   change: 'Select a drug. Compare its mean residence time and half-life with the values calculated from CL and Vss.',
   watch: 'A table of pharmacokinetic parameters has to be internally consistent, and the relations between its columns show how. The mean residence time is MRT = Vss / CL. With Vss in L/kg and CL in mL/min/kg, MRT in hours is Vss / CL x 1000 / 60. For a one-compartment drug the half-life would be 0.693 x MRT. The histograms give the ratio of the calculated to the reported value for the 667 drugs of Obach et al. (2008). The calculated MRT is within 10 percent of the reported value for 637 of them, with a median ratio of 1.00. The value 0.693 x MRT is below the reported half-life for most of the 667 drugs, with a median ratio of 0.76, because most drugs have more than one disposition phase.',
   build: function(api){
@@ -172,9 +169,9 @@ PKP.add({ short: 'Checking a record', level: 'foundations', title: 'Checking a p
 
 /* =========================== tab 03: scoring predictions =========================== */
 function logTicks(lo, hi){ var o = []; for (var e = Math.ceil(lo); e <= Math.floor(hi); e++) o.push(Math.pow(10, e)); return o; }
-SCR.add({ short: 'Fold error', level: 'foundations', title: 'Fold error',
+VITRO.add({ short: 'Fold error', level: 'foundations', ord: 30, title: 'Fold error',
   change: 'Set a predicted and an observed value. Compare with the six drugs in the table.',
-  watch: 'A prediction of a quantity that spans orders of magnitude is scored by the ratio of the predicted value to the observed value and not by their difference. The fold error is that ratio, or its inverse when the ratio is below 1. A predicted clearance of 1 mL/min/kg against an observed 4 is a 4-fold under-prediction, and 4 against 1 is a 4-fold over-prediction. The two errors are equally large on this scale. A prediction within 2-fold of the observation has a ratio between 0.5 and 2. The table gives the parallel-tube prediction with both binding corrections from tab 04 for six drugs of Obach (1999).',
+  watch: 'A prediction of a quantity that spans orders of magnitude is scored by the ratio of the predicted value to the observed value and not by their difference. The fold error is that ratio, or its inverse when the ratio is below 1. A predicted clearance of 1 mL/min/kg against an observed 4 is a 4-fold under-prediction, and 4 against 1 is a 4-fold over-prediction. The two errors are equally large on this scale. A prediction within 2-fold of the observation has a ratio between 0.5 and 2. The table gives the parallel-tube prediction with both binding corrections from tab 07 for six drugs of Obach (1999).',
   build: function(api){
     var lp = 0.3, lo = 0.9;
     var pn = api.el('pn', 'left:28px;top:16px;width:520px;height:508px;padding:14px', '<canvas width="492" height="200" style="width:492px;height:200px"></canvas><div class="rd" style="margin-top:14px"></div>'), cvs = qs('canvas', pn);
@@ -198,7 +195,7 @@ SCR.add({ short: 'Fold error', level: 'foundations', title: 'Fold error',
     return { render: draw };
   } });
 
-SCR.add({ short: 'Average fold error and bias', level: 'foundations', title: 'Average fold error and bias',
+VITRO.add({ short: 'Average fold error and bias', level: 'foundations', ord: 40, title: 'Average fold error and bias',
   change: 'Edit the predicted and observed values. Compare the three summaries.',
   watch: 'Several fold errors are summarized by working on the logarithms of the ratios. The average fold error is 10 raised to the mean of the absolute log ratios. It measures the typical size of the error and has no direction. The bias is 10 raised to the mean of the log ratios. It measures the direction, and a value of 1 means that over-predictions and under-predictions balance on the log scale. The arithmetic mean of the ratios is shown for comparison. It is pulled upward by large over-predictions, so it can report over-prediction when the over- and under-predictions are equal in fold. With the starting values, two drugs are over-predicted 2-fold and 4-fold, two are under-predicted 2-fold, and two are exact.',
   build: function(api){
@@ -222,9 +219,9 @@ SCR.add({ short: 'Average fold error and bias', level: 'foundations', title: 'Av
     return { render: draw };
   } });
 
-SCR.add({ short: 'Why the log scale', level: 'foundations', title: 'Why a logarithmic scale',
+VITRO.add({ short: 'Why the log scale', level: 'foundations', ord: 50, title: 'Why a logarithmic scale',
   change: 'Switch the axes between linear and logarithmic.',
-  watch: 'Clearance values in one set span nearly three orders of magnitude, from 0.03 to 20 mL/min/kg (a 670-fold range) for the 29 drugs of Obach (1999). On linear axes the band that marks agreement within 2-fold widens with the value, and the seven drugs with an observed clearance below 1 mL/min/kg collapse onto the origin, where their errors cannot be read. On logarithmic axes the band has a constant width and every drug is readable. A fold error is therefore plotted and averaged on the logarithmic scale, which is what the following tabs do. The points are the parallel-tube predictions with both binding corrections.',
+  watch: 'Clearance values in one set span nearly three orders of magnitude, from 0.03 to 20 mL/min/kg (a 670-fold range) for the 29 drugs of Obach (1999). On linear axes the band that marks agreement within 2-fold widens with the value, and the seven drugs with an observed clearance below 1 mL/min/kg collapse onto the origin, where their errors cannot be read. On logarithmic axes the band has a constant width and every drug is readable. A fold error is therefore plotted and averaged on the logarithmic scale, which is what tabs 07 to 09 do. The points are the parallel-tube predictions with both binding corrections.',
   build: function(api){
     var ax = 'log';
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
