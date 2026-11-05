@@ -151,7 +151,7 @@ DDI.noOpts = true;
         x.strokeStyle = C.char; x.lineWidth = 1; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(hx, CH.t); x.lineTo(hx, CH.b); x.stroke(); x.setLineDash([]);
         [[q.fi, sm && sm.ti, C.warn], [q.r, sm && sm.vr, C.red]].forEach(function(m){ x.strokeStyle = C.char; x.lineWidth = 1.4; x.beginPath(); x.arc(hx, ly(m[0]), 7, 0, 6.2832); x.stroke(); if (ANIM && m[1] !== null && m[1] !== undefined) SC.dot(x, hx, ly(cl(m[1], 0, 1.05)), 4.5, m[2], '#FFFFFF'); });
         x.fillStyle = C.warn; x.beginPath(); x.moveTo(hx, CH.b - 2); x.lineTo(hx - 7, CH.b + 10); x.lineTo(hx + 7, CH.b + 10); x.closePath(); x.fill();
-        if (forceSide || tnow - lastSide > 0.25) { lastSide = tnow; forceSide = false; side_(q, sm); }
+        if (forceSide || tnow - lastSide > 1.0) { lastSide = tnow; forceSide = false; side_(q, sm); }
       }
       function side_(q, sm){
         var an = ANIM && sm, nI = 0, nS = 0; E.forEach(function(en){ if (en.st === 2) nI++; else if (en.st === 1) nS++; });

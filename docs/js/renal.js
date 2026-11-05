@@ -172,7 +172,7 @@ RN.noOpts = true;
         click: function(p){ if (trZone(p)) { S.inh = S.inh ? 0 : 1; sync(); changed(); } }
       });
       par = P(); sync(); warm(30);
-      SC.run(cvs, function(dt){ if (dt > 0) { step(dt); dirty = true; } if (dirty) { dirty = false; paint(); } if (dt > 0 && simT - lastSide > 0.25) { lastSide = simT; updSide(); } });
+      SC.run(cvs, function(dt){ if (dt > 0) { step(dt); dirty = true; } if (dirty) { dirty = false; paint(); } if (dt > 0 && simT - lastSide > 1.0) { lastSide = simT; updSide(); } });
       return { render: draw };
     } });
 

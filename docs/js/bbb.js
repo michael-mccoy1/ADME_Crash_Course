@@ -182,7 +182,7 @@ BBBL.noOpts = true;
       }
       function frame(dt){
         if (dt > 0) { if (!api.stepDef.visible) return; advance(dt, true); move(dt); }
-        draw(); var now = performance.now(); if (now - lastSide > 300) { lastSide = now; upSide(); }
+        draw(); var now = performance.now(); if (now - lastSide > 1000) { lastSide = now; upSide(); }
       }
       function redraw(){ if (!loop || !ANIM) draw(); }
       function inPump(p){ return Math.abs(p.x - LUM) < 15 && Math.abs(p.y - PUMP.y) < 22; }

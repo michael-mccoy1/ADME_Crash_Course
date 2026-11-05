@@ -405,7 +405,7 @@ var TPROBE = [
         click: function(p){ var o = onOat(p); if (o >= 0 && !blk(o)) { S.k |= 1 << o; changed(); } }
       });
       sync(); seed(); labels();
-      SC.run(cvs, function(dt){ if (dt > 0) adv(dt); draw(); tside += dt; if (tside > 0.25) { tside = 0; panel(); } });
+      SC.run(cvs, function(dt){ if (dt > 0) adv(dt); draw(); tside += dt; if (tside > 1.0) { tside = 0; panel(); } });
       return { render: render };
     } });
 })();

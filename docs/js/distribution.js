@@ -356,7 +356,7 @@ DIS.add({ short: 'Sensitivity of Vss', level: 'advanced', title: 'Sensitivity of
         x.fillStyle = GREY; x.fillRect(312, L2 - 10, 12, 10); SC.text(x, 'Vp', 330, L2, { size: 11.5 });
         x.fillStyle = C.red; x.fillRect(360, L2 - 10, 12, 10); SC.text(x, 'Vt x Kp', 378, L2, { size: 11.5 });
         x.strokeStyle = C.char; x.lineWidth = 1.2; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(452, L2 - 11); x.lineTo(452, L2 + 2); x.stroke(); x.setLineDash([]); SC.text(x, 'Physical volume', 466, L2, { size: 11.5 });
-        var now = performance.now(); if (now - lastSide > 250 || force) { lastSide = now; force = false; sidePanel(P, k); }
+        var now = performance.now(); if (now - lastSide > 1000 || force) { lastSide = now; force = false; sidePanel(P, k); }
       }
 
       function sidePanel(P, k){

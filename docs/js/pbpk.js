@@ -172,7 +172,7 @@ PB.noOpts = true;
       }
       function draw(force){
         qs('.klv', c1).textContent = S.kl.toFixed(1); qs('.krv', c2).textContent = S.kr.toFixed(1); qs('.fuv', c3).textContent = S.fu.toFixed(2); qs('.cliv', c4).textContent = fx(Math.pow(10, S.cli)); qs('.clrv', c5).textContent = S.clr.toFixed(1); qs('.tv', c6).textContent = S.t.toFixed(1);
-        var o = frame(); if (force || (Math.abs(S.t - sideT) > 1e-9 && sideClock > 0.15)) { sidePanel(o); sideT = S.t; sideClock = 0; } dirty = false;
+        var o = frame(); if (force || (Math.abs(S.t - sideT) > 1e-9 && sideClock > 0.4)) { sidePanel(o); sideT = S.t; sideClock = 0; } dirty = false;
       }
       SC.run(cvs, function(dt){
         if (dt > 0) { ph += dt; sideClock += dt; if (play) { var u = Math.sqrt(S.t / TMAX) + dt / 18; if (u >= 1) u = 0; S.t = TMAX * u * u; qs('.t', c6).value = S.t; } }
