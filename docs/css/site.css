@@ -384,3 +384,12 @@ nav.tabs button.qzt b,nav.tabs button.qzt[aria-selected="true"] b{color:inherit}
 .gt th,.gt td{padding:1px 3px !important;text-align:right;white-space:normal;background:transparent !important;border:0 !important;color:var(--char) !important;font-size:10px !important;line-height:1.25;letter-spacing:0 !important;text-transform:none !important}
 .gt th{font-weight:600;color:var(--mid) !important}
 .gt th:first-child,.gt td:first-child{text-align:left;width:27%}
+
+/* intro card: overview, notation, data */
+.intro .isec{margin-top:10px}.intro .isec:first-child{margin-top:0}
+.intro .isec p{margin:0 0 8px;font-size:.93rem;line-height:1.55;max-width:62rem}
+.intro .idet{margin-top:10px;border-top:1px solid var(--silver);padding-top:8px}
+.intro .idet summary{cursor:pointer;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);font-weight:600}
+.intro dl.nt{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 16px;margin:8px 0 0;font-size:.88rem;line-height:1.45}
+.intro dl.nt dt{font-weight:700;color:var(--dred)}.intro dl.nt dd{margin:0}
+@media(max-width:760px){.intro dl.nt{grid-template-columns:minmax(0,1fr)}.intro dl.nt dd{margin-bottom:4px}}

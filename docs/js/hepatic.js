@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 01: hepatic clearance from microsomal data. Data: Obach (1999), 29 drugs. Hepatic blood flow Q = 21 mL/min/kg as in that paper. */
+/* Tab 04: hepatic clearance from microsomal data. Data: Obach (1999), 29 drugs. Hepatic blood flow Q = 21 mL/min/kg as in that paper. */
 var HEP = new Lesson('hep', 'Hepatic clearance');
 HEP.noOpts = true;
 HEP.hint = 'Hepatic clearance from in vitro data';
@@ -85,7 +85,7 @@ function hepDetail(r, o){
 /* ---------- step 1 ---------- */
 HEP.add({ short: 'Predicted against observed', level: 'foundations', title: 'Predicted against observed clearance',
   change: 'Select a point. Change the extraction model and the binding corrections.',
-  watch: 'Each point is one drug from Obach (1999). The predicted hepatic blood clearance is calculated from the human liver microsomal intrinsic clearance, scaled with 45 mg of microsomal protein per g of liver and 20 g of liver per kg. The observed value is the nonrenal blood clearance from intravenous studies (for chlorpromazine, from an intramuscular dose). The shaded band marks agreement within 2-fold. Three numbers summarize the 29 drugs: the count within 2-fold, the average fold error (the geometric mean of the absolute fold difference, 1.0 being perfect) and the bias (the geometric mean of predicted divided by observed). The same three numbers score every prediction against observation in tabs 01 and 02.',
+  watch: 'Each point is one drug from Obach (1999). The predicted hepatic blood clearance is calculated from the human liver microsomal intrinsic clearance, scaled with 45 mg of microsomal protein per g of liver and 20 g of liver per kg. The observed value is the nonrenal blood clearance from intravenous studies (for chlorpromazine, from an intramuscular dose). The shaded band marks agreement within 2-fold. Three numbers summarize the 29 drugs: the count within 2-fold, the average fold error (the geometric mean of the absolute fold difference, 1.0 being perfect) and the bias (the geometric mean of predicted divided by observed). The same three numbers score every prediction against observation in tabs 04 to 06. Tab 03 introduces them.',
   build: function(api){
     var o = { model: 'pt', bind: 'both', sf: 1 }, sel = null;
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="620" height="470" style="width:620px;height:470px;cursor:pointer"></canvas>' + hepLegend()), cvs = qs('canvas', pn);

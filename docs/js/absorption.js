@@ -1,5 +1,5 @@
 "use strict";
-/* Tab 03: absorption and bioavailability. Data: Obach (1999) for the hepatic first-pass limit; Hou (2007) human intestinal absorption,
+/* Tab 06: absorption and bioavailability. Data: Obach (1999) for the hepatic first-pass limit; Hou (2007) human intestinal absorption,
    Wang (2016) Caco-2 permeability and AqSolDB (2019), all via Therapeutics Data Commons, with RDKit descriptors. */
 var ABS = new Lesson('abs', 'Absorption');
 ABS.noOpts = true;

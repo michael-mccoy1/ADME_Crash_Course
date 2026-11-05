@@ -49,7 +49,7 @@ function lineChart(el, series, o){
 /* =====================================================================
    Lesson framework
    ===================================================================== */
-var LESSONS = {}, LORDER = ['hep', 'dist', 'abs', 'quiz'], ACTIVE = 'hep';
+var LESSONS = {}, LORDER = ['path', 'pk', 'score', 'hep', 'dist', 'abs', 'quiz'], ACTIVE = 'path';
 function Lesson(id, title){ this.id = id; this.title = title; this.steps = []; this.gloss = null; this.optsHTML = ''; this.onOpts = null; this.onData = null; LESSONS[id] = this; }
 Lesson.prototype.add = function(def){ this.steps.push(def); return this; };
 Lesson.prototype.glossary = function(items){ this.gloss = items; return this; };
@@ -71,6 +71,15 @@ var railBusy = false;
 window.addEventListener('scroll', function(){ if (railBusy) return; railBusy = true; requestAnimationFrame(function(){ railBusy = false; var root = $('lesson-' + ACTIVE), L = LESSONS[ACTIVE]; if (!root || !L || !L.built) return; var best = null; qsa('.rail a.ra', root).forEach(function(a){ a.classList.remove('on'); var t = $(a.dataset.t); if (t && t.getBoundingClientRect().height > 0 && t.getBoundingClientRect().top <= 140) best = a; }); if (best) best.classList.add('on'); var rl = qs('.rail', root), fs = qs('section.step', root); if (rl && fs) rl.classList.toggle('show', fs.getBoundingClientRect().top < window.innerHeight * 0.6); }); }, { passive: true });
 window.addEventListener('resize', function(){ window.dispatchEvent(new Event('scroll')); });
 document.addEventListener('click', function(e){ if (e.target.closest && e.target.closest('nav.tabs')) setTimeout(function(){ window.dispatchEvent(new Event('scroll')); }, 400); });
+
+function introHTML(ig){
+  var html = '<div class="ig">';
+  if (ig.overview) html += '<div class="isec"><div class="ol">Overview</div>' + ig.overview.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
+  html += '<div class="isec"><div class="ol">Objectives</div><ul>' + ig.goals.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div>';
+  if (ig.notation) html += '<details class="idet" open><summary>Notation</summary><dl class="nt">' + ig.notation.map(function(n){ return '<dt>' + esc(n[0]) + '</dt><dd>' + esc(n[1]) + '</dd>'; }).join('') + '</dl></details>';
+  if (ig.data) html += '<details class="idet" open><summary>Data and sources</summary><ul>' + ig.data.map(function(d){ return '<li>' + esc(d) + '</li>'; }).join('') + '</ul></details>';
+  return html + '</div>';
+}
 function buildLesson(L){
   var root = $('lesson-' + L.id), n = L.steps.length + (L.gloss ? 1 : 0), startsBeginner = false;
   if (L.optsClosed === undefined) L.optsClosed = startsBeginner; 
@@ -78,7 +87,7 @@ function buildLesson(L){
   if (L.noOpts) root.classList.add('noopts');
   root.innerHTML = (L.noOpts ? '' : '<aside class="options"><details class="optd"' + (L.optsClosed ? '' : ' open') + '><summary class="otitle">' + (L.optsLabel || 'Options') + '</summary><div class="obody"></div><div class="aff"><div class="hint">Change an option to see which steps use it.</div></div></details></aside>') + '<div class="steps"><nav class="toc"></nav></div>';
   if (!L.noOpts) qs('.obody', root).innerHTML = typeof L.optsHTML === 'function' ? L.optsHTML() : L.optsHTML; var stepsEl = qs('.steps', root), toc = qs('.toc', root);
-  var ig = window.GUIDE && GUIDE.intro[L.id]; if (ig) { var card = h('div', 'intro', '<div class="ig"><div><div class="ol">Objectives</div><ul>' + ig.goals.map(function(g){ return '<li>' + esc(g) + '</li>'; }).join('') + '</ul></div></div>'); stepsEl.insertBefore(card, toc); }
+  var ig = window.GUIDE && GUIDE.intro[L.id]; if (ig) { var card = h('div', 'intro', introHTML(ig)); stepsEl.insertBefore(card, toc); }
   var rank = { foundations: 0, applied: 1, advanced: 2 };
   L.steps.forEach(function(st, k){ st._o = k; }); function ordKey(st){ return st.ord !== undefined ? st.ord : 100 + st._o; }
   L.steps.sort(function(x, y){ return rank[levelOf(x)] - rank[levelOf(y)] || ordKey(x) - ordKey(y); });
