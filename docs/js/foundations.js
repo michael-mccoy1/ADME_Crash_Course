@@ -15,20 +15,6 @@ var PATHN = [
   { k: 'blood', label: 'Blood and plasma', letter: 'D', what: 'Plasma protein binding and red-cell partitioning. In the models used, only unbound drug is cleared or distributes to tissue.', assay: 'Plasma protein binding, blood to plasma ratio', qty: 'fu, B:P', where: 'Tabs 02 and 08' },
   { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Distribution into tissue, quantified by the volume of distribution.', assay: 'Tissue binding; Vss from animal or human data', qty: 'Vss, fut', where: 'Tabs 02 and 08' },
   { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Renal and biliary excretion add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance; transporter assays', qty: 'CLr, CLbile', where: 'Tab 05; not predicted' }];
-WHY.add({ short: 'Path of an oral dose', level: 'foundations', ord: 20, title: 'Stages of an oral dose',
-  build: function(api){
-    var sel = 'dis';
-    var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:8px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');
-    function draw(){
-      var cur = PATHN.filter(function(n){ return n.k === sel; })[0];
-      qs('.nd', pn).innerHTML = PATHN.map(function(n, i){ var on = n.k === sel; return '<button type="button" data-k="' + n.k + '" style="cursor:pointer;border:2px solid ' + (on ? C.red : C.silver) + ';background:' + (on ? C.light : '#fff') + ';border-radius:8px;padding:8px 12px;text-align:left;min-width:112px"><div style="font-size:11px;color:' + C.mid + '">' + (i + 1) + ', ' + n.letter + '</div><div style="font-weight:700;font-size:13px">' + n.label + '</div></button>'; }).join('');
-      qsa('[data-k]', pn).forEach(function(b){ b.addEventListener('click', function(){ sel = b.dataset.k; draw(); }); });
-      qs('.dt', pn).innerHTML = '<div style="grid-column:1/-1;font-size:14px;line-height:1.55;border:1px solid ' + C.silver + ';border-radius:8px;padding:12px 14px;background:#fff"><b>' + cur.label + '.</b> ' + cur.what + '</div>' + [['ADME letter', cur.letter], ['Typical in vitro assay', cur.assay], ['Quantity', cur.qty], ['Where in this course', cur.where]].map(function(t){ return '<div style="border:1px solid ' + C.silver + ';border-radius:8px;padding:10px 14px;background:#fff"><div class="ol" style="margin-bottom:2px">' + t[0] + '</div><div style="font-size:13.5px;font-weight:600">' + t[1] + '</div></div>'; }).join('');
-      api.stat(cur.label);
-    }
-    return { render: draw };
-  } });
-
 function ivPts(D, V, CL, T, step){ var k = CL / V, pts = [], t; for (t = 0; t <= T + 1e-9; t += step) pts.push([t, D / V * Math.exp(-k * t)]); return pts; }
 ELIM.add({ short: 'Intravenous profile', level: 'foundations', ord: 30, title: 'Concentration after an intravenous dose',
   build: function(api){

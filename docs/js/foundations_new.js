@@ -15,59 +15,6 @@
     x.fillStyle = C.char; x.fillText(xl, (box.l + box.r) / 2, g.h - 6);
   }
 
-  /* ===== tab 01, step 1: concentration and effect ===== */
-  WHY.add({ short: 'Concentration and effect', level: 'foundations', ord: 10, title: 'Dose, concentration and effect',
-    build: function(api){
-      var lec = 0, h = 1, D = 100, CL = 10, V = 50;
-      var pn = api.el('pn', 'left:28px;top:16px;width:440px;height:508px;padding:8px', '<canvas width="424" height="440" style="width:424px;height:440px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('canvas', pn);
-      var pn2 = api.el('pn', 'left:484px;top:16px;width:448px;height:508px;padding:8px', '<canvas width="432" height="440" style="width:432px;height:440px"></canvas><div class="rb" style="font-size:12.5px;margin-top:6px"></div>'), cb = qs('canvas', pn2);
-      var c1 = api.addControl(sld('e', 'EC50', -1, 1, 0.05, lec, 'mg/L')), c2 = api.addControl(sld('h', 'Steepness h', 0.5, 4, 0.1, h)), c3 = api.addControl(sld('d', 'Dose', 10, 500, 10, D, 'mg')), c4 = api.addControl(sld('c', 'CL', 2, 40, 1, CL, 'L/h'));
-      function eff(C, ec){ return 100 * Math.pow(C, h) / (Math.pow(ec, h) + Math.pow(C, h)); }
-      function draw(){
-        var ec = Math.pow(10, lec), k = CL / V, c0 = D / V, th = 0.693 / k; qs('.ev', c1).textContent = ec.toFixed(2); qs('.hv', c2).textContent = h.toFixed(1); qs('.dv', c3).textContent = D; qs('.cv', c4).textContent = CL;
-        var pts = [], i; for (i = 0; i <= 100; i++) { var C = 10 * i / 100; pts.push([C, eff(C, ec)]); }
-        var g = lineChart(ca, [{ pts: pts, color: C.red, nodot: true }], { xl: 'Concentration (mg/L)', yl: 'Effect (percent of Emax)', x0: 0, x1: 10, y0: 0, y1: 100 }), x = g.x;
-        x.strokeStyle = C.char; x.setLineDash([4, 4]); x.lineWidth = 1.3; x.beginPath(); x.moveTo(g.sx(ec), g.box.b); x.lineTo(g.sx(ec), g.sy(50)); x.lineTo(g.box.l, g.sy(50)); x.stroke(); x.setLineDash([]); x.fillStyle = C.char; x.font = '600 11px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText('EC50', g.sx(ec) + 4, g.box.b - 6);
-        var ep = eff(Math.min(c0, 10), ec); x.fillStyle = C.red; x.beginPath(); x.arc(g.sx(Math.min(c0, 10)), g.sy(ep), 6, 0, 6.3); x.fill(); x.fillStyle = C.char; x.fillText('peak', g.sx(Math.min(c0, 10)) + 8, g.sy(ep) - 6);
-        qs('.ra', pn).innerHTML = 'Peak concentration <b>' + c0.toFixed(2) + ' mg/L</b> gives <b>' + ep.toFixed(0) + ' percent</b> of the maximal effect.';
-        var T = Math.max(4 * th, 4), cp = []; for (i = 0; i <= 100; i++) { var t = T * i / 100; cp.push([t, c0 * Math.exp(-k * t)]); }
-        var g2 = lineChart(cb, [{ pts: cp, color: C.mid, nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: Math.max(c0, ec * 1.2) * 1.1 }), x2 = g2.x, above = c0 > ec ? Math.log(c0 / ec) / k : 0;
-        x2.strokeStyle = C.warn; x2.setLineDash([5, 4]); x2.lineWidth = 1.4; x2.beginPath(); x2.moveTo(g2.box.l, g2.sy(ec)); x2.lineTo(g2.box.r, g2.sy(ec)); x2.stroke(); x2.setLineDash([]);
-        if (above > 0) { x2.fillStyle = 'rgba(180,86,27,.15)'; x2.beginPath(); x2.moveTo(g2.sx(0), g2.sy(ec)); for (i = 0; i <= 60; i++) { var tt = above * i / 60; x2.lineTo(g2.sx(tt), g2.sy(c0 * Math.exp(-k * tt))); } x2.lineTo(g2.sx(above), g2.sy(ec)); x2.closePath(); x2.fill(); }
-        x2.fillStyle = C.warn; x2.font = '600 11px Aptos, "Segoe UI", sans-serif'; x2.textAlign = 'right'; x2.fillText('EC50', g2.box.r - 4, g2.sy(ec) - 5);
-        qs('.rb', pn2).innerHTML = 'Half-life <b>' + th.toFixed(1) + ' h</b>. Time above the EC50: <b>' + (above > 0 ? above.toFixed(1) + ' h' : 'none, the peak is below the EC50') + '</b>. A dose of ' + (2 * D) + ' mg would give ' + (c0 * 2 > ec ? (Math.log(2 * c0 / ec) / k).toFixed(1) + ' h' : 'none') + '.';
-        api.stat('Peak effect ' + ep.toFixed(0) + ' percent of Emax, time above EC50 ' + above.toFixed(1) + ' h');
-      }
-      qs('.e', c1).addEventListener('input', function(){ lec = +this.value; draw(); }); qs('.h', c2).addEventListener('input', function(){ h = +this.value; draw(); }); qs('.d', c3).addEventListener('input', function(){ D = +this.value; draw(); }); qs('.c', c4).addEventListener('input', function(){ CL = +this.value; draw(); });
-      return { render: draw };
-    } });
-
-  /* ===== tab 01, step 3: exposure measures ===== */
-  WHY.add({ short: 'Exposure measures', level: 'foundations', ord: 30, title: 'Measures of exposure',
-    build: function(api){
-      var F = 0.6, V = 60, D = 100, CL = 8, ka = 1.2, sel = 'cmax';
-      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-      var c1 = api.addControl('Measure <select class="m">' + hepOpts([['cmax', 'Cmax'], ['tmax', 'tmax'], ['auc', 'AUC'], ['half', 'Half-life'], ['trough', 'Trough at 12 h']], sel) + '</select>'), c2 = api.addControl(sld('k', 'ka', 0.2, 4, 0.1, ka, '1/h')), c3 = api.addControl(sld('c', 'CL', 2, 30, 1, CL, 'L/h'));
-      function cOf(t, ke, kaa){ return F * D * kaa / (V * (kaa - ke)) * (Math.exp(-ke * t) - Math.exp(-kaa * t)); }
-      function draw(){
-        qs('.kv', c2).textContent = ka.toFixed(1); qs('.cv', c3).textContent = CL;
-        var ke = CL / V, kaa = Math.abs(ka - ke) < 1e-3 ? ka + 0.01 : ka, T = 24, pts = [], cmax = 0, tmax = 0, t, i, auc24 = 0, prev = 0;
-        for (i = 0; i <= 240; i++) { t = T * i / 240; var c = cOf(t, ke, kaa); pts.push([t, c]); if (c > cmax) { cmax = c; tmax = t; } if (i) auc24 += (c + prev) / 2 * (T / 240); prev = c; }
-        var g = lineChart(cvs, [{ pts: pts, color: C.red, nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: cmax * 1.15 }), x = g.x, th = 0.693 / Math.min(ke, kaa);
-        x.strokeStyle = C.char; x.fillStyle = C.char; x.lineWidth = 1.5; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left';
-        if (sel === 'cmax') { x.setLineDash([5, 4]); x.beginPath(); x.moveTo(g.box.l, g.sy(cmax)); x.lineTo(g.sx(tmax), g.sy(cmax)); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(g.sx(tmax), g.sy(cmax), 6, 0, 6.3); x.fill(); x.fillText('Cmax ' + cmax.toFixed(2) + ' mg/L', g.sx(tmax) + 10, g.sy(cmax) - 8); }
-        if (sel === 'tmax') { x.setLineDash([5, 4]); x.beginPath(); x.moveTo(g.sx(tmax), g.sy(cmax)); x.lineTo(g.sx(tmax), g.box.b); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(g.sx(tmax), g.box.b, 6, 0, 6.3); x.fill(); x.fillText('tmax ' + tmax.toFixed(1) + ' h', g.sx(tmax) + 10, g.box.b - 10); }
-        if (sel === 'auc') { x.fillStyle = 'rgba(15,110,140,.20)'; x.beginPath(); x.moveTo(g.sx(0), g.box.b); pts.forEach(function(p){ x.lineTo(g.sx(p[0]), g.sy(p[1])); }); x.lineTo(g.sx(T), g.box.b); x.closePath(); x.fill(); x.fillStyle = C.char; x.fillText('AUC 0 to 24 h = ' + auc24.toFixed(1) + ' mg x h/L', g.sx(T * 0.35), g.sy(cmax * 0.45)); }
-        if (sel === 'half') { var t1 = Math.min(Math.max(2 * tmax, 8), T - th - 0.5), c1v = cOf(t1, ke, kaa), c2v = cOf(t1 + th, ke, kaa); [[t1, c1v], [t1 + th, c2v]].forEach(function(p){ x.setLineDash([4, 4]); x.beginPath(); x.moveTo(g.box.l, g.sy(p[1])); x.lineTo(g.sx(p[0]), g.sy(p[1])); x.lineTo(g.sx(p[0]), g.box.b); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(g.sx(p[0]), g.sy(p[1]), 5, 0, 6.3); x.fill(); }); x.fillText('half-life ' + th.toFixed(1) + ' h: ' + c1v.toFixed(2) + ' to ' + c2v.toFixed(2) + ' mg/L', g.sx(t1) + 10, g.sy(c1v) - 12); }
-        if (sel === 'trough') { var ct = cOf(12, ke, kaa); x.setLineDash([5, 4]); x.beginPath(); x.moveTo(g.sx(12), g.box.b); x.lineTo(g.sx(12), g.sy(ct)); x.stroke(); x.setLineDash([]); x.beginPath(); x.arc(g.sx(12), g.sy(ct), 6, 0, 6.3); x.fill(); x.fillText('trough ' + ct.toFixed(2) + ' mg/L at 12 h', g.sx(12) + 10, g.sy(ct) - 10); }
-        qs('.tl', side).innerHTML = fTile('AUC, 0 to infinity', (F * D / CL).toFixed(1), 'mg x h/L = F x dose / CL') + fRows([['Cmax', cmax.toFixed(2) + ' mg/L'], ['tmax', tmax.toFixed(1) + ' h'], ['AUC, 0 to 24 h', auc24.toFixed(1) + ' mg x h/L'], ['Terminal half-life', th.toFixed(1) + ' h'], ['Concentration at 12 h', cOf(12, ke, kaa).toFixed(2) + ' mg/L']]);
-        api.stat('Cmax ' + cmax.toFixed(2) + ' mg/L at ' + tmax.toFixed(1) + ' h');
-      }
-      qs('.m', c1).addEventListener('change', function(){ sel = this.value; draw(); }); qs('.k', c2).addEventListener('input', function(){ ka = +this.value; draw(); }); qs('.c', c3).addEventListener('input', function(){ CL = +this.value; draw(); });
-      return { render: draw };
-    } });
-
   /* ===== tab 02, step 1: units and conversions ===== */
   UNITS.add({ short: 'Units and conversions', level: 'foundations', ord: 10, title: 'Units and conversions',
     build: function(api){

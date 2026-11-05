@@ -3,18 +3,18 @@
 var STEPTEXT = {
  "why/Concentration and effect": {
   "watch": "Effect follows the Emax model, E = Emax C^h / (EC50^h + C^h), with plasma concentration taken as the target concentration. After an intravenous bolus, C exceeds the EC50 for ln(C0 / EC50) / k, so doubling the dose extends the interval by one half-life, ln 2 / k.",
-  "legend": "Left: effect against concentration. Right: plasma concentration after an intravenous bolus (V = 50 L); the shaded interval marks C above the EC50.",
-  "change": "EC50, h, dose, CL. Outputs: effect at C0, half-life, time above the EC50."
+  "legend": "Left: effect against concentration. Right: plasma concentration after an intravenous bolus (V = 50 L); the shaded interval marks C above the EC50. Grey dashed curves are pinned scenarios. Hovering on either plot marks the same concentration on both.",
+  "change": "EC50, h, dose, CL, concentration axis; drag the EC50 line or the C0 point; Pin keeps up to three scenarios; PNG and CSV export. Outputs: effect at C0, half-life, time above the EC50."
  },
  "why/Path of an oral dose": {
   "watch": "Seven stages follow oral administration. Each is assigned to absorption (A), distribution (D), metabolism (M) or excretion (E) and characterized by an in vitro assay and a parameter that relates it to a clinical quantity (table). Gut-wall metabolism, renal clearance and biliary clearance are described and not predicted; no public per-compound data were used.",
-  "legend": "Stages of an oral dose with the associated ADME category, assay, parameter and course location.",
-  "change": "Stage. Outputs: process, assay, parameter, course location."
+  "legend": "Dose, 100 mg, through the stages of an oral dose. Arrow width is proportional to the amount; red arrows are losses (not absorbed, gut-wall metabolism, hepatic first pass). Selecting a stage gives its ADME category, assay, parameter and course location.",
+  "change": "Fa, Fg, Fh, ADME highlight; click a stage. Outputs: amount at each stage, F = Fa x Fg x Fh, assay and parameter of the selected stage."
  },
  "why/Exposure measures": {
   "watch": "Exposure is summarized by Cmax, tmax, AUC, terminal half-life and trough. For first-order absorption, C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)] and AUC(0 to infinity) = F D / CL. Peak-related toxicity is assessed by Cmax; efficacy that requires C above a threshold, by the trough or the time above the EC50.",
-  "legend": "Oral profile (dose 100 mg, F = 0.6, V = 60 L) with the selected measure highlighted.",
-  "change": "Measure, ka, CL. Outputs: Cmax, tmax, AUC(0 to 24 h), half-life, concentration at 12 h."
+  "legend": "Oral profile (dose 100 mg, V = 60 L) with the selected measure highlighted. The grey dashed curve is the pinned profile.",
+  "change": "Measure, F, ka, CL; hover for C and AUC(0 to t); drag the AUC end, the trough time or the half-life start; Pin compares a profile with the current one; PNG and CSV export. Outputs: Cmax, tmax, AUC, half-life, concentration at the trough time."
  },
  "units/Units and conversions": {
   "watch": "mg/L = uM x MW / 1000 and ng/mL = ug/L = uM x MW. Dose (umol) = dose (mg) / MW x 1000. CL (L/h) = CL (mL/min/kg) x W (kg) x 60 / 1000. Errors in these conversions produce factors of 10, 60 or 1000 that can be mistaken for differences between compounds.",
