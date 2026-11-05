@@ -18,18 +18,18 @@ var STEPTEXT = {
  },
  "units/Units and conversions": {
   "watch": "mg/L = uM x MW / 1000 and ng/mL = ug/L = uM x MW. Dose (umol) = dose (mg) / MW x 1000. CL (L/h) = CL (mL/min/kg) x W (kg) x 60 / 1000. Errors in these conversions produce factors of 10, 60 or 1000 that can be mistaken for differences between compounds.",
-  "legend": "Conversions for the values set, and the units used in this course.",
-  "change": "MW, concentration, dose, body weight, CL. Outputs: converted values."
+  "legend": "Linked unit fields (editing any field updates the others), and the clearance of 667 drugs (Obach et al., 2008) on a logarithmic axis with the value set and hepatic blood flow marked; units used in this course are tabulated below.",
+  "change": "Edit any field; drag the CL line or click a drug on the strip; hover for names; PNG and CSV export. Outputs: converted values, percentile of CL in the set, fraction of hepatic blood flow."
  },
  "units/Amount and volume": {
   "watch": "V = A / C is an apparent volume. For a 70 kg adult, plasma volume is 3.05 L, extracellular fluid 13.6 L and total body water 40.2 L (Oie-Tozer constants; Coutinho et al., 2024). In the Obach et al. (2008) data (n = 667), Vss exceeds 40.2 L for 415 drugs (range 2.5 to 49,000 L), consistent with tissue binding.",
-  "legend": "Vss of the selected drug (70 kg adult, logarithmic axis) with plasma, extracellular fluid and body water volumes marked.",
-  "change": "Drug. Outputs: Vss, concentration after a 100 mg dose, ratio to body water."
+  "legend": "Vss of 667 drugs (70 kg adult, logarithmic axis) with plasma, extracellular fluid and body water volumes marked; the selected drug is the large point and the pinned drug the open circle.",
+  "change": "Drug, dose; click or drag on the strip to select the nearest drug; hover for names; Pin keeps a reference drug; PNG and CSV export. Outputs: Vss, concentration after the dose, ratio to body water."
  },
  "units/Bound and unbound drug": {
   "watch": "Cu = fu x C, with only unbound drug assumed to cross membranes, be cleared and bind the target. For the 554 drugs with a reported fu (Obach et al., 2008), the median is 0.25 (quartiles 0.06 and 0.70); fu is below 0.1 for 179 and below 0.01 for 41.",
-  "legend": "Left: total, unbound and bound concentration of the selected drug. Right: distribution of fu (n = 554).",
-  "change": "Drug, total concentration. Outputs: Cu, bound concentration."
+  "legend": "Left: total, unbound and bound concentration of the selected drug. Right: distribution of fu (n = 554); the dark line marks the selected drug and the grey line the pinned drug.",
+  "change": "Drug, total concentration; drag the line on the histogram to move through the set; click a bar to list its drugs; Pin compares two drugs; PNG and CSV export. Outputs: Cu, bound concentration."
  },
  "elim/First-order elimination": {
   "watch": "First-order elimination: dA/dt = -kA, A(t) = A0 exp(-kt), t1/2 = 0.693 / k; the fraction 1 - exp(-k) is eliminated per hour. Of a 100 mg dose, 50, 25 and 3.1 mg remain after 1, 2 and 5 half-lives.",

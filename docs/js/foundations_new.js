@@ -15,66 +15,6 @@
     x.fillStyle = C.char; x.fillText(xl, (box.l + box.r) / 2, g.h - 6);
   }
 
-  /* ===== tab 02, step 1: units and conversions ===== */
-  UNITS.add({ short: 'Units and conversions', level: 'foundations', ord: 10, title: 'Units and conversions',
-    build: function(api){
-      var mw = 400, lc = 0, dose = 100, wt = 70, clk = 5;
-      var pn = api.el('pn', 'left:28px;top:16px;width:440px;height:508px;overflow:auto', '<h4>Concentration and dose</h4><div class="a"></div>');
-      var pn2 = api.el('pn', 'left:484px;top:16px;width:448px;height:508px;overflow:auto', '<h4>Clearance</h4><div class="b"></div><h4 style="margin-top:14px">Units used in this course</h4><div class="c"></div>');
-      var c1 = api.addControl(sld('m', 'MW', 150, 800, 10, mw, 'Da')), c2 = api.addControl(sld('x', 'Concentration', -2, 2, 0.05, lc, 'micromolar (log)')), c3 = api.addControl(sld('d', 'Dose', 1, 500, 1, dose, 'mg')), c4 = api.addControl(sld('w', 'Body weight', 40, 120, 1, wt, 'kg')), c5 = api.addControl(sld('k', 'CL', 0.1, 30, 0.1, clk, 'mL/min/kg'));
-      function draw(){
-        var c = Math.pow(10, lc); qs('.mv', c1).textContent = mw; qs('.xv', c2).textContent = fx(c); qs('.dv', c3).textContent = dose; qs('.wv', c4).textContent = wt; qs('.kv', c5).textContent = clk.toFixed(1);
-        qs('.a', pn).innerHTML = fRows([['Concentration', fx(c) + ' micromolar'], ['In mg/L', fx(c * mw / 1000) + ' mg/L'], ['In ng/mL (= microgram/L)', fx(c * mw) + ' ng/mL'], ['Molecular weight', mw + ' g/mol'], ['Dose', dose + ' mg'], ['Dose in micromoles', fx(dose / mw * 1000) + ' micromol'], ['Dose per kg for ' + wt + ' kg', (dose / wt).toFixed(2) + ' mg/kg']]) + '<div class="hint" style="font-size:12px;margin-top:8px">mg/L = micromolar x MW / 1000. ng/mL = micromolar x MW. Micromoles = mg / MW x 1000.</div>';
-        qs('.b', pn2).innerHTML = fRows([['Clearance per kg', clk.toFixed(1) + ' mL/min/kg'], ['Whole body, ' + wt + ' kg', fx(clk * wt * 60 / 1000) + ' L/h'], ['Whole body in mL/min', fx(clk * wt) + ' mL/min'], ['Same value in L/h/kg', (clk * 60 / 1000).toFixed(3) + ' L/h/kg']]) + '<div class="hint" style="font-size:12px;margin-top:8px">L/h = mL/min/kg x weight x 60 / 1000.</div>';
-        qs('.c', pn2).innerHTML = fRows([['Dose', 'mg, or mg/kg'], ['Plasma concentration', 'mg/L, ng/mL or micromolar'], ['Clearance', 'L/h, or mL/min/kg'], ['Volume of distribution', 'L, or L/kg'], ['Half-life, MRT', 'h'], ['AUC', 'mg x h/L'], ['CLint, microsomes', 'microL/min/mg protein'], ['CLint, hepatocytes', 'microL/min/10^6 cells'], ['CLint scaled to the body', 'mL/min/kg']]);
-        api.stat(fx(c) + ' micromolar = ' + fx(c * mw) + ' ng/mL');
-      }
-      qs('.m', c1).addEventListener('input', function(){ mw = +this.value; draw(); }); qs('.x', c2).addEventListener('input', function(){ lc = +this.value; draw(); }); qs('.d', c3).addEventListener('input', function(){ dose = +this.value; draw(); }); qs('.w', c4).addEventListener('input', function(){ wt = +this.value; draw(); }); qs('.k', c5).addEventListener('input', function(){ clk = +this.value; draw(); });
-      return { render: draw };
-    } });
-
-  /* ===== tab 02, step 2: concentration is amount over volume ===== */
-  UNITS.add({ short: 'Amount and volume', level: 'foundations', ord: 20, title: 'Amount, concentration and volume',
-    build: function(api){
-      var named = OBACH08.filter(function(d){ return d.name && d.vss > 0; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; }), cur = 'Warfarin', D = 100;
-      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="330" style="width:624px;height:330px"></canvas><div class="ro" style="font-size:13px;margin-top:8px;line-height:1.5"></div>'), cvs = qs('canvas', pn);
-      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-      var c1 = api.addControl('Drug <select class="d">' + named.map(function(d){ return '<option' + (d.name === cur ? ' selected' : '') + '>' + d.name + '</option>'; }).join('') + '</select>');
-      function draw(){
-        var d = named.filter(function(z){ return z.name === cur; })[0], V = d.vss * W70, c0 = D / V, g = cv(cvs), x = g.x, L = 30, R = g.w - 30, lo = 0, hi = 4.8;
-        var sx = function(v){ return L + (Math.log10(v) - lo) / (hi - lo) * (R - L); };
-        x.strokeStyle = C.char; x.lineWidth = 1.4; x.beginPath(); x.moveTo(L, 200); x.lineTo(R, 200); x.stroke(); x.fillStyle = C.mid; x.font = '11px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'center';
-        [1, 10, 100, 1000, 10000].forEach(function(v){ x.beginPath(); x.moveTo(sx(v), 195); x.lineTo(sx(v), 205); x.stroke(); x.fillText(String(v) + ' L', sx(v), 222); });
-        [['plasma', VP, 150], ['extracellular fluid', VECF, 120], ['body water', VTBW, 90]].forEach(function(r, i){ x.strokeStyle = C.warn; x.setLineDash([4, 4]); x.lineWidth = 1.3; x.beginPath(); x.moveTo(sx(r[1]), r[2] + 8); x.lineTo(sx(r[1]), 200); x.stroke(); x.setLineDash([]); x.fillStyle = C.warn; x.font = '600 11px Aptos, "Segoe UI", sans-serif'; x.fillText(r[0] + ' ' + r[1].toFixed(r[1] < 10 ? 2 : 1) + ' L', sx(r[1]), r[2]); });
-        x.fillStyle = C.char; x.beginPath(); x.arc(sx(V), 200, 8, 0, 6.3); x.fill(); x.font = '600 13px Aptos, "Segoe UI", sans-serif'; x.fillText(d.name + ', V = ' + fx(V) + ' L', Math.min(Math.max(sx(V), 110), R - 110), 270);
-        x.fillStyle = C.mid; x.font = '12px Aptos, "Segoe UI", sans-serif'; x.fillText('Volume of distribution at steady state, logarithmic axis, 70 kg adult', (L + R) / 2, 318);
-        qs('.ro', pn).innerHTML = 'A ' + D + ' mg dose spread over ' + fx(V) + ' L gives a concentration of <b>' + fx(c0) + ' mg/L</b>. The volume is <b>' + (V / VTBW).toFixed(1) + ' times</b> the body water volume of 40.2 L.';
-        qs('.tl', side).innerHTML = fTile('Vss', fx(d.vss) + ' L/kg', fx(V) + ' L for 70 kg') + fRows([['Fraction unbound in plasma', d.fu != null ? d.fu : 'not reported'], ['Clearance', fx(d.cl) + ' mL/min/kg'], ['Half-life', fx(d.t12) + ' h'], ['Relation to body water', V > VTBW ? 'above' : (V > VECF ? 'between extracellular fluid and body water' : 'below extracellular fluid')]]);
-        api.stat(d.name + ', V = ' + fx(V) + ' L');
-      }
-      qs('.d', c1).addEventListener('change', function(){ cur = this.value; draw(); });
-      return { render: draw };
-    } });
-
-  /* ===== tab 02, step 3: bound and unbound drug ===== */
-  UNITS.add({ short: 'Bound and unbound drug', level: 'foundations', ord: 30, title: 'Bound and unbound drug',
-    build: function(api){
-      var fus = OBACH08.filter(function(d){ return d.name && d.fu; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; }), cur = 'Warfarin', lt = 0, all = OBACH08.filter(function(d){ return d.fu; });
-      var pn = api.el('pn', 'left:28px;top:16px;width:420px;height:508px;padding:14px', '<div class="bars"></div><div class="ro" style="font-size:13px;margin-top:14px;line-height:1.5"></div>');
-      var pn2 = api.el('pn', 'left:464px;top:16px;width:468px;height:508px;padding:8px', '<canvas width="452" height="320" style="width:452px;height:320px"></canvas><div class="hint" style="font-size:12px;padding:6px">Each bar counts drugs. The line marks the selected drug.</div>'), cvs = qs('canvas', pn2);
-      var c1 = api.addControl('Drug <select class="d">' + fus.map(function(d){ return '<option' + (d.name === cur ? ' selected' : '') + '>' + d.name + '</option>'; }).join('') + '</select>'), c2 = api.addControl(sld('t', 'Total concentration', -2, 2, 0.05, lt, 'mg/L (log)'));
-      function draw(){
-        var d = fus.filter(function(z){ return z.name === cur; })[0], tot = Math.pow(10, lt), free = d.fu * tot; qs('.tv', c2).textContent = fx(tot);
-        var bar = function(label, v, col){ return '<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><span>' + label + '</span><b>' + fx(v) + ' mg/L</b></div><div style="height:16px;background:' + C.light + ';border-radius:3px"><div style="height:16px;width:' + Math.max(0.5, 100 * v / tot).toFixed(1) + '%;background:' + col + ';border-radius:3px"></div></div></div>'; };
-        qs('.bars', pn).innerHTML = '<div class="ol">Total plasma concentration split</div>' + bar('Total, C', tot, C.char) + bar('Unbound, Cu = fu x C', free, C.red) + bar('Bound', tot - free, C.tint);
-        qs('.ro', pn).innerHTML = d.name + ' has fu = <b>' + d.fu + '</b>, so <b>' + (100 * d.fu).toFixed(d.fu < 0.1 ? 2 : 0) + ' percent</b> of the drug in plasma is unbound. At a total concentration of ' + fx(tot) + ' mg/L the unbound concentration is ' + fx(free) + ' mg/L.';
-        logHist(cvs, all.map(function(z){ return z.fu; }), d.fu, -4, 0, 24, 'Fraction unbound, 554 drugs', 'fu, logarithmic axis', [0.0001, 0.001, 0.01, 0.1, 1]);
-        api.stat(d.name + ', fu ' + d.fu);
-      }
-      qs('.d', c1).addEventListener('change', function(){ cur = this.value; draw(); }); qs('.t', c2).addEventListener('input', function(){ lt = +this.value; draw(); });
-      return { render: draw };
-    } });
-
   /* ===== tab 03, step 1: first-order elimination ===== */
   ELIM.add({ short: 'First-order elimination', level: 'foundations', ord: 10, title: 'First-order elimination',
     build: function(api){
