@@ -749,7 +749,64 @@ var GUIDE = {
         "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute) (CC BY-SA 3.0): total clearance and fu of 554 drugs (step 3) and total clearance of 16 substrates (step 4).",
         "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: human biliary clearance of 16 substrates that also have a total clearance in the Obach set."
       ]
-    }
+    },
+    "dose": {
+        "scope": "Repeat oral dosing to steady state with the average steady-state concentration (Css,avg), the allometric scaling of clearance from animal species to humans, the daily dose and dosing interval implied by the clearance and half-life of 667 drugs, and the conversion of an animal no-observed-adverse-effect level (NOAEL) to a human starting dose. Dose-dependent kinetics, pharmacodynamic models and physiologically based pharmacokinetic (PBPK) models are not covered.",
+        "notation": [
+              [
+                    "Css,avg",
+                    "average steady-state plasma concentration, F x dose / (CL x tau)."
+              ],
+              [
+                    "Cmax,ss, Cmin,ss",
+                    "maximum and minimum plasma concentration within a dosing interval at steady state."
+              ],
+              [
+                    "tau",
+                    "dosing interval."
+              ],
+              [
+                    "CL",
+                    "clearance, the volume of plasma cleared of drug per unit time."
+              ],
+              [
+                    "V",
+                    "volume of distribution."
+              ],
+              [
+                    "F",
+                    "oral bioavailability, the fraction of the dose reaching the systemic circulation."
+              ],
+              [
+                    "ka",
+                    "first-order absorption rate constant."
+              ],
+              [
+                    "R",
+                    "accumulation ratio on repeat dosing, 1 / (1 - exp(-k tau))."
+              ],
+              [
+                    "W, a, b",
+                    "body weight, allometric coefficient and exponent in CL = a W^b."
+              ],
+              [
+                    "NOAEL",
+                    "no-observed-adverse-effect level, the highest animal dose without adverse findings."
+              ],
+              [
+                    "HED",
+                    "human equivalent dose, the human dose with the same body-surface-area-normalized exposure as the animal dose."
+              ],
+              [
+                    "Surface-area factor",
+                    "conversion factor of the FDA guidance between dose per kg and dose per body surface area: 3 for mouse, 6 for rat, 12 for rabbit and monkey, 20 for dog and 37 for human."
+              ]
+        ],
+        "data": [
+              "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute; CC BY-SA 3.0): clearance and half-life of 667 drugs.",
+              "FDA (2005), Estimating the Maximum Safe Starting Dose in Initial Clinical Trials for Therapeutics in Adult Healthy Volunteers: surface-area factors and reference body weights."
+        ]
+  }
   },
   "steps": {
     "why/Concentration and effect": {
@@ -937,6 +994,21 @@ var GUIDE = {
     },
     "rn/Biliary share of clearance": {
       "notice": "Valsartan has the largest biliary share, 0.88 of total clearance, among the 16 substrates."
+    },
+    "dose/Dose and steady state": {
+      "notice": "Css,avg depends on dose, F, CL and tau, and not on V or ka."
+    },
+    "dose/Allometric scaling": {
+      "notice": "With an exponent below 1, clearance per kg is lower in the larger species."
+    },
+    "dose/Daily dose from clearance": {
+      "notice": "At a Css,avg of 1 mg/L, 170 of the 667 drugs would need more than 1 g/day."
+    },
+    "dose/Half-life and dosing interval": {
+      "notice": "A 12 h interval exceeds the half-life of 513 of the 667 drugs."
+    },
+    "dose/Starting dose from animal data": {
+      "notice": "The human equivalent dose from a rat NOAEL is 6 / 37, or 0.16, of the rat dose."
     }
   }
 };

@@ -24,7 +24,9 @@ Tab 11, transporters, has six steps: carrier-mediated and passive uptake, inhibi
 
 Tab 12, renal and biliary excretion, has four steps: filtration and net renal clearance, renal impairment and the AUC ratio, the filtration limit across 554 drugs, and the biliary share of total clearance. Source data: Obach et al. (2008) total clearance and fu (554 drugs) and, for the biliary step, total clearance of 16 substrates that also appear in Table 1 of Miyake et al., J Pharmacol Exp Ther 387:135 (2023). No per-compound renal clearance or fe data are used; the renal steps use equations and the filtration limit fu x GFR.
 
-The quiz (tab 13) has 110 questions on tabs 01 to 12. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+Tab 13, human pharmacokinetics and dose, has five steps: dose, interval and steady state; allometric scaling of clearance; the daily dose implied by clearance across 667 drugs; the dosing interval implied by half-life; and the conversion of an animal no-observed-adverse-effect level to a starting dose. Source data: Obach et al. (2008) clearance and half-life, and the body-surface-area factors and reference body weights of the FDA guidance on maximum safe starting doses (2005). The allometry step uses illustrative values for one compound, set by dragging.
+
+The quiz (tab 14) has 120 questions on tabs 01 to 13. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally
 

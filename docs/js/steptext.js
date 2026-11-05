@@ -310,5 +310,30 @@ var STEPTEXT = {
   "watch": "For the 16 substrates tabulated by Miyake et al. (2023) that also have a total clearance in Obach et al. (2008), the biliary share CLbile / CL ranges from 0.001 (cefazolin) to 0.88 (valsartan); 7 of 16 have a share of at least 0.2. The two quantities come from different studies, so the shares are indicative.",
   "legend": "Human biliary clearance as a fraction of total clearance for 16 substrates, colored by ECCS class.",
   "change": "Hover a bar for the compound; click a bar for its values; PNG and CSV export. Outputs: compounds with at least 0.2 of clearance in bile, class 3B median, highest and lowest share."
+ },
+ "dose/Dose and steady state": {
+  "watch": "At steady state on repeated oral doses, Css,avg = F x dose / (CL x tau), independent of V and ka. The peak and trough depend on V, ka and tau and follow from superposition of single-dose profiles. The dose for a target Css,avg is dose = Css,avg x CL x tau / F. The accumulation ratio is R = 1 / (1 - exp(-k tau)) with k = CL / V.",
+  "legend": "Plasma concentration after repeated oral doses (triangles on the time axis mark the doses); the shaded band is the target window and the dashed line is Css,avg. Grey dashed curves are pinned regimens.",
+  "change": "Dose, interval, CL, V, F, ka; drag the Css,avg point to set the dose and the two limits to set the window; hover for C; Pin keeps up to two; export as an image (PNG) and a table (CSV). Outputs: Css,avg, Cmax,ss, Cmin,ss, time in the window, dose for the window midpoint."
+ },
+ "dose/Allometric scaling": {
+  "watch": "Clearance scales with body weight W as CL = a W^b. A fit of log CL against log W over the species gives b, and fixed exponents of 0.75 and 1 (equal clearance per kg) bracket the choice. The human clearance is predicted at 70 kg. With b below 1, clearance per kg falls as body weight rises. The species values are illustrative values for one compound, set by dragging.",
+  "legend": "Clearance against body weight on logarithmic axes: species (teal points), the fitted line and lines of exponent 0.75 and 1; the dashed vertical line marks 70 kg.",
+  "change": "Drag each species point vertically; Reset points; export as an image (PNG) and a table (CSV). Outputs: fitted exponent, predicted human CL for each exponent."
+ },
+ "dose/Daily dose from clearance": {
+  "watch": "The daily dose that holds a target Css,avg is Css,avg x CL x 24 h / F. For the 667 drugs of Obach et al. (2008), with CL for a 70 kg adult, the median daily dose is 40 mg for a Css,avg of 0.1 mg/L and 403 mg for 1 mg/L; 170 drugs would require more than 1 g/day at 1 mg/L.",
+  "legend": "Number of drugs against the daily dose for the target Css,avg and F set; the dashed line marks 1 g/day.",
+  "change": "Target Css,avg, F; drag the histogram sideways to change the target; hover for bin counts; export as an image (PNG) and a table (CSV). Outputs: median daily dose, drugs below 100 mg and above 1 g per day."
+ },
+ "dose/Half-life and dosing interval": {
+  "watch": "The accumulation ratio R = 1 / (1 - exp(-0.693 tau / t1/2)) and the peak to trough ratio exp(0.693 tau / t1/2) depend on tau / t1/2, where t1/2 is the half-life. In the Obach et al. (2008) set the median half-life is 4.1 h and 403 of 667 drugs have a half-life below 6 h. A 12 h interval exceeds the half-life of 513 drugs.",
+  "legend": "Left: half-life of 667 drugs with the dosing interval marked. Right: accumulation ratio at that interval.",
+  "change": "Dosing interval tau; drag the interval line on the left histogram; hover for bin counts; export as an image (PNG) and a table (CSV). Outputs: drugs with tau above the half-life, median accumulation ratio."
+ },
+ "dose/Starting dose from animal data": {
+  "watch": "The FDA guidance converts a no-observed-adverse-effect level (NOAEL) in an animal species to a human equivalent dose (HED) with body-surface-area factors: HED = NOAEL x (animal factor / 37). The maximum recommended starting dose is the HED divided by a safety factor, 10 by default. The factors are 3 for mouse, 6 for rat, 12 for rabbit and monkey, 20 for dog and 37 for human, with reference body weights of 0.02, 0.15, 1.8, 3, 10 and 60 kg.",
+  "legend": "The NOAEL in the selected species (teal bar) and the dose in each species with the same human equivalent dose; the dashed line marks the human equivalent dose.",
+  "change": "NOAEL, species, safety factor; drag the top of the selected bar to set the NOAEL; hover a bar for the factor; export as an image (PNG) and a table (CSV). Outputs: HED, starting dose per kg and for a 60 kg adult."
  }
 };
