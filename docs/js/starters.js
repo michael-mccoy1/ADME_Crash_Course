@@ -2,32 +2,6 @@
 /* A worked single-drug step in tab 06 and the first step of tab 08: one worked example, with every quantity shown, before any scoreboard. */
 
 /* ---------- tab 06: from assay to clearance for one drug ---------- */
-VITRO.add({ short: 'From assay to clearance', level: 'foundations', ord: 20, title: 'From assay to clearance',
-  build: function(api){
-    var cur = 'Verapamil', model = 'pt', shown = 1, Q = HQ;
-    var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px"></div><div class="say" style="margin-top:14px;font-size:13.5px;line-height:1.5"></div>');
-    var c1 = api.addControl('Drug <select class="d">' + hepOpts(OBACH99.map(function(d){ return [d.name, d.name]; }), cur) + '</select>'), c2 = api.addControl('Model <select class="m">' + hepOpts([['ws', 'Well-stirred'], ['pt', 'Parallel-tube']], model) + '</select>'), c3 = api.addControl('<button type="button" class="btn sm nx">Next</button> <button type="button" class="btn sm ghost rs">Show all</button> <button type="button" class="btn sm ghost rt">Reset</button>');
-    function draw(){
-      var d = OBACH99.filter(function(z){ return z.name === cur; })[0], fub = d.fup / d.bp, cl = fub * d.clint / d.fum, pred = model === 'pt' ? mPT(Q, cl) : mWS(Q, cl), fe = pred / d.obs;
-      var st = [
-        ['1. Scaled CLint', 'from the microsomal assay', hfx(d.clint) + ' mL/min/kg'],
-        ['2. fu(blood)', 'fu plasma / B:P = ' + d.fup + ' / ' + d.bp, fub.toFixed(3)],
-        ['3. fu(mic)', 'unbound fraction in the incubation', String(d.fum)],
-        ['4. Corrected CLint', 'fu(blood) x CLint / fu(mic) = ' + fub.toFixed(3) + ' x ' + hfx(d.clint) + ' / ' + d.fum, hfx(cl) + ' mL/min/kg'],
-        ['5. Predicted blood CL', model === 'pt' ? 'Q x (1 - exp(-CL / Q)), Q = ' + Q : 'Q x CL / (Q + CL), Q = ' + Q, hfx(pred) + ' mL/min/kg'],
-        ['6. Observed blood CL', 'intravenous studies', hfx(d.obs) + ' mL/min/kg']];
-      qs('.grid', pn).innerHTML = st.map(function(s, i){ var on = i < shown; return '<div style="border:1px solid ' + (i === shown - 1 ? C.red : C.silver) + ';border-radius:8px;padding:14px 16px;background:#fff;opacity:' + (on ? 1 : 0.18) + ';transition:opacity .3s"><div class="ol" style="margin-bottom:4px">' + s[0] + '</div><div style="font-size:12px;color:' + C.mid + ';min-height:34px">' + s[1] + '</div><div style="font-size:22px;font-weight:700;margin-top:6px;color:' + (i === 5 ? C.dred : C.char) + '">' + (on ? s[2] : '') + '</div></div>'; }).join('');
-      var msg = shown < 6 ? 'Stage ' + shown + ' of 6.' : 'The predicted clearance is ' + hfx(pred) + ' mL/min/kg and the observed value is ' + hfx(d.obs) + ' mL/min/kg. The prediction is ' + (fe >= 1 ? fe.toFixed(1) + '-fold above' : (1 / fe).toFixed(1) + '-fold below') + ' the observation, and ' + ((fe >= 0.5 && fe <= 2) ? 'within' : 'outside') + ' 2-fold.';
-      qs('.say', pn).innerHTML = msg; api.stat(cur + ', ' + (model === 'pt' ? 'parallel-tube' : 'well-stirred'));
-    }
-    qs('.d', c1).addEventListener('change', function(){ cur = this.value; shown = 1; draw(); });
-    qs('.m', c2).addEventListener('change', function(){ model = this.value; draw(); });
-    qs('.nx', c3).addEventListener('click', function(){ shown = Math.min(6, shown + 1); draw(); });
-    qs('.rs', c3).addEventListener('click', function(){ shown = 6; draw(); });
-    qs('.rt', c3).addEventListener('click', function(){ shown = 1; draw(); });
-    return { render: draw };
-  } });
-
 /* ---------- tab 08: what volume of distribution measures ---------- */
 DIS.add({ short: 'What Vss measures', level: 'foundations', ord: 0, title: 'Apparent volume of distribution',
   build: function(api){

@@ -78,53 +78,53 @@ var STEPTEXT = {
  },
  "met/Metabolic routes": {
   "watch": "An in vitro system measures a route only if it contains the enzyme and its cofactor. Liver microsomes contain cytochrome P450 and UDP-glucuronosyltransferases and, with NADPH, support P450 oxidation. Hepatocytes contain the hepatic enzymes of all four routes. The tab 07 predictions use microsomes with NADPH and cover oxidation only.",
-  "legend": "Reaction, enzymes, covering in vitro system and coverage by the tab 07 prediction, for four routes.",
-  "change": "Route. Outputs: reaction, enzymes, in vitro system, coverage."
+  "legend": "Share of one compound's clearance by route (stacked bar; hatched segments are routes not measured by the systems selected), with the in vitro systems that cover each route.",
+  "change": "Drag the dividers to set route shares; click a system column to run it; click a route for its details; PNG and CSV export. Outputs: share of clearance captured, routes missed, reaction, enzymes, system."
  },
  "met/Enzyme kinetics": {
   "watch": "v = Vmax S / (Km + S). For S << Km, v is approximately (Vmax / Km) S and CLint = Vmax / Km (uL/min/mg for Vmax in pmol/min/mg and Km in uM). The first-order approximation overestimates v by 1 + S / Km: 10% at S = 0.1 Km and 100% at S = Km.",
-  "legend": "Left: rate against substrate concentration with the low-concentration tangent. Right: clearance v / S against concentration.",
-  "change": "Vmax, Km, S. Outputs: v, CLint, error of the first-order approximation."
+  "legend": "Left: rate against substrate concentration with the low-concentration tangent. Right: clearance v / S against concentration. The vertical line marks the substrate concentration set; grey dashed curves are pinned parameter sets.",
+  "change": "Vmax, Km, S; drag the Vmax line, the Km point or the substrate line; hover for values on both plots; Pin keeps up to three; PNG and CSV export. Outputs: v, CLint, error of the first-order approximation."
  },
  "met/Depletion assay": {
   "watch": "For S << Km, ln C = ln C0 - kt with k = 0.693 / t1/2. CLint (uL/min/mg) = k (1/min) / protein (mg/mL) x 1000; scaled CLint (mL/min/kg) = CLint x 45 x 20 / 1000 (45 mg protein per g liver, 20 g liver per kg). Chlorpromazine (Obach, 1999): t1/2 = 25 min at 1 mg/mL gives 25 mL/min/kg.",
-  "legend": "Left: percent remaining against time. Right: natural logarithm of percent remaining. Sampling times 0, 5, 15, 30, 45 and 60 min are marked.",
-  "change": "In vitro half-life, protein concentration. Outputs: k, CLint per mg, scaled CLint."
+  "legend": "Left: percent remaining against time. Right: natural logarithm of percent remaining. The points are the sampling times 0, 5, 15, 30, 45 and 60 min; the line is the least-squares fit of ln(percent) against time.",
+  "change": "Half-life of the generated data, protein concentration; drag any point on either plot and the fit follows; Regenerate resets the points; PNG and CSV export. Outputs: fitted k and half-life, CLint per mg, scaled CLint."
  },
  "met/Clearance and extraction": {
   "watch": "E = (Cin - Cout) / Cin and CL = Q x E, so CL cannot exceed Q; for the liver, Fh = 1 - E. Hepatic blood flow is 21 mL/min/kg (Obach, 1999). Selecting a drug sets E to its observed nonrenal blood clearance divided by 21.",
-  "legend": "Inlet and outlet concentration relative to the inlet value.",
-  "change": "Q, E or drug. Outputs: CL, Fh."
+  "legend": "Inlet and outlet concentration relative to the inlet value (left), and observed CL / Q of 29 drugs with the selected E marked (right).",
+  "change": "Q, E or drug; drag the outlet bar top or the line on the strip to set E; click a drug on the strip; Pin keeps E values; PNG and CSV export. Outputs: CL, Fh."
  },
  "met/Total clearance": {
   "watch": "CL = CLh + CLr + CLother and fe = CLr / CL. With GFR = 120 mL/min (7.2 L/h), filtration alone gives CLr = fu x 7.2 L/h; a higher CLr indicates net secretion and a lower one net reabsorption. Loss of a route that carries a fraction s of CL multiplies the AUC by 1 / (1 - s).",
-  "legend": "Components of total clearance.",
-  "change": "CLh, CLr, CLother, fu. Outputs: CL, fe, renal clearance relative to filtration."
+  "legend": "Components of total clearance; the dashed outline under the bar is the clearance by filtration alone.",
+  "change": "CLh, CLr, CLother, fu; drag the end of a segment; hover for the share; Pin compares totals; PNG and CSV export. Outputs: CL, fe, renal clearance relative to filtration."
  },
  "vitro/What an assay measures": {
   "watch": "Each assay yields a parameter that requires a scaling step and a model to predict a clinical quantity (table). Six assays are listed with the parameter, the scaling and the course section that uses them.",
-  "legend": "Measurement, parameter, link to the in vivo parameter and course location for six assays.",
-  "change": "Assay. Outputs: measurement, parameter, scaling, course location."
+  "legend": "Left: measurement, parameter, link to the in vivo parameter and course location for the selected assay, with the calculation at the value set. Right: public distribution of that quantity; the line marks the value set.",
+  "change": "Assay, value; drag the line or click a bar on the distribution; PNG and CSV export. Outputs: scaled quantity, percentile within the public data."
  },
  "vitro/From assay to clearance": {
   "watch": "CL' = fu(blood) x CLint / fu(mic). With Q = 21 mL/min/kg, the well-stirred model gives CL = Q x CL' / (Q + CL') and the parallel-tube model CL = Q x [1 - exp(-CL' / Q)]. Predictions are compared with the observed nonrenal blood clearance after intravenous dosing (Obach, 1999).",
-  "legend": "Value at each stage for the selected drug.",
-  "change": "Drug, model, stage. Outputs: predicted CL, fold error."
+  "legend": "Value at each stage for the selected drug (left). Right: predicted blood CL against corrected CLint for both models, with the observed value; the point marks this drug.",
+  "change": "Drug, model, stage, CLint scale factor; drag the point along the curve to change the scale factor; Match observation sets the factor that reproduces the observed CL. Outputs: predicted CL, fold error, CLint needed."
  },
  "vitro/Fold error": {
   "watch": "Fold error is r = predicted / observed, or 1 / r when r is below 1, with the direction stated. A prediction is within 2-fold when 0.5 <= r <= 2.",
   "legend": "Predicted and observed values on a logarithmic axis; the shaded interval is within 2-fold. Table: observed and predicted clearance (mL/min/kg) for six drugs.",
-  "change": "Predicted and observed values. Output: fold error."
+  "change": "Predicted and observed values; drag either dot on the axis; click a drug in the table to load its pair; hover for the ratio to each; PNG and CSV export. Output: fold error."
  },
  "vitro/Average fold error and bias": {
   "watch": "Average fold error = 10^mean(|log10 r|). Bias = 10^mean(log10 r); 1 indicates balanced over- and under-prediction. The arithmetic mean of r is not used because large over-predictions inflate it. For r = 2, 0.5, 1, 4, 0.5 and 1: average fold error 1.78, bias 1.12, arithmetic mean 1.50.",
-  "legend": "Log ratio of each drug; the dashed line marks the bias.",
-  "change": "Predicted and observed values for six drugs. Outputs: average fold error, bias, arithmetic mean ratio, count within 2-fold."
+  "legend": "Log ratio of each drug; the dotted lines mark 2-fold and the dashed line marks the bias.",
+  "change": "Predicted and observed values for six drugs; drag a dot to set that drug's predicted value; PNG and CSV export. Outputs: average fold error, bias, arithmetic mean ratio, count within 2-fold."
  },
  "vitro/Why the log scale": {
   "watch": "Observed clearance in the Obach (1999) set spans 0.03 to 20 mL/min/kg (670-fold). On linear axes the 2-fold band widens with the value and the seven drugs below 1 mL/min/kg are compressed at the origin. Fold errors are plotted and averaged on the logarithmic scale in tabs 07 to 09.",
   "legend": "Parallel-tube predictions with both binding corrections against observed blood clearance (n = 29) on linear or logarithmic axes.",
-  "change": "Axis scale. Outputs: number of drugs below 1 mL/min/kg, range."
+  "change": "Axis scale; hover for names; click a drug or drag a rectangle to select several; PNG and CSV export. Outputs: number of drugs below 1 mL/min/kg, range, and for a selection the average fold error, bias and count within 2-fold."
  },
  "hep/Predicted against observed": {
   "watch": "CLint from Obach (1999) is scaled with 45 mg protein per g liver and 20 g liver per kg. Observed values are nonrenal blood clearances from intravenous studies (chlorpromazine, intramuscular). Agreement is summarized by the number within 2-fold, the average fold error and the bias (tab 06), used throughout tabs 07 to 09.",
