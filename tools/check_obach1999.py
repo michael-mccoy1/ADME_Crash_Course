@@ -29,4 +29,4 @@ for k in ["base","neutral","acid","all"]:
     sel=[r for r in rows if k=="all" or r[1]==k]
     mine=[round(afe([r[3][i] for r in sel],[r[2] for r in sel]),2) for i in range(6)]
     print(k,len(sel),'mine',mine,'paper',paper[k])
-json.dump([dict(drug=n,cls=c,fu_plasma=fp,bp=bp,cl_blood_obs=act,clint=cli,fu_mic=fm) for n,c,fp,bp,act,cli,fm in D],open(r'C:\Users\qit5997\AppData\Local\Temp\claude\38ca4062b4477634\a7e0a743-158e-4e1a-9809-008d5f1aac5c\scratchpad\obach1999.json','w'),indent=1)
+json.dump([dict(drug=n,cls=c,fu_plasma=fp,bp=bp,cl_blood_obs=act,clint=cli,fu_mic=fm) for n,c,fp,bp,act,cli,fm in D],open('obach1999_rows.json','w'),indent=1)
