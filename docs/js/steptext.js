@@ -4,7 +4,7 @@ var STEPTEXT = {
  "why/Concentration and effect": {
   "watch": "Effect follows the Emax model, E = Emax C^h / (EC50^h + C^h), with plasma concentration taken as the target concentration. After an intravenous bolus, C exceeds the EC50 for ln(C0 / EC50) / k, so doubling the dose extends the interval by one half-life, ln 2 / k.",
   "legend": "Left: effect against concentration. Right: plasma concentration after an intravenous bolus (V = 50 L); the shaded interval marks C above the EC50. Grey dashed curves are pinned scenarios. Hovering on either plot marks the same concentration on both.",
-  "change": "EC50, h, dose, CL, concentration axis; drag the EC50 line or the C0 point; Pin keeps up to three scenarios; PNG and CSV export. Outputs: effect at C0, half-life, time above the EC50."
+  "change": "EC50, h, dose, CL, concentration axis; drag the EC50 line or the C0 point; Pin keeps up to three scenarios; export as an image (PNG) and a table (CSV). Outputs: effect at C0, half-life, time above the EC50."
  },
  "why/Path of an oral dose": {
   "watch": "Seven stages follow oral administration. Each is assigned to absorption (A), distribution (D), metabolism (M) or excretion (E) and characterized by an in vitro assay and a parameter that relates it to a clinical quantity (table). Gut-wall metabolism, renal clearance and biliary clearance are described and not predicted; no public per-compound data were used.",
@@ -19,7 +19,7 @@ var STEPTEXT = {
  "units/Units and conversions": {
   "watch": "mg/L = uM x MW / 1000 and ng/mL = ug/L = uM x MW. Dose (umol) = dose (mg) / MW x 1000. CL (L/h) = CL (mL/min/kg) x W (kg) x 60 / 1000. Errors in these conversions produce factors of 10, 60 or 1000 that can be mistaken for differences between compounds.",
   "legend": "Linked unit fields (editing any field updates the others), and the clearance of 667 drugs (Obach et al., 2008) on a logarithmic axis with the value set and hepatic blood flow marked; units used in this course are tabulated below.",
-  "change": "Edit any field; drag the CL line or click a drug on the strip; hover for names; PNG and CSV export. Outputs: converted values, percentile of CL in the set, fraction of hepatic blood flow."
+  "change": "Edit any field; drag the CL line or click a drug on the strip; hover for names; export as an image (PNG) and a table (CSV). Outputs: converted values, percentile of CL in the set, fraction of hepatic blood flow."
  },
  "units/Amount and volume": {
   "watch": "V = A / C is an apparent volume. For a 70 kg adult, plasma volume is 3.05 L, extracellular fluid 13.6 L and total body water 40.2 L (Oie-Tozer constants; Coutinho et al., 2024). In the Obach et al. (2008) data (n = 667), Vss exceeds 40.2 L for 415 drugs (range 2.5 to 49,000 L), consistent with tissue binding.",
@@ -34,7 +34,7 @@ var STEPTEXT = {
  "elim/First-order elimination": {
   "watch": "First-order elimination: dA/dt = -kA, A(t) = A0 exp(-kt), t1/2 = 0.693 / k; the fraction 1 - exp(-k) is eliminated per hour. Of a 100 mg dose, 50, 25 and 3.1 mg remain after 1, 2 and 5 half-lives.",
   "legend": "Amount in the body after a 100 mg dose, with markers at multiples of the half-life; table of amount and elimination rate at each multiple. Grey dashed curves are pinned half-lives.",
-  "change": "Half-life, axis; drag the half-life point; hover for amount and rate; Pin keeps up to three; PNG and CSV export. Outputs: k, fraction eliminated per hour, amount and rate at each half-life."
+  "change": "Half-life, axis; drag the half-life point; hover for amount and rate; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: k, fraction eliminated per hour, amount and rate at each half-life."
  },
  "elim/Clearance": {
   "watch": "With A = V C, the elimination rate is kVC. Defining CL = kV gives rate = CL x C and k = CL / V; CL is the volume of plasma cleared of drug per unit time.",
@@ -64,7 +64,7 @@ var STEPTEXT = {
  "oral/Oral profile": {
   "watch": "First-order absorption gives C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)] with ke = CL / V. tmax = ln(ka / ke) / (ka - ke), and AUC(0 to infinity) = F D / CL, the intravenous AUC multiplied by F.",
   "legend": "Plasma concentration after oral and intravenous doses of 100 mg; the shaded area under the oral curve is proportional to the oral AUC. Grey dashed curves are pinned oral profiles.",
-  "change": "F, CL, V, ka; drag the oral peak (vertical sets F, horizontal sets ka) or the intravenous starting point (sets V); hover for both concentrations; Pin keeps up to three; PNG and CSV export. Outputs: oral and intravenous AUC, Cmax, tmax, half-life."
+  "change": "F, CL, V, ka; drag the oral peak (vertical sets F, horizontal sets ka) or the intravenous starting point (sets V); hover for both concentrations; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: oral and intravenous AUC, Cmax, tmax, half-life."
  },
  "oral/Bioavailability from AUCs": {
   "watch": "F = (AUC_po / Dose_po) / (AUC_iv / Dose_iv) from crossover administration, assuming equal CL on both occasions and dose-independent CL. For 100 mg orally with AUC 8 mg x h/L and 50 mg intravenously with AUC 10 mg x h/L, F = 0.4.",
@@ -79,7 +79,7 @@ var STEPTEXT = {
  "met/Metabolic routes": {
   "watch": "An in vitro system measures a route only if it contains the enzyme and its cofactor. Liver microsomes contain cytochrome P450 and UDP-glucuronosyltransferases and, with NADPH, support P450 oxidation. Hepatocytes contain the hepatic enzymes of all four routes. The tab 07 predictions use microsomes with NADPH and cover oxidation only.",
   "legend": "Share of one compound's clearance by route (stacked bar; hatched segments are routes not measured by the systems selected), with the in vitro systems that cover each route.",
-  "change": "Drag the dividers to set route shares; click a system column to run it; click a route for its details; PNG and CSV export. Outputs: share of clearance captured, routes missed, reaction, enzymes, system."
+  "change": "Drag the dividers to set route shares; click a system column to run it; click a route for its details; export as an image (PNG) and a table (CSV). Outputs: share of clearance captured, routes missed, reaction, enzymes, system."
  },
  "met/Enzyme kinetics": {
   "watch": "v = Vmax S / (Km + S). For S << Km, v is approximately (Vmax / Km) S and CLint = Vmax / Km (uL/min/mg for Vmax in pmol/min/mg and Km in uM). The first-order approximation overestimates v by 1 + S / Km: 10% at S = 0.1 Km and 100% at S = Km.",
@@ -104,7 +104,7 @@ var STEPTEXT = {
  "vitro/What an assay measures": {
   "watch": "Each assay yields a parameter that requires a scaling step and a model to predict a clinical quantity (table). Six assays are listed with the parameter, the scaling and the course section that uses them.",
   "legend": "Left: measurement, parameter, link to the in vivo parameter and course location for the selected assay, with the calculation at the value set. Right: public distribution of that quantity; the line marks the value set.",
-  "change": "Assay, value; drag the line or click a bar on the distribution; PNG and CSV export. Outputs: scaled quantity, percentile within the public data."
+  "change": "Assay, value; drag the line or click a bar on the distribution; export as an image (PNG) and a table (CSV). Outputs: scaled quantity, percentile within the public data."
  },
  "vitro/From assay to clearance": {
   "watch": "CL' = fu(blood) x CLint / fu(mic). With Q = 21 mL/min/kg, the well-stirred model gives CL = Q x CL' / (Q + CL') and the parallel-tube model CL = Q x [1 - exp(-CL' / Q)]. Predictions are compared with the observed nonrenal blood clearance after intravenous dosing (Obach, 1999).",
@@ -129,7 +129,7 @@ var STEPTEXT = {
  "hep/Predicted against observed": {
   "watch": "CLint from Obach (1999) is scaled with 45 mg protein per g liver and 20 g liver per kg. Observed values are nonrenal blood clearances from intravenous studies (chlorpromazine, intramuscular). Agreement is summarized by the number within 2-fold, the average fold error and the bias (tab 06), used throughout tabs 07 to 09.",
   "legend": "Predicted against observed clearance (n = 29); shaded band, within 2-fold; dashed line, identity.",
-  "change": "Extraction model, binding correction; hover for names and values; drag a rectangle to select drugs for their average fold error, bias and count within 2-fold; PNG and CSV export. Outputs: within 2-fold, average fold error, bias."
+  "change": "Extraction model, binding correction; hover for names and values; drag a rectangle to select drugs for their average fold error, bias and count within 2-fold; export as an image (PNG) and a table (CSV). Outputs: within 2-fold, average fold error, bias."
  },
  "hep/Scaling to the liver": {
   "watch": "Scaling uses microsomal protein per g liver (MPPGL) and liver weight per kg (Obach, 1999: 45 mg/g, 20 g/kg), acting as one factor on CLint. For the parallel-tube model with both binding corrections at factor 1.0, bias = 0.48 and 16 of 29 drugs are within 2-fold. The average fold error is lowest (1.60) at a factor of about 3.2, and bias = 1.0 at about 2.6.",
@@ -169,7 +169,7 @@ var STEPTEXT = {
  "dist/What Vss measures": {
   "watch": "Vss = Vp + Kp x Vt. For a 70 kg adult, Vp = 3.05 L and Vt = 37.2 L (0.0436 and 0.151 + 0.38 L/kg; Oie-Tozer constants). Kp = 1 gives 40 L (0.57 L/kg) and Kp = 10 gives 375 L.",
   "legend": "Distribution of a 100 mg dose between plasma and tissue at equilibrium; second bar, Vss on a scale to 400 L.",
-  "change": "Kp; drag the plasma share boundary or the end of the volume bar to set Kp; hover the bars for amounts and volumes; PNG export. Outputs: Vss, concentrations, amounts in plasma and tissue."
+  "change": "Kp; drag the plasma share boundary or the end of the volume bar to set Kp; hover the bars for amounts and volumes; export as an image (PNG). Outputs: Vss, concentrations, amounts in plasma and tissue."
  },
  "dist/Volume from binding": {
   "watch": "Vss = Vp + fup Ve + Re/i Vp (1 - fup) + Vr fup / fut, with Vp = 0.0436, Ve = 0.151 and Vr = 0.38 L/kg and Re/i = 1.4 (Coutinho et al., 2024). Only the tissue term is unbounded as fut decreases. At fup = fut = 1, Vss = 0.57 L/kg.",
@@ -209,7 +209,7 @@ var STEPTEXT = {
  "abs/Hepatic first-pass limit": {
   "watch": "For Fa = Fg = 1, F = Fh = 1 - CLb / Q, an upper bound. Fh from the observed nonrenal blood clearance of the 29 drugs of Obach (1999), assuming nonrenal clearance is hepatic: with Q = 21 mL/min/kg, Fh is below 0.5 for 11 drugs, below 0.2 for 5 and at least 0.9 for 8.",
   "legend": "Fh for each drug, in descending order; colour, compound class.",
-  "change": "Q; hover a bar for the drug; PNG and CSV export. Outputs: counts below thresholds; drug details."
+  "change": "Q; hover a bar for the drug; export as an image (PNG) and a table (CSV). Outputs: counts below thresholds; drug details."
  },
  "abs/Solubility and dose": {
   "watch": "D0 = (Dose / V) / S; D0 above 1 indicates incomplete dissolution in V. S (mg/mL) = 10^logS x MW for the 9,980 AqSolDB compounds (Sorkun et al., 2019), which are chemicals in general, not drugs, at uncontrolled pH. For 100 mg in 250 mL, D0 exceeds 1 for 4,712.",
@@ -234,7 +234,7 @@ var STEPTEXT = {
  "ddi/Reversible inhibition": {
   "watch": "For a competitive inhibitor of the enzyme that clears the substrate, AUCR = 1 + [I] / Ki. With a fraction fm of clearance through the inhibited enzyme, AUCR = 1 / [fm / (1 + [I] / Ki) + 1 - fm], which approaches 1 / (1 - fm) as [I] / Ki increases. An AUC ratio of 2 or more is the usual positive threshold; it is reached at [I] / Ki = 1 when fm = 1.",
   "legend": "AUC ratio against [I] / Ki for fm = 1, 0.9, 0.7, 0.5 and 0.3 (grey) and for the fm set (teal). Dashed lines: AUC ratio 2, [I] / Ki = 1 and the ceiling 1 / (1 - fm). Grey dashed curves are pinned values of fm.",
-  "change": "[I], Ki, fm; drag the point (horizontal sets [I], vertical sets fm); hover for the ratio at any [I] / Ki; Pin keeps up to three; PNG and CSV export. Outputs: AUC ratio, ceiling, clearance reduction."
+  "change": "[I], Ki, fm; drag the point (horizontal sets [I], vertical sets fm); hover for the ratio at any [I] / Ki; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: AUC ratio, ceiling, clearance reduction."
  },
  "ddi/Inhibitor concentration": {
   "watch": "Ito et al. (2004) used four estimates of the inhibitor concentration: the average during repeated oral dosing, [I]av = (D / tau) / (CL/F); the unbound average, fu x [I]av; the maximum, [I]max = [I]av k tau / (1 - exp(-k tau)); and the maximum concentration at the liver inlet, [I]in = [I]av + ka Fa D / Qh, with Qh = 1610 mL/min. Each is divided by Ki to give the ratio that enters the AUC ratio.",
@@ -264,7 +264,7 @@ var STEPTEXT = {
  "tp/Carrier-mediated uptake": {
   "watch": "Uptake into hepatocytes or transfected cells is the sum of a saturable carrier-mediated term and passive diffusion, v = Vmax C / (Km + C) + Pdif C (Brouwer et al., 2013, Table 3). At C well below Km the carrier-mediated clearance is Vmax / Km. The carrier-mediated and passive terms are equal at C = Vmax / Pdif - Km.",
   "legend": "Uptake rate against substrate concentration: passive (grey), carrier-mediated (dashed) and total (teal). The vertical dashed line marks the substrate concentration set.",
-  "change": "Vmax, Km, Pdif, substrate; drag the Vmax line, the Km point, the Pdif point or the substrate line; hover for the components; Pin keeps up to three; PNG and CSV export. Outputs: carrier-mediated share, carrier clearance, crossover concentration."
+  "change": "Vmax, Km, Pdif, substrate; drag the Vmax line, the Km point, the Pdif point or the substrate line; hover for the components; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: carrier-mediated share, carrier clearance, crossover concentration."
  },
  "tp/Inhibition of uptake": {
   "watch": "For a competitive inhibitor of the carrier-mediated component, uptake relative to control is 1 / (1 + [I] / IC50), with IC50 = Ki (1 + S / Km); hence Ki = IC50 / (1 + S / Km) (the Cheng-Prusoff relation). The IC50 equals Ki only when S is much smaller than Km.",
@@ -294,7 +294,7 @@ var STEPTEXT = {
  "rn/Filtration and net renal clearance": {
   "watch": "Free drug is filtered at the rate fu x GFR. Tubular secretion adds CLsec and reabsorption removes a fraction Fr of what is filtered and secreted, so CLr = (fu x GFR + CLsec) x (1 - Fr). A CLr above fu x GFR requires net secretion and a CLr below it requires net reabsorption.",
   "legend": "Waterfall from filtration through secretion and reabsorption to the renal clearance.",
-  "change": "fu, GFR, CLsec, reabsorbed fraction; drag the top of the filtered, secreted or renal clearance bar; hover a bar for its value; PNG and CSV export. Outputs: CLr, CLr over filtration, net transport, CLr over GFR."
+  "change": "fu, GFR, CLsec, reabsorbed fraction; drag the top of the filtered, secreted or renal clearance bar; hover a bar for its value; export as an image (PNG) and a table (CSV). Outputs: CLr, CLr over filtration, net transport, CLr over GFR."
  },
  "rn/Renal impairment and AUC ratio": {
   "watch": "With a fraction fe of clearance renal and the nonrenal clearance unchanged, a renal function KF relative to normal gives AUCR = 1 / (1 - fe + fe KF). The dose adjustment factor of Giusti and Hayton, Q = 1 - fe (1 - KF), is the inverse of the AUC ratio. At KF near 0 the ratio approaches 1 / (1 - fe).",

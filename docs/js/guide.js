@@ -3,9 +3,63 @@
 var GUIDE = {
   "intro": {
     "why": {
-      "scope": "Effect is related to the concentration at the target by an Emax model, and absorption, distribution, metabolism and excretion (ADME) determine the concentration-time course. Stages of an oral dose are classified by ADME category, assay and parameter, and Cmax, tmax, AUC, half-life and trough are defined.",
+      "scope": "Effect is related to the concentration at the target by an Emax model (Emax is the maximal effect), and absorption, distribution, metabolism and excretion (ADME) determine the concentration-time course. Stages of an oral dose are classified by ADME category, assay and parameter, and the maximum concentration (Cmax), the time of the maximum (tmax), the area under the concentration-time curve (AUC), half-life and trough are defined.",
       "data": [
         "No data set. The curves are calculated from the equations with the values set by the sliders."
+      ],
+      "notation": [
+        [
+          "Emax",
+          "maximal effect."
+        ],
+        [
+          "EC50",
+          "concentration giving 50 percent of the maximal effect."
+        ],
+        [
+          "Cmax",
+          "maximum plasma concentration."
+        ],
+        [
+          "tmax",
+          "time at which Cmax occurs."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "Fa",
+          "fraction of the dose absorbed."
+        ],
+        [
+          "Fg",
+          "fraction escaping gut-wall metabolism."
+        ],
+        [
+          "Fh",
+          "fraction escaping hepatic first-pass extraction."
+        ],
+        [
+          "ka",
+          "first-order absorption rate constant."
+        ],
+        [
+          "ke",
+          "first-order elimination rate constant, CL / V."
+        ],
+        [
+          "V",
+          "volume of distribution."
+        ],
+        [
+          "F",
+          "oral bioavailability."
+        ]
       ]
     },
     "units": {
@@ -18,25 +72,115 @@ var GUIDE = {
         [
           "Cu",
           "unbound concentration, fu x C."
+        ],
+        [
+          "Vss",
+          "volume of distribution at steady state."
+        ],
+        [
+          "MW",
+          "molecular weight."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "V",
+          "apparent volume of distribution, amount divided by concentration."
         ]
       ],
       "data": [
-        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385, via ChEMBL (CC BY-SA 3.0): Vss for 667 drugs and fu for 554.",
+        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute) (CC BY-SA 3.0): Vss for 667 drugs and fu for 554.",
         "Body volumes from the constants of Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0)."
       ]
     },
     "elim": {
-      "scope": "One-compartment elimination: first-order kinetics, clearance, the intravenous profile, half-life as a function of V and CL, accumulation on repeat dosing, and a consistency check on 667 measured drugs. Distribution is treated in tab 08 and the processes that make up clearance in tab 05.",
+      "scope": "One-compartment elimination: first-order kinetics, clearance (CL), the intravenous profile, half-life as a function of volume (V) and CL, accumulation on repeat dosing, and a consistency check on 667 measured drugs. Distribution is treated in tab 08 and the processes that make up clearance in tab 05.",
       "data": [
-        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385, via ChEMBL (CC BY-SA 3.0): CL, Vss, MRT and half-life for 667 drugs (step 6)."
+        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute) (CC BY-SA 3.0): CL, Vss, MRT and half-life for 667 drugs (step 6)."
+      ],
+      "notation": [
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "V",
+          "volume of distribution in the one-compartment model."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "Vss",
+          "volume of distribution at steady state."
+        ],
+        [
+          "MRT",
+          "mean residence time."
+        ],
+        [
+          "R",
+          "accumulation ratio on repeat dosing, 1 / (1 - exp(-k tau))."
+        ],
+        [
+          "F",
+          "oral bioavailability."
+        ]
       ]
     },
     "oral": {
-      "scope": "The oral profile, bioavailability from oral and intravenous AUC, and its decomposition into Fa, Fg and Fh. Tab 09 treats the hepatic upper bound, solubility and public absorption data.",
+      "scope": "The oral profile, bioavailability from the oral and intravenous area under the concentration-time curve (AUC), and its decomposition into the fraction absorbed (Fa), the fraction escaping gut-wall metabolism (Fg) and the fraction escaping hepatic first-pass extraction (Fh). Tab 09 treats the hepatic upper bound, solubility and public absorption data.",
       "notation": [
         [
           "Fa, Fg, Fh",
           "fraction absorbed, fraction escaping gut-wall metabolism, fraction escaping hepatic first-pass extraction."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "F",
+          "oral bioavailability, the fraction of the dose reaching the systemic circulation."
+        ],
+        [
+          "Cmax",
+          "maximum plasma concentration."
+        ],
+        [
+          "tmax",
+          "time at which Cmax occurs."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "CLh",
+          "hepatic clearance."
+        ],
+        [
+          "ka",
+          "first-order absorption rate constant."
+        ],
+        [
+          "ke",
+          "first-order elimination rate constant, CL / V."
+        ],
+        [
+          "Q",
+          "hepatic blood flow, 21 mL/min/kg."
+        ],
+        [
+          "V",
+          "volume of distribution."
         ]
       ],
       "data": [
@@ -53,6 +197,58 @@ var GUIDE = {
         [
           "GFR",
           "120 mL/min."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "CLh",
+          "hepatic clearance."
+        ],
+        [
+          "CLr",
+          "renal clearance."
+        ],
+        [
+          "CLother",
+          "clearance by routes other than hepatic and renal."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "Vmax",
+          "maximum rate of the enzyme or carrier."
+        ],
+        [
+          "Km",
+          "Michaelis constant, the substrate concentration at half of Vmax."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "fe",
+          "fraction of the dose excreted unchanged in urine."
+        ],
+        [
+          "Fh",
+          "fraction escaping hepatic first-pass extraction."
+        ],
+        [
+          "NADPH",
+          "reduced nicotinamide adenine dinucleotide phosphate, the cofactor of cytochrome P450 reactions."
+        ],
+        [
+          "UDP",
+          "uridine diphosphate; UDP-glucuronic acid is the cofactor of glucuronidation."
+        ],
+        [
+          "Q",
+          "hepatic blood flow, 21 mL/min/kg."
         ]
       ],
       "data": [
@@ -77,6 +273,22 @@ var GUIDE = {
         [
           "Within 2-fold",
           "0.5 <= predicted / observed <= 2."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "Q",
+          "hepatic blood flow, 21 mL/min/kg."
+        ],
+        [
+          "CLint",
+          "intrinsic clearance, the clearance of unbound drug by an organ with no limit from blood flow or binding."
         ]
       ],
       "data": [
@@ -84,7 +296,7 @@ var GUIDE = {
       ]
     },
     "hep": {
-      "scope": "Prediction of human hepatic blood clearance from the microsomal CLint of 29 drugs (Obach, 1999), scored against intravenous clearance. Each step varies one assumption and reports the number within 2-fold, the average fold error and the bias.",
+      "scope": "Prediction of human hepatic blood clearance from the microsomal intrinsic clearance (CLint) of 29 drugs (Obach, 1999), scored against intravenous clearance. Each step varies one assumption and reports the number within 2-fold, the average fold error and the bias.",
       "notation": [
         [
           "fu(blood)",
@@ -101,6 +313,50 @@ var GUIDE = {
         [
           "CL'",
           "binding-corrected CLint, fu(blood) x CLint / fu(mic)."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "B:P",
+          "blood to plasma concentration ratio."
+        ],
+        [
+          "MW",
+          "molecular weight."
+        ],
+        [
+          "MPPGL",
+          "mg of microsomal protein per g of liver."
+        ],
+        [
+          "ECCS",
+          "extended clearance classification system, which assigns classes 1A to 4 from ionization, permeability and molecular weight."
+        ],
+        [
+          "NADPH",
+          "reduced nicotinamide adenine dinucleotide phosphate, the cofactor of cytochrome P450 reactions."
+        ],
+        [
+          "CV",
+          "coefficient of variation."
+        ],
+        [
+          "Dn",
+          "dispersion number of the dispersion model."
+        ],
+        [
+          "ChEMBL",
+          "public database of bioactive molecules maintained by the European Bioinformatics Institute."
+        ],
+        [
+          "MDCK",
+          "Madin-Darby canine kidney cells, a cell line used for permeability and transporter assays."
         ]
       ],
       "data": [
@@ -110,11 +366,11 @@ var GUIDE = {
       ]
     },
     "dist": {
-      "scope": "Vss through the Oie-Tozer equation. fut is back-calculated from observed Vss (Obach et al., 2008) and predicted from logD, pKa and fup. Further analyses cover ionization class, the half-life implied by CL and Vss, blood and plasma clearance, and the sensitivity of Vss to its inputs.",
+      "scope": "The volume of distribution at steady state (Vss) through the Oie-Tozer equation. The fraction unbound in tissue (fut) is back-calculated from observed Vss (Obach et al., 2008) and predicted from the distribution coefficient at pH 7.4 (logD), the acid dissociation constant (pKa) and the fraction unbound in plasma (fup). Further analyses cover ionization class, the half-life implied by clearance (CL) and Vss, blood and plasma clearance, and the sensitivity of Vss to its inputs.",
       "notation": [
         [
           "Vp, Ve, Vr",
-          "0.0436, 0.151 and 0.38 L/kg (Oie-Tozer)."
+          "plasma, extracellular (outside plasma) and residual tissue water volumes of the Oie-Tozer model: 0.0436, 0.151 and 0.38 L/kg."
         ],
         [
           "Re/i",
@@ -123,10 +379,38 @@ var GUIDE = {
         [
           "fut",
           "fraction unbound in tissue."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "fup",
+          "fraction unbound in plasma."
+        ],
+        [
+          "logD",
+          "logarithm of the octanol-water distribution coefficient at pH 7.4."
+        ],
+        [
+          "logP",
+          "logarithm of the octanol-water partition coefficient."
+        ],
+        [
+          "pKa",
+          "acid dissociation constant, as a logarithm."
+        ],
+        [
+          "Kp",
+          "tissue to plasma partition coefficient."
+        ],
+        [
+          "B:P",
+          "blood to plasma concentration ratio."
         ]
       ],
       "data": [
-        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385: human intravenous PK, 667 of the 670 drugs as deposited in ChEMBL (CC BY-SA 3.0).",
+        "Obach RS, Lombardo F, Waters NJ (2008), Drug Metab Dispos 36:1385: human intravenous PK, 667 of the 670 drugs as deposited in ChEMBL (public database of bioactive molecules, European Bioinformatics Institute) (CC BY-SA 3.0).",
         "AstraZeneca measured logD and pKa in ChEMBL, available for 172 of these drugs.",
         "Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0): the Oie-Tozer constants and the tissue binding equation."
       ]
@@ -141,6 +425,70 @@ var GUIDE = {
         [
           "Papp",
           "apparent permeability, cm/s."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "CLb",
+          "nonrenal blood clearance."
+        ],
+        [
+          "Fa",
+          "fraction of the dose absorbed."
+        ],
+        [
+          "Fg",
+          "fraction escaping gut-wall metabolism."
+        ],
+        [
+          "Fh",
+          "fraction escaping hepatic first-pass extraction."
+        ],
+        [
+          "MW",
+          "molecular weight."
+        ],
+        [
+          "TPSA",
+          "topological polar surface area."
+        ],
+        [
+          "logP",
+          "logarithm of the octanol-water partition coefficient."
+        ],
+        [
+          "pKa",
+          "acid dissociation constant, as a logarithm."
+        ],
+        [
+          "S0",
+          "intrinsic solubility of the neutral form."
+        ],
+        [
+          "ROC",
+          "receiver operating characteristic; the area under the ROC curve measures how well a descriptor separates two groups."
+        ],
+        [
+          "AqSolDB",
+          "aqueous solubility database."
+        ],
+        [
+          "Caco-2",
+          "human colorectal cell line used as an intestinal permeability model."
+        ],
+        [
+          "Q",
+          "hepatic blood flow, 21 mL/min/kg."
+        ],
+        [
+          "V",
+          "volume of fluid in which the dose dissolves (dose number), or the volume of distribution."
+        ],
+        [
+          "F",
+          "oral bioavailability."
         ]
       ],
       "data": [
@@ -149,79 +497,259 @@ var GUIDE = {
       ]
     },
     "ddi": {
-        "scope": "Static prediction of the substrate AUC ratio from [I] / Ki for reversible inhibition, four definitions of the inhibitor concentration, and their performance against 190 in vivo studies of CYP3A4, CYP2D6 and CYP2C9 inhibition. Time-dependent inhibition and induction are given as equations only. Transporter-mediated interactions and dynamic (physiologically based) models are not covered.",
-        "notation": [
-              [
-                    "AUCR",
-                    "ratio of the substrate AUC with and without the perpetrator."
-              ],
-              [
-                    "fm",
-                    "fraction of the substrate clearance through the inhibited enzyme."
-              ],
-              [
-                    "[I]",
-                    "inhibitor concentration: [I]av, [I]av,u, [I]max or [I]in (step 2)."
-              ],
-              [
-                    "Ki",
-                    "reversible inhibition constant, uM."
-              ]
+      "scope": "Static prediction of the substrate area under the curve (AUC) ratio from [I] / Ki for reversible inhibition, four definitions of the inhibitor concentration, and their performance against 190 in vivo studies of inhibition of the cytochrome P450 (CYP) enzymes CYP3A4, CYP2D6 and CYP2C9. Time-dependent inhibition and induction are given as equations only. Transporter-mediated interactions and dynamic (physiologically based) models are not covered.",
+      "notation": [
+        [
+          "AUCR",
+          "ratio of the substrate AUC with and without the perpetrator."
         ],
-        "data": [
-              "Ito K, Brown HS, Houston JB (2004), Br J Clin Pharmacol 57:473: AUC ratio, Ki and [I] / Ki for 190 of 193 in vivo studies (Tables 2 to 4; open access). Three studies with a missing inhibitor concentration are omitted."
+        [
+          "fm",
+          "fraction of the substrate clearance through the inhibited enzyme."
+        ],
+        [
+          "[I]",
+          "inhibitor concentration: [I]av, [I]av,u, [I]max or [I]in (step 2)."
+        ],
+        [
+          "Ki",
+          "reversible inhibition constant, uM."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "CYP",
+          "cytochrome P450, a family of metabolizing enzymes; CYP3A4, CYP2D6 and CYP2C9 are individual enzymes."
+        ],
+        [
+          "KI",
+          "inhibitor concentration giving half of the maximal inactivation rate, kinact."
+        ],
+        [
+          "kinact",
+          "maximum inactivation rate constant."
+        ],
+        [
+          "kobs",
+          "observed inactivation rate constant, kinact [I] / (KI + [I])."
+        ],
+        [
+          "kdeg",
+          "enzyme degradation rate constant."
+        ],
+        [
+          "EC50",
+          "concentration giving 50 percent of the maximal effect."
+        ],
+        [
+          "Emax",
+          "maximal effect."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "Fa",
+          "fraction of the dose absorbed."
+        ],
+        [
+          "ka",
+          "first-order absorption rate constant."
+        ],
+        [
+          "Qh",
+          "hepatic blood flow, 21 mL/min/kg unless set."
+        ],
+        [
+          "MW",
+          "molecular weight."
+        ],
+        [
+          "F",
+          "oral bioavailability; CL/F is the oral clearance."
         ]
-  },
+      ],
+      "data": [
+        "Ito K, Brown HS, Houston JB (2004), Br J Clin Pharmacol 57:473: AUC ratio, Ki and [I] / Ki for 190 of 193 in vivo studies (Tables 2 to 4; open access). Three studies with a missing inhibitor concentration are omitted."
+      ]
+    },
     "tp": {
-        "scope": "Carrier-mediated and passive uptake, the inhibition constant from an IC50, the extended clearance model for hepatic uptake, the effect of uptake inhibition on the hepatic clearance ratio, and public data on biliary clearance by ECCS class and on recommended probe substrates and inhibitors. The model steps use parameters set by the sliders, and no transporter kinetic database is analyzed. Renal transport and uptake into other tissues are not covered.",
-        "notation": [
-              [
-                    "PSinf",
-                    "sinusoidal uptake clearance into hepatocytes."
-              ],
-              [
-                    "PSeff",
-                    "efflux clearance from hepatocytes back to blood."
-              ],
-              [
-                    "PSint",
-                    "intracellular elimination clearance, CLmet + CLbile."
-              ],
-              [
-                    "ECCS",
-                    "extended clearance classification system (tab 07, step 8)."
-              ]
+      "scope": "Carrier-mediated and passive uptake, the inhibition constant from the concentration giving half-maximal inhibition (IC50), the extended clearance model for hepatic uptake, the effect of uptake inhibition on the hepatic clearance ratio, and public data on biliary clearance by class of the extended clearance classification system (ECCS) and on recommended probe substrates and inhibitors. The model steps use parameters set by the sliders, and no transporter kinetic database is analyzed. Renal transport and uptake into other tissues are not covered.",
+      "notation": [
+        [
+          "PSinf",
+          "sinusoidal uptake clearance into hepatocytes."
         ],
-        "data": [
-              "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: ECCS class and human biliary clearance of 20 substrates, as collected there from the Drug Interaction Database and the literature.",
-              "Brouwer KLR et al., Clin Pharmacol Ther 94:95 (2013), Table 2: recommended probe substrates, inhibitors and potential clinical probes for each transporter (open access)."
+        [
+          "PSeff",
+          "efflux clearance from hepatocytes back to blood."
+        ],
+        [
+          "PSint",
+          "intracellular elimination clearance, CLmet + CLbile."
+        ],
+        [
+          "ECCS",
+          "extended clearance classification system (tab 07, step 8)."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "CLint",
+          "intrinsic clearance, the clearance of unbound drug by an organ with no limit from blood flow or binding."
+        ],
+        [
+          "CLh",
+          "hepatic clearance."
+        ],
+        [
+          "CLmet",
+          "intrinsic clearance by metabolism in the hepatocyte."
+        ],
+        [
+          "CLbile",
+          "biliary clearance."
+        ],
+        [
+          "Vmax",
+          "maximum rate of the enzyme or carrier."
+        ],
+        [
+          "Km",
+          "Michaelis constant, the substrate concentration at half of Vmax."
+        ],
+        [
+          "Ki",
+          "reversible inhibition constant."
+        ],
+        [
+          "IC50",
+          "inhibitor concentration giving 50 percent inhibition."
+        ],
+        [
+          "fu",
+          "fraction unbound in plasma."
+        ],
+        [
+          "Q",
+          "hepatic blood flow, 21 mL/min/kg."
+        ],
+        [
+          "Qh",
+          "hepatic blood flow, 21 mL/min/kg unless set."
+        ],
+        [
+          "Pdif",
+          "passive diffusion clearance."
+        ],
+        [
+          "Iu",
+          "unbound inhibitor concentration."
+        ],
+        [
+          "R",
+          "ratio 1 + Iu / Ki that predicts the clearance ratio at uptake-limited clearance."
+        ],
+        [
+          "OATP",
+          "organic anion-transporting polypeptide; OAT is organic anion transporter and OCT is organic cation transporter."
+        ],
+        [
+          "MATE",
+          "multidrug and toxin extrusion protein."
+        ],
+        [
+          "MRP",
+          "multidrug resistance-associated protein."
+        ],
+        [
+          "P-gp",
+          "P-glycoprotein."
+        ],
+        [
+          "BCRP",
+          "breast cancer resistance protein."
+        ],
+        [
+          "MDCK, CHO, HEK293",
+          "cell lines used for transporter assays: Madin-Darby canine kidney, Chinese hamster ovary and human embryonic kidney 293."
+        ],
+        [
+          "fu,b",
+          "fraction unbound in blood."
         ]
-  },
+      ],
+      "data": [
+        "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: ECCS class and human biliary clearance of 20 substrates, as collected there from the Drug Interaction Database and the literature.",
+        "Brouwer KLR et al., Clin Pharmacol Ther 94:95 (2013), Table 2: recommended probe substrates, inhibitors and potential clinical probes for each transporter (open access)."
+      ]
+    },
     "rn": {
-        "scope": "Renal clearance as filtration plus net tubular transport, the effect of renal impairment on the AUC ratio, a filtration limit applied to 554 drugs, and the biliary share of total clearance for 16 substrates. No public per-compound renal clearance data were used, so renal excretion is analyzed through the filtration limit and the equations only. Transporter identity is covered in tab 11.",
-        "notation": [
-              [
-                    "fu",
-                    "fraction unbound in plasma."
-              ],
-              [
-                    "GFR",
-                    "glomerular filtration rate, 120 mL/min for a 70 kg adult or about 1.8 mL/min/kg."
-              ],
-              [
-                    "fe",
-                    "fraction of the dose excreted unchanged in urine."
-              ],
-              [
-                    "KF",
-                    "renal function relative to normal, GFR / normal GFR."
-              ]
+      "scope": "Renal clearance as filtration plus net tubular transport, the effect of renal impairment on the area under the curve (AUC) ratio, a filtration limit applied to 554 drugs, and the biliary share of total clearance for 16 substrates. No public per-compound renal clearance data were used, so renal excretion is analyzed through the filtration limit and the equations only. Transporter identity is covered in tab 11.",
+      "notation": [
+        [
+          "fu",
+          "fraction unbound in plasma."
         ],
-        "data": [
-              "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (CC BY-SA 3.0): total clearance and fu of 554 drugs (step 3) and total clearance of 16 substrates (step 4).",
-              "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: human biliary clearance of 16 substrates that also have a total clearance in the Obach set."
+        [
+          "GFR",
+          "glomerular filtration rate, 120 mL/min for a 70 kg adult or about 1.8 mL/min/kg."
+        ],
+        [
+          "fe",
+          "fraction of the dose excreted unchanged in urine."
+        ],
+        [
+          "KF",
+          "renal function relative to normal, GFR / normal GFR."
+        ],
+        [
+          "AUC",
+          "area under the plasma concentration-time curve."
+        ],
+        [
+          "AUCR",
+          "ratio of the substrate AUC with and without the perpetrator or with and without impairment."
+        ],
+        [
+          "CL",
+          "clearance, the volume of plasma cleared of drug per unit time."
+        ],
+        [
+          "CLr",
+          "renal clearance."
+        ],
+        [
+          "CLbile",
+          "biliary clearance."
+        ],
+        [
+          "CLsec",
+          "secretory clearance in the kidney tubule."
+        ],
+        [
+          "ECCS",
+          "extended clearance classification system, which assigns classes 1A to 4 from ionization, permeability and molecular weight."
+        ],
+        [
+          "Q",
+          "dose adjustment factor, 1 - fe (1 - KF)."
         ]
-  }
+      ],
+      "data": [
+        "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute) (CC BY-SA 3.0): total clearance and fu of 554 drugs (step 3) and total clearance of 16 substrates (step 4).",
+        "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: human biliary clearance of 16 substrates that also have a total clearance in the Obach set."
+      ]
+    }
   },
   "steps": {
     "why/Concentration and effect": {
