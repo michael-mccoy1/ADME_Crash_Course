@@ -18,7 +18,7 @@ HEP.add({ short: 'Microsomes against hepatocytes', level: 'advanced', title: 'Mi
       rows.forEach(function(r){
         var px = A.sx(Math.min(Math.max(r.a, 0.1001), 999)), py = A.sy(Math.min(Math.max(r.b, 0.1001), 999)), on = sel && sel.id === r.z.id, l = Math.log10(r.b / r.a); lr.push(l); if (l > 0) above++; if (Math.abs(l) <= Math.log10(2)) w2++;
         x.fillStyle = r.z.name ? C.dred : C.red; x.globalAlpha = on ? 1 : 0.7; x.beginPath(); x.arc(px, py, on ? 7 : 4.5, 0, 6.3); x.fill(); x.globalAlpha = 1; if (on) { x.strokeStyle = C.char; x.lineWidth = 2; x.stroke(); }
-        pts.push({ x: px, y: py, r: { d: r.z, row: r } });
+        pts.push({ x: px, y: py, r: { d: r.z, row: r }, vx: r.a, vy: r.b });
       });
       cvs._pts = pts; cvs._g = g;
       lr.sort(function(p, q){ return p - q; }); var med = Math.pow(10, lr[Math.floor(lr.length / 2)]);

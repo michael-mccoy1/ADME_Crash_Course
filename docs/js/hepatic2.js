@@ -37,12 +37,12 @@ HEP.add({ short: 'Empirical scalars', level: 'applied', title: 'Empirical scalar
       }
       var g = cv(ca), box = { l: 40, r: g.w - 12, t: 16, b: g.h - 42 }, x = g.x, lo = Math.log10(0.5), hi = Math.log10(12), nb = 24, ymax = hepBinMax(fs, lo, hi, nb) * 1.15;
       hepAxisX(g, box, [0.5, 1, 2, 4, 8], lo, hi, 'Fitted scalar factor (fitting set)', 'Resamples');
-      hepHist(g, fs, box, lo, hi, nb, C.red, 0.85, ymax);
+      ca._hist = { lo: lo, hi: hi, box: box, log: true, series: [['Resamples', hepHist(g, fs, box, lo, hi, nb, C.red, 0.85, ymax)]], name: 'Fitted scalar factor' };
       var xf = box.l + (Math.log10(full) - lo) / (hi - lo) * (box.r - box.l); x.strokeStyle = C.char; x.setLineDash([4, 4]); x.lineWidth = 1.4; x.beginPath(); x.moveTo(xf, box.t); x.lineTo(xf, box.b); x.stroke(); x.setLineDash([]);
       qs('.ra', pn).innerHTML = 'Fitting set of <b>' + n + '</b> drugs: median factor <b>' + hepQ(fs, 0.5).toFixed(2) + '</b> (5th to 95th percentile ' + hepQ(fs, 0.05).toFixed(2) + ' to ' + hepQ(fs, 0.95).toFixed(2) + '). Dashed line: all 29 drugs, ' + full.toFixed(2) + '.';
       var g2 = cv(cb), b2 = { l: 40, r: g2.w - 12, t: 16, b: g2.h - 42 }, x2 = g2.x, lo2 = Math.log10(1), hi2 = Math.log10(5), nb2 = 24, ym2 = Math.max(hepBinMax(held, lo2, hi2, nb2), hepBinMax(heldRaw, lo2, hi2, nb2)) * 1.15;
       hepAxisX(g2, b2, [1, 1.5, 2, 3, 4], lo2, hi2, 'Held-out average fold error', 'Resamples');
-      hepHist(g2, heldRaw, b2, lo2, hi2, nb2, C.mid, 0.45, ym2); hepHist(g2, held, b2, lo2, hi2, nb2, C.red, 0.8, ym2);
+      var cRaw = hepHist(g2, heldRaw, b2, lo2, hi2, nb2, C.mid, 0.45, ym2), cHeld = hepHist(g2, held, b2, lo2, hi2, nb2, C.red, 0.8, ym2); cb._hist = { lo: lo2, hi: hi2, box: b2, log: true, series: [['With fitted factor', cHeld], ['Factor 1.0', cRaw]], name: 'Held-out average fold error' };
       x2.textAlign = 'left'; x2.font = '600 11px Aptos, "Segoe UI", sans-serif'; x2.fillStyle = C.red; x2.fillRect(b2.r - 150, b2.t + 6, 12, 10); x2.fillStyle = C.char; x2.fillText('With fitted factor', b2.r - 134, b2.t + 15); x2.fillStyle = C.mid; x2.globalAlpha = 0.45; x2.fillRect(b2.r - 150, b2.t + 22, 12, 10); x2.globalAlpha = 1; x2.fillStyle = C.char; x2.fillText('Factor 1.0', b2.r - 134, b2.t + 31); x2.font = '12px Aptos, "Segoe UI", sans-serif';
       qs('.rb', pn2).innerHTML = 'Held-out average fold error, median: <b>' + hepQ(held, 0.5).toFixed(2) + '</b> with the fitted factor (5th to 95th percentile ' + hepQ(held, 0.05).toFixed(2) + ' to ' + hepQ(held, 0.95).toFixed(2) + ') and <b>' + hepQ(heldRaw, 0.5).toFixed(2) + '</b> without it.';
       api.stat(n + ' fitting drugs, ' + N + ' resamples');

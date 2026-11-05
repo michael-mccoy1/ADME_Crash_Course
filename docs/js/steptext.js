@@ -129,106 +129,106 @@ var STEPTEXT = {
  "hep/Predicted against observed": {
   "watch": "CLint from Obach (1999) is scaled with 45 mg protein per g liver and 20 g liver per kg. Observed values are nonrenal blood clearances from intravenous studies (chlorpromazine, intramuscular). Agreement is summarized by the number within 2-fold, the average fold error and the bias (tab 06), used throughout tabs 07 to 09.",
   "legend": "Predicted against observed clearance (n = 29); shaded band, within 2-fold; dashed line, identity.",
-  "change": "Extraction model, binding correction. Outputs: within 2-fold, average fold error, bias."
+  "change": "Extraction model, binding correction; hover for names and values; drag a rectangle to select drugs for their average fold error, bias and count within 2-fold; PNG and CSV export. Outputs: within 2-fold, average fold error, bias."
  },
  "hep/Scaling to the liver": {
   "watch": "Scaling uses microsomal protein per g liver (MPPGL) and liver weight per kg (Obach, 1999: 45 mg/g, 20 g/kg), acting as one factor on CLint. For the parallel-tube model with both binding corrections at factor 1.0, bias = 0.48 and 16 of 29 drugs are within 2-fold. The average fold error is lowest (1.60) at a factor of about 3.2, and bias = 1.0 at about 2.6.",
   "legend": "Left: predicted against observed clearance for the scalars set. Right: average fold error and bias against scaling factor.",
-  "change": "MPPGL, liver weight, model. Outputs: average fold error, bias, within 2-fold, optimal factor."
+  "change": "MPPGL, liver weight, model; drag the factor marker on the right plot to set MPPGL; hover for the scores at any factor; drag a rectangle on the scatter to select drugs; PNG and CSV export. Outputs: average fold error, bias, within 2-fold, optimal factor."
  },
  "hep/Extraction models": {
   "watch": "Well-stirred: E = CL' / (Q + CL'). Parallel-tube: E = 1 - exp(-CL' / Q). The dispersion model approaches parallel-tube as Dn tends to 0 and well-stirred as Dn tends to infinity. At equal CL', the well-stirred E is 9% lower than the parallel-tube value where the latter is 0.2, and 18% lower where it is 0.5.",
   "legend": "Extraction ratio against binding-corrected CLint / Q for the three models; points, the 29 drugs at their observed extraction ratio.",
-  "change": "Q, Dn, drug. Outputs: clearance predicted by each model."
+  "change": "Q, Dn, drug; hover a point for its values; PNG and CSV export. Outputs: clearance predicted by each model."
  },
  "hep/Binding assumptions": {
   "watch": "Treatments: none, fu(blood) only, and fu(blood) with fu(mic). Measured CLint is already reduced by incubation binding, so fu(blood) alone over-corrects. For bases (n = 12) the average fold error is lowest without correction (1.31, against 1.60 with both); for acids (n = 9), with both (2.71, against 5.41 without).",
   "legend": "Average fold error by compound class and treatment; table, the five largest fold errors.",
-  "change": "Extraction model, form of fu(blood). Outputs: average fold error by class."
+  "change": "Extraction model, form of fu(blood); hover a bar for the score of that class and treatment; PNG and CSV export. Outputs: average fold error by class."
  },
  "hep/Empirical scalars": {
   "watch": "The factor is chosen so that the fitting set has bias 1 (300 random fitting and held-out splits of the 29 drugs). Fitted on all drugs it is 2.6, and the average fold error falls from 2.14 to 1.62 (parallel-tube, both corrections). All in vitro data come from one laboratory, so the held-out score does not estimate transfer to another assay.",
   "legend": "Left: fitted factor over resamples. Right: held-out average fold error with and without the factor.",
-  "change": "Number of fitting drugs, model. Outputs: median and 5th to 95th percentiles of the factor and of the held-out error."
+  "change": "Number of fitting drugs, model; hover a bin for its counts; PNG export. Outputs: median and 5th to 95th percentiles of the factor and of the held-out error."
  },
  "hep/Low-turnover compounds": {
   "watch": "A loss below a set multiple of the assay variability is reported as a CLint limit. For a multiple of 2, k(min) = -ln(1 - 2 CV) / T, and the lowest reportable scaled CLint is k(min) / protein x 45 x 20. A half-life of 120 min at 10 mg/mL gives 0.52 mL/min/kg, the warfarin limit (Obach, 1999). A prediction from the limit is an upper bound.",
   "legend": "Percent remaining against time, with the region of losses below twice the variability shaded. Panel: predictions at the limit for the selected drug.",
-  "change": "Protein, incubation time, variability, CLint, drug, model. Outputs: lowest reportable CLint, prediction at the limit."
+  "change": "Protein, incubation time, variability, CLint, drug, model; drag the CLint point vertically and the incubation marker horizontally; hover for the loss at any time; PNG export. Outputs: lowest reportable CLint, prediction at the limit."
  },
  "hep/Microsomes against hepatocytes": {
   "watch": "CLint of 96 compounds with uncensored values in both assays (AstraZeneca data in ChEMBL; 96 of 187 with both) is scaled with MPPGL and hepatocellularity, each times liver weight per kg. Differences can reflect enzymes absent from an NADPH-supplemented incubation, uptake, binding and the scalars. With 45 mg/g, 120 x 10^6 cells/g (assumed) and 20 g/kg, 62 of 96 have the higher clearance in hepatocytes (median ratio 1.22).",
   "legend": "Scaled hepatocyte against scaled microsomal CLint; dashed line, identity; shaded band, within 2-fold.",
-  "change": "MPPGL, hepatocellularity, liver weight. Outputs: number above identity, median ratio."
+  "change": "MPPGL, hepatocellularity, liver weight; hover for values; drag a rectangle to select compounds; PNG and CSV export. Outputs: number above identity, median ratio."
  },
  "hep/Choosing a method by class": {
   "watch": "The extended clearance classification system (Varma et al., 2015) assigns a class from ionization at pH 7, MW and passive permeability (cut-offs: 5 x 10^-6 cm/s in low-efflux MDCK cells; MW 400 Da for acids and zwitterions) and predicts the rate-determining mechanism. It was correct for about 92% of 307 compounds with one mechanism contributing at least 70% of clearance. Microsomal scaling applies to classes 1A and 2.",
   "legend": "ECCS class map; the marked compound is set by the controls.",
-  "change": "Ionization, MW, permeability, plasma protein binding. Outputs: class, predicted mechanism."
+  "change": "Ionization, MW, permeability, plasma protein binding; drag the marked compound on the map; hover for the class at any position; PNG export. Outputs: class, predicted mechanism."
  },
  "dist/What Vss measures": {
   "watch": "Vss = Vp + Kp x Vt. For a 70 kg adult, Vp = 3.05 L and Vt = 37.2 L (0.0436 and 0.151 + 0.38 L/kg; Oie-Tozer constants). Kp = 1 gives 40 L (0.57 L/kg) and Kp = 10 gives 375 L.",
   "legend": "Distribution of a 100 mg dose between plasma and tissue at equilibrium; second bar, Vss on a scale to 400 L.",
-  "change": "Kp. Outputs: Vss, concentrations, amounts in plasma and tissue."
+  "change": "Kp; drag the plasma share boundary or the end of the volume bar to set Kp; hover the bars for amounts and volumes; PNG export. Outputs: Vss, concentrations, amounts in plasma and tissue."
  },
  "dist/Volume from binding": {
   "watch": "Vss = Vp + fup Ve + Re/i Vp (1 - fup) + Vr fup / fut, with Vp = 0.0436, Ve = 0.151 and Vr = 0.38 L/kg and Re/i = 1.4 (Coutinho et al., 2024). Only the tissue term is unbounded as fut decreases. At fup = fut = 1, Vss = 0.57 L/kg.",
   "legend": "Vss against fut at the fup set, with curves for fup = 0.001, 0.01, 0.1 and 1. Panel: the three terms.",
-  "change": "fup, fut. Outputs: Vss and the share of each term."
+  "change": "fup, fut; drag the point (horizontal sets fut, vertical sets fup); hover for Vss at any fut; PNG export. Outputs: Vss and the share of each term."
  },
  "dist/Implied tissue binding": {
   "watch": "fut = Vr fup / (Vss - Vp - fup Ve - Re/i Vp (1 - fup)); undefined where Vss is below the plasma and extracellular terms, and above 1 where Vss lies below the fut = 1 curve. For 554 drugs (Obach et al., 2008) it is undefined for 26 and above 1 for 76; the median of the remaining 528 is 0.09.",
   "legend": "Observed Vss against fup (n = 554) with Oie-Tozer curves at fut = 1, 0.1, 0.01 and 0.001.",
-  "change": "Drug. Outputs: counts, median implied fut."
+  "change": "Drug; hover for names and values; drag a rectangle to select drugs; PNG and CSV export. Outputs: counts, median implied fut."
  },
  "dist/Predicting tissue binding": {
   "watch": "fut was predicted for 163 drugs with fup and measured logD (AstraZeneca) by (a) fut = 1, (b) the Lombardo equation as stated by Coutinho et al. (2024), log fut = 0.0080 - 0.2294 logD - 0.9311 fi + 0.8885 log fup, with fi from measured pKa (0 if none), and (c) the median implied fut, fitted on the same drugs. The source applies the equation with logP to compounds neutral at pH 7.4; here it is applied with logD to all classes.",
   "legend": "Predicted against observed Vss. Table: within 2-fold, average fold error and bias by ionization class.",
-  "change": "Source of fut. Outputs: scoreboard by class."
+  "change": "Source of fut; hover for names and values; drag a rectangle to select drugs for their score; PNG and CSV export. Outputs: scoreboard by class."
  },
  "dist/Ionization class": {
   "watch": "172 drugs with measured logD, grouped by AstraZeneca pKa. The group with no pKa reported mixes compounds without an ionizable group, with a pKa outside the measured range, and unmeasured. Medians (acids, bases, zwitterions, no pKa): Vss 0.19, 2.2, 1.7 and 1.3 L/kg; fup 0.05, 0.36, 0.75 and 0.15; logD 0.31, 1.67, -0.35 and 1.47.",
   "legend": "Selected variable by group; bars mark the medians.",
-  "change": "Variable. Outputs: group medians."
+  "change": "Variable; hover for names and values; drag a rectangle to select drugs; PNG export. Outputs: group medians."
  },
  "dist/Half-life from CL and Vss": {
   "watch": "For a one-compartment drug t1/2 = 0.693 Vss / CL; for 667 drugs (Obach et al., 2008) it is within 2-fold of the reported terminal half-life for 554 (average fold error 1.51, bias 0.68). For log-normal errors in CL and Vss (fold errors fc and fv, correlation rho), var(ln t1/2) = (ln fv)^2 + (ln fc)^2 - 2 rho ln fv ln fc.",
   "legend": "Left: 0.693 x Vss / CL against reported t1/2. Right: distribution of predicted over true t1/2 from 4000 draws.",
-  "change": "Fold errors of CL and Vss, correlation. Outputs: fraction within 2-fold, geometric standard deviation."
+  "change": "Fold errors of CL and Vss, correlation; hover for names and bin counts; drag a rectangle on the scatter to select drugs; PNG and CSV export. Outputs: fraction within 2-fold, geometric standard deviation."
  },
  "dist/Blood to plasma ratio": {
   "watch": "CL(blood) = CL(plasma) / B:P; B:P is 0.53 to 1.5 in the Obach (1999) set. The parallel-tube prediction with both corrections has an average fold error of 2.14 and a bias of 0.48 against blood clearance, and 1.93 and 0.64 against plasma clearance. The improvement reflects the higher plasma value offsetting the under-prediction (B:P below 1) and not a better prediction.",
   "legend": "Predicted blood clearance against observed blood or plasma clearance (n = 29).",
-  "change": "Comparison basis. Outputs: scoreboard by class."
+  "change": "Comparison basis; hover for names and values; drag a rectangle to select drugs; PNG and CSV export. Outputs: scoreboard by class."
  },
  "dist/Sensitivity of Vss": {
   "watch": "Where the tissue term dominates, Vss is proportional to fup / fut. At fup = fut = 0.03 the tissue term is 78% of Vss; 2-fold changes in Ve, Re/i and Vp change Vss by 1% or less, 6 to 12% and 10 to 21%.",
   "legend": "Vss relative to its unperturbed value when each input is divided and multiplied by the perturbation factor.",
-  "change": "fup, fut, perturbation factor. Outputs: Vss ratio for each input."
+  "change": "fup, fut, perturbation factor; hover a bar for its Vss ratio; PNG export. Outputs: Vss ratio for each input."
  },
  "abs/Hepatic first-pass limit": {
   "watch": "For Fa = Fg = 1, F = Fh = 1 - CLb / Q, an upper bound. Fh from the observed nonrenal blood clearance of the 29 drugs of Obach (1999), assuming nonrenal clearance is hepatic: with Q = 21 mL/min/kg, Fh is below 0.5 for 11 drugs, below 0.2 for 5 and at least 0.9 for 8.",
   "legend": "Fh for each drug, in descending order; colour, compound class.",
-  "change": "Q. Outputs: counts below thresholds; drug details."
+  "change": "Q; hover a bar for the drug; PNG and CSV export. Outputs: counts below thresholds; drug details."
  },
  "abs/Solubility and dose": {
   "watch": "D0 = (Dose / V) / S; D0 above 1 indicates incomplete dissolution in V. S (mg/mL) = 10^logS x MW for the 9,980 AqSolDB compounds (Sorkun et al., 2019), which are chemicals in general, not drugs, at uncontrolled pH. For 100 mg in 250 mL, D0 exceeds 1 for 4,712.",
   "legend": "Distribution of log10 D0; shaded bars, D0 above 1.",
-  "change": "Dose, volume. Outputs: number and percentage with D0 above 1."
+  "change": "Dose, volume; drag the histogram sideways to change the dose; hover for bin counts; PNG export. Outputs: number and percentage with D0 above 1."
  },
  "abs/pH-dependent solubility": {
   "watch": "Monoprotic acid: S = S0 (1 + 10^(pH - pKa)); base: S = S0 (1 + 10^(pKa - pH)). Salt solubility limits and micellar solubilization are neglected, so S at low pH is an upper limit for a base. Raising gastric pH, for example by acid suppression, raises D0 in the stomach; D0 at intestinal pH indicates whether the dose remains dissolved.",
   "legend": "log10 D0 against pH for the dose and volume set; markers at gastric and intestinal pH.",
-  "change": "Type, pKa, S0, dose, gastric and intestinal pH. Outputs: S and D0 at each pH."
+  "change": "Type, pKa, S0, dose, gastric and intestinal pH; drag the gastric, intestinal or pKa markers; hover for S and D0 at any pH; PNG export. Outputs: S and D0 at each pH."
  },
  "abs/Permeability descriptors": {
   "watch": "Caco-2 log10 Papp (Wang et al., 2016; n = 910) correlates with TPSA (Spearman rho = -0.63), donors (-0.65), MW (-0.38), acceptors (-0.45) and Crippen logP (+0.28). Wang et al. built their model on 30 selected descriptors.",
   "legend": "log10 Papp against the selected descriptor; line, median of equal-count bins.",
-  "change": "Descriptor. Output: Spearman correlation."
+  "change": "Descriptor; hover for names and values; drag a rectangle to select compounds for their medians; PNG and CSV export. Output: Spearman correlation."
  },
  "abs/Property rules": {
   "watch": "Rule of five (Lipinski): MW above 500, logP above 5, donors above 5, acceptors above 10. Veber: rotatable bonds above 10, TPSA above 140 A^2. Of the 578 compounds of Hou et al. (2007), 78 have a fraction absorbed of 30% or less (poor). Calling all compounds good scores 86.5%, and the rule of five with one violation 86.7%. The ROC area of Crippen logP is 0.27: poorly absorbed compounds have lower logP.",
   "legend": "Left: classification of poor and good compounds by the rule set. Right: ROC area of each descriptor for poor against good.",
-  "change": "Preset, thresholds, violations required. Outputs: compounds caught and flagged, accuracy, baseline, balanced accuracy."
+  "change": "Preset, thresholds, violations required; hover a bar for its counts or AUC; PNG export. Outputs: compounds caught and flagged, accuracy, baseline, balanced accuracy."
  }
 };

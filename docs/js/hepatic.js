@@ -56,7 +56,7 @@ function hepScatter(el, rows, sel){
     var px = A.sx(r.d.obs), py = A.sy(Math.max(r.p, 0.0101)), on = sel && sel.name === r.d.name;
     x.fillStyle = HCLS[r.d.cls][1]; x.globalAlpha = on ? 1 : 0.85; x.beginPath(); x.arc(px, py, on ? 7 : 5, 0, 6.3); x.fill(); x.globalAlpha = 1;
     if (on) { x.strokeStyle = C.char; x.lineWidth = 2; x.stroke(); x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(r.d.name, px + 10, py - 8); x.font = '12px Aptos, "Segoe UI", sans-serif'; }
-    pts.push({ x: px, y: py, r: r });
+    pts.push({ x: px, y: py, r: r, vx: r.d.obs, vy: r.p });
   });
   el._pts = pts; el._g = g; return g;
 }

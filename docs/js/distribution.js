@@ -30,7 +30,7 @@ function dScatter(el, pts, o){
   var hit = [];
   pts.forEach(function(p){ var px = A.sx(Math.min(Math.max(p.x, Math.pow(10, o.xlo) * 1.001), Math.pow(10, o.xhi) * 0.999)), py = A.sy(Math.min(Math.max(p.y, Math.pow(10, o.ylo) * 1.001), Math.pow(10, o.yhi) * 0.999)), on = o.sel && o.sel === p.d;
     x.fillStyle = p.col; x.globalAlpha = on ? 1 : 0.65; x.beginPath(); x.arc(px, py, on ? 7 : 3.6, 0, 6.3); x.fill(); x.globalAlpha = 1; if (on) { x.strokeStyle = C.char; x.lineWidth = 2; x.stroke(); x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(p.d.name || p.d.id, px + 10, py - 8); x.font = '12px Aptos, "Segoe UI", sans-serif'; }
-    hit.push({ x: px, y: py, r: p.d }); });
+    hit.push({ x: px, y: py, r: p.d, vx: p.x, vy: p.y }); });
   var lx = box.l + 8; x.font = '600 11px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left';
   (o.curves || []).forEach(function(c){ if (!c.label) return; x.strokeStyle = c.col; x.lineWidth = 2; x.setLineDash(c.dash || []); x.beginPath(); x.moveTo(lx, box.t + 10); x.lineTo(lx + 14, box.t + 10); x.stroke(); x.setLineDash([]); x.fillStyle = C.char; x.fillText(c.label, lx + 18, box.t + 14); lx += x.measureText(c.label).width + 34; });
   x.font = '12px Aptos, "Segoe UI", sans-serif'; el._pts = hit; el._g = g; return g;
@@ -153,7 +153,7 @@ DIS.add({ short: 'Half-life from CL and Vss', level: 'applied', title: 'Half-lif
       lr.forEach(function(v){ var k = Math.floor((v - lo) / (hi - lo) * nb); if (k >= 0 && k < nb) cnt[k]++; }); var ym = Math.max.apply(null, cnt) * 1.15, x = g.x, bw = (box.r - box.l) / nb;
       x.strokeStyle = C.silver; x.fillStyle = C.mid; x.textAlign = 'center'; [0.1, 0.25, 0.5, 1, 2, 4, 10].forEach(function(v){ var xp = box.l + (Math.log10(v) - lo) / (hi - lo) * (box.r - box.l); x.beginPath(); x.moveTo(xp, box.t); x.lineTo(xp, box.b); x.stroke(); x.fillText(String(v), xp, box.b + 16); });
       cnt.forEach(function(c, k){ var hg = c / ym * (box.b - box.t), mid = lo + (k + 0.5) * (hi - lo) / nb, ok = Math.abs(mid) <= Math.log10(2); x.fillStyle = ok ? C.red : C.tint; x.fillRect(box.l + k * bw + 1, box.b - hg, bw - 2, hg); });
-      x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.fillText('Predicted over true half-life', (box.l + box.r) / 2, box.b + 33); x.font = '12px Aptos, "Segoe UI", sans-serif';
+      cb._hist = { cnt: cnt, lo: lo, hi: hi, box: box, log: true, name: 'Predicted over true half-life' }; x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.fillText('Predicted over true half-life', (box.l + box.r) / 2, box.b + 33); x.font = '12px Aptos, "Segoe UI", sans-serif';
       var ana = Math.exp(Math.sqrt(sc * sc + sv * sv - 2 * rho * sc * sv));
       qs('.rb', pn2).innerHTML = 'Half-life error: <b>' + (100 * w2 / N).toFixed(0) + ' percent</b> within 2-fold of the true value. Geometric standard deviation: <b>' + ana.toFixed(2) + '</b> (from the CL and Vss values and their correlation). Dark bars lie within 2-fold.';
       api.stat('Half-life within 2-fold: ' + (100 * w2 / N).toFixed(0) + ' percent');
@@ -177,7 +177,7 @@ DIS.add({ short: 'Blood to plasma ratio', level: 'applied', title: 'Blood to pla
       x.fillStyle = 'rgba(15,110,140,.09)'; x.beginPath(); x.moveTo(A.sx(0.01), A.sy(0.02)); x.lineTo(A.sx(100), A.sy(200)); x.lineTo(A.sx(100), A.sy(50)); x.lineTo(A.sx(0.01), A.sy(0.005)); x.closePath(); x.fill();
       x.strokeStyle = C.mid; x.lineWidth = 1.2; x.setLineDash([5, 4]); x.beginPath(); x.moveTo(A.sx(0.01), A.sy(0.01)); x.lineTo(A.sx(100), A.sy(100)); x.stroke(); x.setLineDash([]);
       var hit = [];
-      rows.forEach(function(r){ var px = A.sx(r.o), py = A.sy(Math.max(r.p, 0.0101)), on = sel === r.d; x.fillStyle = HCLS[r.d.cls][1]; x.globalAlpha = on ? 1 : 0.85; x.beginPath(); x.arc(px, py, on ? 7 : 5, 0, 6.3); x.fill(); x.globalAlpha = 1; if (on) { x.strokeStyle = C.char; x.lineWidth = 2; x.stroke(); x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(r.d.name, px + 10, py - 8); x.font = '12px Aptos, "Segoe UI", sans-serif'; } hit.push({ x: px, y: py, r: r.d }); });
+      rows.forEach(function(r){ var px = A.sx(r.o), py = A.sy(Math.max(r.p, 0.0101)), on = sel === r.d; x.fillStyle = HCLS[r.d.cls][1]; x.globalAlpha = on ? 1 : 0.85; x.beginPath(); x.arc(px, py, on ? 7 : 5, 0, 6.3); x.fill(); x.globalAlpha = 1; if (on) { x.strokeStyle = C.char; x.lineWidth = 2; x.stroke(); x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(r.d.name, px + 10, py - 8); x.font = '12px Aptos, "Segoe UI", sans-serif'; } hit.push({ x: px, y: py, r: r.d, vx: r.o, vy: r.p }); });
       cvs._pts = hit; cvs._g = g;
       var sc = dScore(rows), byc = ['base', 'neutral', 'acid'].map(function(k){ var s = dScore(rows.filter(function(r){ return r.d.cls === k; })); return [HCLS[k][0], s.gmfe.toFixed(2) + ', bias ' + s.bias.toFixed(2)]; });
       var r0 = sel && rows.filter(function(r){ return r.d === sel; })[0];
@@ -203,9 +203,9 @@ DIS.add({ short: 'Sensitivity of Vss', level: 'advanced', title: 'Sensitivity of
       var sx = function(l){ return zero + l / span * (box.r - box.l) / 2; };
       x.strokeStyle = C.silver; x.fillStyle = C.mid; x.lineWidth = 1; x.textAlign = 'center'; [-1, -0.5, 0, 0.5, 1].forEach(function(t){ var l = t * Math.log10(f); x.beginPath(); x.moveTo(sx(l), box.t); x.lineTo(sx(l), box.b); x.stroke(); x.fillText(Math.pow(10, l).toFixed(2), sx(l), box.b + 16); });
       x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.fillText('Vss relative to the unperturbed value', zero, box.b + 33); x.textAlign = 'left'; x.fillText('Input divided by ' + f.toFixed(1) + ' (left bar), multiplied (right bar)', box.l, 16); x.font = '12px Aptos, "Segoe UI", sans-serif';
-      var lines = [];
+      var lines = []; cvs._bars = [];
       items.forEach(function(it, i){ var lo = Math.log10(it[1](1 / f) / base), hi = Math.log10(it[1](f) / base), y = box.t + i * bh + 6; x.fillStyle = C.char; x.textAlign = 'right'; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.fillText(it[0], box.l - 8, y + bh / 2 + 2); x.font = '12px Aptos, "Segoe UI", sans-serif';
-        x.fillStyle = C.tint; x.fillRect(Math.min(sx(0), sx(lo)), y, Math.abs(sx(lo) - sx(0)), bh - 14); x.fillStyle = C.red; x.fillRect(Math.min(sx(0), sx(hi)), y, Math.abs(sx(hi) - sx(0)), bh - 14); lines.push([it[0], Math.pow(10, lo).toFixed(2) + ' to ' + Math.pow(10, hi).toFixed(2)]); });
+        x.fillStyle = C.tint; x.fillRect(Math.min(sx(0), sx(lo)), y, Math.abs(sx(lo) - sx(0)), bh - 14); x.fillStyle = C.red; x.fillRect(Math.min(sx(0), sx(hi)), y, Math.abs(sx(hi) - sx(0)), bh - 14); lines.push([it[0], Math.pow(10, lo).toFixed(2) + ' to ' + Math.pow(10, hi).toFixed(2)]); cvs._bars.push({ x0: Math.min(sx(0), sx(lo)), x1: Math.max(sx(0), sx(lo)), y0: y, y1: y + bh - 14, lines: [it[0] + ' divided by ' + f.toFixed(1), 'Vss x ' + Math.pow(10, lo).toFixed(2)] }, { x0: Math.min(sx(0), sx(hi)), x1: Math.max(sx(0), sx(hi)), y0: y, y1: y + bh - 14, lines: [it[0] + ' multiplied by ' + f.toFixed(1), 'Vss x ' + Math.pow(10, hi).toFixed(2)] }); });
       x.strokeStyle = C.char; x.lineWidth = 1.5; x.beginPath(); x.moveTo(zero, box.t); x.lineTo(zero, box.b); x.stroke();
       var q = otParts(fup, fut);
       qs('.tl', side).innerHTML = '<div class="score" style="margin-bottom:8px"><b>Vss</b><div class="v">' + hfx(base) + ' L/kg</div><div class="s">tissue term ' + (100 * q.tissue / base).toFixed(0) + ' percent of the total</div></div><h4>Vss ratio, divided to multiplied</h4>' + dRows(lines);
