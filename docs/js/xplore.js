@@ -13,7 +13,7 @@ XP.install = function(){
   });
 };
 XP.med = function(a){ var s = a.slice().sort(function(p, q){ return p - q; }); return s.length ? s[Math.floor(s.length / 2)] : NaN; };
-XP.label = function(r){ return r.name || (r.d && (r.d.name || r.d.id)) || r.id || ''; };
+XP.label = function(r){ if (r.s && r.i) return r.s + ' with ' + r.i; return r.name || (r.d && (r.d.name || r.d.id)) || r.id || ''; };
 
 XP.wire = function(api, h, spec){
   var cvs = Array.prototype.slice.call(api.inner.querySelectorAll('canvas')), sb = api.sbar, st = [];
@@ -166,6 +166,10 @@ XP.wire = function(api, h, spec){
     })()] });
   XP.add('abs', 'Permeability descriptors', { name: 'permeability-descriptors', csvPts: true, cv: [{ mode: 'xy', cols: ['Compound', 'Descriptor', 'Caco-2 log10 Papp (cm/s)'], tip: function(r, q, X){ var dk = X.sel('k'); return [r.name, 'log10 Papp ' + r.y.toFixed(2), dk + ' ' + r[dk]]; }, stats: function(rs, pts, X){ var dk = X.sel('k'); return [rs.length + ' selected', 'Median log10 Papp ' + XP.med(rs.map(function(r){ return r.y; })).toFixed(2), 'Median ' + dk + ' ' + hfx(XP.med(rs.map(function(r){ return r[dk]; })))]; } }] });
   XP.add('abs', 'Property rules', { name: 'property-rules', cv: [{}, {}] });
+
+  /* ---------------- tab 10 ---------------- */
+  XP.add('ddi', 'Predicted against observed AUC ratio', { name: 'predicted-against-observed-auc-ratio', csvPts: true, cv: [{ xn: 'observed', yn: 'predicted', cols: ['Study', 'Observed AUC ratio', 'Predicted AUC ratio (1 + [I]/Ki)'], tip: function(r, q){ return [r.s + ' with ' + r.i, 'CYP' + r.c + ', Ki ' + hfx(r.k) + ' uM', 'observed ' + r.a, 'predicted ' + hfx(q.vy)]; } }] });
+  XP.add('ddi', 'Inhibitor potency and exposure', { name: 'inhibitor-potency-and-exposure', csvPts: true, cv: [{ mode: 'xy', xn: 'Ki', yn: '[I]', cols: ['Study', 'Ki (uM)', 'Inhibitor concentration (uM)'], tip: function(r, q){ return [r.i, 'with ' + r.s + ', CYP' + r.c, 'Ki ' + hfx(r.k) + ' uM', '[I] ' + hfx(q.vy) + ' uM', 'observed AUC ratio ' + r.a]; }, stats: function(rs){ var pos = rs.filter(function(r){ return r.a >= 2; }).length; return [rs.length + ' selected', 'AUC ratio 2 or more: ' + pos + ' of ' + rs.length, 'Median Ki ' + hfx(XP.med(rs.map(function(r){ return r.k; }))) + ' uM']; } }] });
 })();
 
 XP.install();

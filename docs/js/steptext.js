@@ -230,5 +230,35 @@ var STEPTEXT = {
   "watch": "Rule of five (Lipinski): MW above 500, logP above 5, donors above 5, acceptors above 10. Veber: rotatable bonds above 10, TPSA above 140 A^2. Of the 578 compounds of Hou et al. (2007), 78 have a fraction absorbed of 30% or less (poor). Calling all compounds good scores 86.5%, and the rule of five with one violation 86.7%. The ROC area of Crippen logP is 0.27: poorly absorbed compounds have lower logP.",
   "legend": "Left: classification of poor and good compounds by the rule set. Right: ROC area of each descriptor for poor against good.",
   "change": "Preset, thresholds, violations required; hover a bar for its counts or AUC; PNG export. Outputs: compounds caught and flagged, accuracy, baseline, balanced accuracy."
+ },
+ "ddi/Reversible inhibition": {
+  "watch": "For a competitive inhibitor of the enzyme that clears the substrate, AUCR = 1 + [I] / Ki. With a fraction fm of clearance through the inhibited enzyme, AUCR = 1 / [fm / (1 + [I] / Ki) + 1 - fm], which approaches 1 / (1 - fm) as [I] / Ki increases. An AUC ratio of 2 or more is the usual positive threshold; it is reached at [I] / Ki = 1 when fm = 1.",
+  "legend": "AUC ratio against [I] / Ki for fm = 1, 0.9, 0.7, 0.5 and 0.3 (grey) and for the fm set (red). Dashed lines: AUC ratio 2, [I] / Ki = 1 and the ceiling 1 / (1 - fm). Grey dashed curves are pinned values of fm.",
+  "change": "[I], Ki, fm; drag the point (horizontal sets [I], vertical sets fm); hover for the ratio at any [I] / Ki; Pin keeps up to three; PNG and CSV export. Outputs: AUC ratio, ceiling, clearance reduction."
+ },
+ "ddi/Inhibitor concentration": {
+  "watch": "Ito et al. (2004) used four estimates of the inhibitor concentration: the average during repeated oral dosing, [I]av = (D / tau) / (CL/F); the unbound average, fu x [I]av; the maximum, [I]max = [I]av k tau / (1 - exp(-k tau)); and the maximum concentration at the liver inlet, [I]in = [I]av + ka Fa D / Qh, with Qh = 1610 mL/min. Each is divided by Ki to give the ratio that enters the AUC ratio.",
+  "legend": "Four inhibitor concentrations for the regimen set (logarithmic axis, uM) with the value of Ki as a dashed line; bar labels give [I] and [I] / Ki.",
+  "change": "Dose, MW, interval, CL/F, half-life, ka x Fa, fu, Ki; drag the Ki line; hover a bar for [I] / Ki and the AUC ratio at fm = 1; PNG and CSV export. Outputs: the four concentrations and ratios."
+ },
+ "ddi/Predicted against observed AUC ratio": {
+  "watch": "Observed AUC ratios from 190 in vivo studies (CYP3A4, n = 109; CYP2D6, n = 56; CYP2C9, n = 25) are compared with the prediction 1 + [I] / Ki. Mean observed ratios are 4.5 for CYP3A4, 2.6 for CYP2D6 and 2.0 for CYP2C9. Predicted values are within 2-fold of observed for 110 of 190 studies with [I]av and 98 with [I]in, which over-predicts on average (bias 2.2). At [I] / Ki of 1 or more, [I]in identifies 65 of the 93 studies with an AUC ratio of 2 or more and [I]av,u identifies 9.",
+  "legend": "Observed AUC ratio against 1 + [I] / Ki for the enzyme and concentration chosen; shaded band, within 2-fold; dashed lines mark an AUC ratio of 2. Points above the horizontal line and left of the vertical line are false negatives.",
+  "change": "Enzyme, inhibitor concentration; hover for substrate, inhibitor and values; drag a rectangle to select studies for their score; click a study for its inputs; PNG and CSV export. Outputs: within 2-fold, average fold error, bias, classification counts."
+ },
+ "ddi/Cutoff and classification": {
+  "watch": "A study is predicted positive when [I] / Ki is at least the cutoff and observed positive when the AUC ratio is at least 2. At a cutoff of 1, [I]in identifies 65 of 93 observed positives with 46 false positives among 97 negatives; at 0.1 it identifies 92 with 90 false positives. [I]av,u identifies 9 at a cutoff of 1. The counts follow the pattern of Table 5 in Ito et al. (2004), which used a subset of the studies for CYP3A4 and CYP2D6.",
+  "legend": "Sensitivity and false-positive rate against the cutoff on [I] / Ki for the enzyme and concentration chosen. Table: classification counts at the cutoff for the four concentration definitions.",
+  "change": "Enzyme, concentration, cutoff, positive threshold; drag the cutoff line; hover for rates; PNG and CSV export. Outputs: counts and sensitivity at the cutoff."
+ },
+ "ddi/Inhibitor potency and exposure": {
+  "watch": "Ki in the database spans 0.0085 to 240 uM, 4.5 orders of magnitude. Each study is placed by Ki and the inhibitor concentration; points above the line [I] = Ki have [I] / Ki above 1. 93 of 190 studies have an AUC ratio of 2 or more.",
+  "legend": "Inhibitor concentration against Ki for each study; lines mark [I] = Ki and [I] = 0.1 Ki; red points have an AUC ratio of 2 or more.",
+  "change": "Enzyme, inhibitor concentration; hover for names and values; drag a rectangle to select studies; click a study for its inputs; PNG and CSV export. Outputs: Ki range, counts above [I] = Ki and their observed outcome."
+ },
+ "ddi/Time-dependent inhibition and induction": {
+  "watch": "Time-dependent inhibition lowers enzyme content at the rate kobs = kinact [I] / (KI + [I]), giving B = kdeg / (kdeg + kobs). Induction raises enzyme content, C = 1 + Emax [I] / (EC50 + [I]). With A = 1 / (1 + [I] / Ki) for reversible inhibition, the combined AUC ratio is 1 / [fm A B C + 1 - fm]. Intestinal terms are omitted. kdeg is the enzyme degradation rate constant; 0.019 per h is used here, of the order used for hepatic CYP3A. No in vivo data are plotted.",
+  "legend": "AUC ratio against [I] for reversible inhibition, time-dependent inhibition, induction and their combination. Grey dashed curves are pinned parameter sets.",
+  "change": "[I], fm, Ki, kinact, KI, kdeg, Emax, EC50; drag the [I] line; hover for each term; Pin keeps up to two; PNG and CSV export. Outputs: A, B, C and the AUC ratios."
  }
 };

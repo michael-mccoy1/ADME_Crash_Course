@@ -147,7 +147,31 @@ var GUIDE = {
         "Obach RS (1999), Drug Metab Dispos 27:1350: observed clearance for the hepatic first-pass limit.",
         "AqSolDB (Sorkun et al., 2019), Caco-2 (Wang et al., 2016) and human intestinal absorption (Hou et al., 2007) sets from Therapeutics Data Commons (CC BY 4.0), with descriptors calculated by RDKit."
       ]
-    }
+    },
+    "ddi": {
+        "scope": "Static prediction of the substrate AUC ratio from [I] / Ki for reversible inhibition, four definitions of the inhibitor concentration, and their performance against 190 in vivo studies of CYP3A4, CYP2D6 and CYP2C9 inhibition. Time-dependent inhibition and induction are given as equations only. Transporter-mediated interactions and dynamic (physiologically based) models are not covered.",
+        "notation": [
+              [
+                    "AUCR",
+                    "ratio of the substrate AUC with and without the perpetrator."
+              ],
+              [
+                    "fm",
+                    "fraction of the substrate clearance through the inhibited enzyme."
+              ],
+              [
+                    "[I]",
+                    "inhibitor concentration: [I]av, [I]av,u, [I]max or [I]in (step 2)."
+              ],
+              [
+                    "Ki",
+                    "reversible inhibition constant, uM."
+              ]
+        ],
+        "data": [
+              "Ito K, Brown HS, Houston JB (2004), Br J Clin Pharmacol 57:473: AUC ratio, Ki and [I] / Ki for 190 of 193 in vivo studies (Tables 2 to 4; open access). Three studies with a missing inhibitor concentration are omitted."
+        ]
+  }
   },
   "steps": {
     "why/Concentration and effect": {
@@ -287,6 +311,24 @@ var GUIDE = {
     },
     "abs/Property rules": {
       "notice": "Accuracy must be read against the baseline of 86.5%."
+    },
+    "ddi/Reversible inhibition": {
+      "notice": "At fm = 0.9 the AUC ratio cannot exceed 10, however large [I] / Ki becomes."
+    },
+    "ddi/Inhibitor concentration": {
+      "notice": "[I]in exceeds [I]max in 188 of the 190 studies, and [I]av,u is [I]av multiplied by fu."
+    },
+    "ddi/Predicted against observed AUC ratio": {
+      "notice": "At [I] / Ki of 1 or more, [I]in identifies 65 of the 93 studies with an AUC ratio of 2 or more and [I]av,u identifies 9."
+    },
+    "ddi/Cutoff and classification": {
+      "notice": "Lowering the cutoff on [I]in / Ki from 1 to 0.1 raises false positives from 46 to 90 of 97."
+    },
+    "ddi/Inhibitor potency and exposure": {
+      "notice": "28 studies with an AUC ratio of 2 or more have [I]in / Ki below 1."
+    },
+    "ddi/Time-dependent inhibition and induction": {
+      "notice": "Induction lowers the AUC ratio below 1, so the combined curve can cross 1 as [I] increases."
     }
   }
 };

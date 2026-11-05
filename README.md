@@ -18,7 +18,9 @@ Tab 08, distribution, has eight steps. Source data: Obach et al. (2008), Drug Me
 
 Tab 09, absorption and bioavailability, has five steps. Source data: Obach (1999) for the hepatic first-pass limit; Hou et al. (2007) human intestinal absorption (578 compounds), Wang et al. (2016) Caco-2 permeability (910 compounds) and AqSolDB (Sorkun et al., 2019), all through Therapeutics Data Commons (CC BY 4.0), with descriptors calculated by RDKit.
 
-The quiz (tab 10) has 80 questions on tabs 01 to 09. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+Tab 10, drug-drug interactions, has six steps: reversible inhibition and the AUC ratio, the four definitions of inhibitor concentration, predicted against observed AUC ratio, cutoff and classification, inhibitor potency and exposure, and time-dependent inhibition and induction (equations only). Source data: Ito K, Brown HS, Houston JB (2004), Br J Clin Pharmacol 57:473, Tables 2 to 4 (open access): 190 of 193 in vivo studies of CYP3A4, CYP2D6 and CYP2C9 inhibition with observed AUC ratio, Ki and [I] / Ki; three rows with a missing inhibitor concentration are omitted. The counts at [I] / Ki of 1 follow Table 5 of that paper (CYP2C9 exactly; CYP3A4 and CYP2D6 differ because the paper used a subset).
+
+The quiz (tab 11) has 90 questions on tabs 01 to 10. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally
 
