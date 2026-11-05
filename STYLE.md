@@ -11,6 +11,7 @@ Working DMPK scientists. Do not define clearance, volume of distribution, fracti
 * Forbidden: why this matters, imagine, think of, notice how, let's, simply, just, powerful, crucial, key insight, robust, "it turns out", "the idea is", "under the hood".
 * Do not state that something is easy or intuitive. Do not praise.
 * Give numbers with their source. Say which data set a result comes from.
+* Spelling: American (ionization, summarize, modeled).
 * Typography: no em dashes, en dashes, middle dots, multiplication signs or ellipsis characters.
 
 ## Numbers
