@@ -16,6 +16,151 @@ DOSE.noOpts = true;
   var DR = OBACH08.filter(function(d){ return d.cl > 0 && d.t12 > 0; });
   var CLH = DR.map(function(d){ return d.cl * 70 * 60 / 1000; });
 
+  /* ===== step 0: animated regimen schematic (depot, central compartment, drain) coupled to the analytic multiple-dose equations ===== */
+  DOSE.add({ short: 'Regimen schematic', level: 'foundations', ord: 5, title: 'Dosing regimen and body model',
+    build: function(api){
+      var S = IX.state('dsx', { d: 200, tau: 12, cl: 5, v: 100, f: 0.8, ka: 1.5, lo: 1.5, hi: 4, sp: 4 }), pins = [], lockYm = null, G = null, D = null;
+      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
+      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="sd"></div>');
+      var c1 = api.addControl(IX.slider('d', 'Dose', 10, 1000, 10, S.d, 'mg')), c2 = api.addControl(IX.slider('tau', 'Interval tau', 2, 48, 1, S.tau, 'h')), c3 = api.addControl(IX.slider('cl', 'CL', 1, 50, 1, S.cl, 'L/h')), c4 = api.addControl(IX.slider('v', 'V', 10, 500, 10, S.v, 'L')), c5 = api.addControl(IX.slider('f', 'F', 0.1, 1, 0.01, S.f)), c6 = api.addControl(IX.slider('ka', 'ka', 0.2, 5, 0.1, S.ka, '1/h')), c7 = api.addControl(IX.slider('sp', 'Speed', 0, 24, 0.5, S.sp, 'h/s'));
+      var c8 = api.addControl('<button type="button" class="btn sm gv">Give dose now</button> <button type="button" class="btn sm ghost rs">Restart</button>');
+      var CTL = [['d', c1], ['tau', c2], ['cl', c3], ['v', c4], ['f', c5], ['ka', c6], ['sp', c7]], R = SC.rand(11);
+      var tm = 0, doses = [], nDose = 0, nextT = 0, lastSched = -1e9, pills = [], parts = [], snap = true;
+      var CX = 175, DEP = { l: 115, r: 235, t: 44, b: 100 }, CT = 130, CB = 220, GX = 578, GW = 18, GT = 44, GB = 220, PB = { l: 58, r: 606, t: 276, b: 450 };
+      function sync(){ CTL.forEach(function(r){ qs('.' + r[0], r[1]).value = S[r[0]]; }); }
+      function P(){ return { d: S.d, tau: S.tau, cl: S.cl, v: S.v, f: S.f, ka: S.ka }; }
+      /* same one-compartment oral model as 'Dose and steady state': C = F D ka / (V (ka - ke)) (exp(-ke s) - exp(-ka s)), superposed over doses */
+      function kin(p){ var ke = p.cl / p.v, ka = Math.abs(p.ka - ke) < 1e-3 ? p.ka + 0.01 : p.ka; return { ke: ke, ka: ka, a: p.f * p.d * ka / (p.v * (ka - ke)) }; }
+      function concAt(p, t){ var q = kin(p), c = 0, i, s; for (i = 0; i < doses.length; i++) { s = t - doses[i].t; if (s >= 0) c += q.a * (Math.exp(-q.ke * s) - Math.exp(-q.ka * s)); } return Math.max(c, 0); }
+      function depotAt(p, t){ var q = kin(p), a = 0, i, s; for (i = 0; i < doses.length; i++) { s = t - doses[i].t; if (s >= 0) a += p.f * p.d * Math.exp(-q.ka * s); } return a; }
+      function concReg(p, t){ var q = kin(p), n, c = 0, s; for (n = 0; n * p.tau <= t + 1e-9; n++) { s = t - n * p.tau; c += q.a * (Math.exp(-q.ke * s) - Math.exp(-q.ka * s)); } return c; }
+      function ssv(p){ var q = kin(p), e1 = 1 - Math.exp(-q.ke * p.tau), e2 = 1 - Math.exp(-q.ka * p.tau), mx = 0, mn = 1e9, i, s, c; for (i = 0; i <= 200; i++) { s = p.tau * i / 200; c = q.a * (Math.exp(-q.ke * s) / e1 - Math.exp(-q.ka * s) / e2); mx = Math.max(mx, c); mn = Math.min(mn, c); } return { mx: mx, mn: Math.max(mn, 0), ag: p.f * p.d / e2 }; }
+      function niceUp(v){ var e = Math.pow(10, Math.floor(Math.log10(v))), m = v / e, L = [1, 1.5, 2, 3, 5, 7.5, 10], i; for (i = 0; i < L.length; i++) if (L[i] >= m - 1e-9) return L[i] * e; return 10 * e; }
+      function derive(){ var p = P(), q = kin(p), th = 0.693 / q.ke, ss = ssv(p), u0 = D ? D.u : null;
+        D = { th: th, t90: 3.32 * th, css: p.f * p.d / (p.cl * p.tau), ss: ss, R: 1 / (1 - Math.exp(-q.ke * p.tau)), Tw: cl(Math.max(5 * p.tau, 1.6 * 3.32 * th), 24, 600), u: niceUp((ss.mx * p.v + ss.ag) / 240) };
+        if (u0 !== D.u) snap = true; }
+      function geo(){ var W = 60 + 240 * (S.v - 10) / 490; return { cen: { l: CX - W / 2, r: CX + W / 2, t: CT, b: CB }, dw: 6 + 48 * (S.cl - 1) / 49 }; }
+      function advanceTo(t){ while (nextT <= t + 1e-9) { doses.push({ t: nextT, x: false }); lastSched = nextT; nDose++; if (ANIM) pills.push({ y: 4 }); nextT += S.tau; } tm = t;
+        var q = kin(P()); doses = doses.filter(function(o){ var s = tm - o.t; return !(s * q.ke > 30 && s * q.ka > 30); }); }
+      function giveNow(){ doses.push({ t: tm, x: true }); nDose++; if (ANIM) pills.push({ y: 4 }); }
+      function restart(){ tm = 0; doses = []; nDose = 0; nextT = 0; lastSched = -1e9; pills = []; parts = []; snap = true; }
+      function rin(b){ return { x: b.l + 6 + R() * (b.r - b.l - 12), y: b.t + 6 + R() * (b.b - b.t - 12) }; }
+      function mk(k, pt){ return { k: k, x: pt.x, y: pt.y, vx: (R() - 0.5) * 40, vy: (R() - 0.5) * 40, wp: [] }; }
+      function fitCount(k, n, b){ var have = parts.filter(function(q){ return q.k === k; }), i; for (i = have.length; i > n; i--) parts.splice(parts.indexOf(have[i - 1]), 1); for (i = have.length; i < n && parts.length < 300; i++) parts.push(mk(k, rin(b))); }
+      function move(dt, ge){
+        parts.forEach(function(q){
+          if (q.k === 'g' || q.k === 'c') { var b = q.k === 'g' ? DEP : ge.cen; q.vx = (q.vx + (R() - 0.5) * 300 * dt) * 0.98; q.vy = (q.vy + (R() - 0.5) * 300 * dt) * 0.98; var sp = Math.hypot(q.vx, q.vy); if (sp > 35) { q.vx *= 35 / sp; q.vy *= 35 / sp; } q.x += q.vx * dt; q.y += q.vy * dt;
+            if (q.x < b.l + 4) { q.x = b.l + 4; q.vx = Math.abs(q.vx); } if (q.x > b.r - 4) { q.x = b.r - 4; q.vx = -Math.abs(q.vx); } if (q.y < b.t + 4) { q.y = b.t + 4; q.vy = Math.abs(q.vy); } if (q.y > b.b - 4) { q.y = b.b - 4; q.vy = -Math.abs(q.vy); } }
+          else if (q.k === 'l') { q.x -= 70 * dt; q.y += 6 * dt; if (q.x < 40) q.dead = true; }
+          else { var st = (q.k === 'p' ? 150 : 90) * dt; while (st > 0 && q.wp.length) { var w = q.wp[0], d = Math.hypot(w.x - q.x, w.y - q.y); if (d <= st) { q.x = w.x; q.y = w.y; q.wp.shift(); st -= d; } else { q.x += (w.x - q.x) / d * st; q.y += (w.y - q.y) / d * st; st = 0; } }
+            if (!q.wp.length) { if (q.k === 'p') q.k = 'c'; else q.dead = true; } }
+        });
+        parts = parts.filter(function(q){ return !q.dead; });
+      }
+      function reconcile(dt, ge, Ng, Nc){
+        if (snap || dt === 0) { parts = parts.filter(function(q){ return q.k === 'g' || q.k === 'c'; }); fitCount('g', Ng, DEP); fitCount('c', Nc, ge.cen); snap = false; return; }
+        var g = parts.filter(function(q){ return q.k === 'g'; }), c = parts.filter(function(q){ return q.k === 'c'; }), np = parts.filter(function(q){ return q.k === 'p'; }).length, i;
+        if (g.length > Ng) { g.sort(function(a, b){ return Math.hypot(a.x - CX, a.y - DEP.b) - Math.hypot(b.x - CX, b.y - DEP.b); }); for (i = 0; i < g.length - Ng; i++) { g[i].k = 'p'; g[i].wp = [{ x: CX, y: DEP.b - 3 }, { x: CX, y: CT + 6 }, rin(ge.cen)]; } np += g.length - Ng; }
+        else if (g.length < Ng && !pills.length) { for (i = g.length; i < Ng && parts.length < 300; i++) parts.push(mk('g', { x: CX + (R() - 0.5) * 36, y: DEP.t + 6 + R() * 12 })); }
+        var tot = c.length + np;
+        if (tot > Nc) { c.sort(function(a, b){ return Math.hypot(a.x - CX, a.y - CB) - Math.hypot(b.x - CX, b.y - CB); }); for (i = 0; i < Math.min(c.length, tot - Nc); i++) { var ox = CX + (R() - 0.5) * ge.dw * 0.7; c[i].k = 'x'; c[i].wp = [{ x: ox, y: CB - 2 }, { x: ox, y: CB + 30 }]; } }
+        else if (tot < Nc) { for (i = tot; i < Nc && parts.length < 300; i++) parts.push(mk('c', rin(ge.cen))); }
+      }
+      function frame(dt){
+        if (!D) derive();
+        if (dt > 0 && S.sp > 0) advanceTo(tm + dt * S.sp); else advanceTo(!ANIM ? Math.max(tm, 0.9 * D.Tw) : tm);
+        var p = P(), ge = geo(), Ag = depotAt(p, tm), Cp = concAt(p, tm), Ng = Math.round(Ag / D.u), Nc = Math.round(Cp * p.v / D.u);
+        pills.forEach(function(o){ if (dt > 0) o.y += 220 * dt; if (o.y >= DEP.t + 4 || !ANIM) { o.done = true; if (ANIM) { var nl = Math.min(14, Math.round((1 - S.f) * S.d / D.u)), i; for (i = 0; i < nl && parts.length < 300; i++) parts.push({ k: 'l', x: DEP.l + 8 + R() * 14, y: DEP.t + 14 + R() * 26, vx: 0, vy: 0, wp: [] }); } } });
+        pills = pills.filter(function(o){ return !o.done; });
+        if (dt > 0) move(dt, ge);
+        reconcile(dt, ge, Ng, Nc);
+        drawAll(p, ge, Ag, Cp);
+      }
+      function drawAll(p, ge, Ag, Cp){
+        var g = cv(cvs), x = g.x, cen = ge.cen, dw = ge.dw, x0 = Math.max(0, tm - 0.9 * D.Tw), x1 = x0 + D.Tw, i, n = 220, pts = [], vmax = 0, tEnd = Math.min(tm, x1);
+        for (i = 0; i <= n && tEnd > x0; i++) { var tt = x0 + (tEnd - x0) * i / n, cc = concAt(p, tt); pts.push([tt, cc]); vmax = Math.max(vmax, cc); }
+        var ym = lockYm || Math.max(D.ss.mx, S.hi, D.css, vmax * 1.08 / 1.2) * 1.2;
+        G = { ym: ym, dw: dw };
+        /* clock and legend */
+        SC.text(x, 't = ' + tm.toFixed(1) + ' h, ' + nDose + (nDose === 1 ? ' dose' : ' doses'), 12, 18, { bold: true });
+        SC.text(x, S.sp > 0 ? 'next dose in ' + Math.max(0, nextT - tm).toFixed(1) + ' h' : 'paused (speed 0)', 12, 34, { color: C.mid, size: 11 });
+        SC.dot(x, 346, 14, 3.2, C.red); SC.text(x, '1 particle = ' + fx(D.u) + ' mg of drug', 354, 18, { size: 11 });
+        SC.dot(x, 346, 30, 3.2, GREY); SC.text(x, 'not bioavailable, (1 - F) x dose', 354, 34, { size: 11 });
+        /* depot */
+        SC.rr(x, DEP.l, DEP.t, DEP.r - DEP.l, DEP.b - DEP.t, 8); x.fillStyle = C.light; x.fill(); x.strokeStyle = C.bg; x.lineWidth = 1.5; x.stroke();
+        SC.arrow(x, DEP.l - 2, 84, 46, 84, GREY, 1.6, 7); SC.text(x, '1 - F', 80, 76, { size: 11, bold: true, color: C.mid, align: 'center' });
+        SC.text(x, 'Depot compartment (gut)', 340, 60, { bold: true }); SC.text(x, 'Ag = ' + fx(Ag) + ' mg', 340, 76, { color: C.mid });
+        /* central compartment, tinted by concentration */
+        var tint = SC.mix('#FFFFFF', C.tint, Math.min(1, Cp / ym) * 0.75);
+        SC.rr(x, cen.l, cen.t, cen.r - cen.l, cen.b - cen.t, 8); x.fillStyle = tint; x.fill(); x.strokeStyle = C.bg; x.lineWidth = 1.5; x.stroke();
+        /* absorption channel */
+        x.fillStyle = C.light; x.fillRect(CX - 5, DEP.b - 2, 10, CT - DEP.b + 4); x.strokeStyle = C.bg; x.lineWidth = 1.5; x.beginPath(); x.moveTo(CX - 6, DEP.b); x.lineTo(CX - 6, CT); x.moveTo(CX + 6, DEP.b); x.lineTo(CX + 6, CT); x.stroke();
+        SC.arrow(x, CX + 22, DEP.b + 4, CX + 22, CT - 4, C.red, 2, 8); SC.text(x, 'ka = ' + S.ka.toFixed(1) + ' 1/h, ' + fx(kin(p).ka * Ag) + ' mg/h', CX + 30, 119, { bold: true, color: C.red, size: 11 });
+        /* drain, width proportional to CL */
+        x.fillStyle = tint; x.fillRect(CX - dw / 2, CB - 2.5, dw, 5); x.fillStyle = C.light; x.fillRect(CX - dw / 2, CB + 1, dw, 16);
+        x.strokeStyle = C.bg; x.beginPath(); x.moveTo(CX - dw / 2, CB); x.lineTo(CX - dw / 2, CB + 18); x.moveTo(CX + dw / 2, CB); x.lineTo(CX + dw / 2, CB + 18); x.stroke();
+        SC.dot(x, CX + dw / 2, CB + 10, 6, C.char, '#FFFFFF'); SC.text(x, 'drag', CX - dw / 2 - 7, CB + 14, { size: 11, color: C.mid, align: 'right' });
+        SC.arrow(x, CX + 44, CB + 4, CX + 44, CB + 30, C.warn, 2, 8); SC.text(x, 'CL = ' + S.cl + ' L/h, CL x C = ' + fx(S.cl * Cp) + ' mg/h', CX + 52, CB + 21, { bold: true, color: C.warn, size: 11 });
+        SC.text(x, 'Central compartment', 340, 146, { bold: true }); SC.text(x, 'V = ' + S.v + ' L', 340, 162, { color: C.mid }); SC.text(x, 'C = ' + fx(Cp) + ' mg/L', 340, 178, { bold: true, color: C.red }); SC.text(x, 'A = C x V = ' + fx(Cp * S.v) + ' mg', 340, 194, { color: C.mid });
+        /* particles and falling tablets */
+        parts.forEach(function(q){ SC.dot(x, q.x, q.y, 2.8, q.k === 'l' ? GREY : C.red); });
+        pills.forEach(function(o){ SC.rr(x, CX - 10, o.y - 5, 20, 10, 5); x.fillStyle = C.warn; x.fill(); x.fillStyle = '#FFFFFF'; x.fillRect(CX - 0.5, o.y - 5, 1, 10); });
+        /* concentration gauge on the plot scale */
+        function gy(v){ return GB - Math.min(v, ym) / ym * (GB - GT); }
+        SC.rr(x, GX, GT, GW, GB - GT, 4); x.fillStyle = C.light; x.fill(); x.fillStyle = 'rgba(180,86,27,.14)'; x.fillRect(GX, gy(S.hi), GW, gy(S.lo) - gy(S.hi));
+        x.fillStyle = C.red; x.fillRect(GX + 3, gy(Cp), GW - 6, GB - gy(Cp)); x.strokeStyle = C.bg; x.lineWidth = 1; SC.rr(x, GX, GT, GW, GB - GT, 4); x.stroke();
+        x.strokeStyle = C.warn; x.lineWidth = 1.6; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(GX - 6, gy(S.hi)); x.lineTo(GX + GW + 3, gy(S.hi)); x.moveTo(GX - 6, gy(S.lo)); x.lineTo(GX + GW + 3, gy(S.lo)); x.stroke();
+        x.strokeStyle = C.char; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(GX - 6, gy(D.css)); x.lineTo(GX + GW + 3, gy(D.css)); x.stroke(); x.setLineDash([]);
+        SC.text(x, 'C (mg/L)', GX + GW / 2, 36, { bold: true, size: 11, align: 'center' });
+        SC.text(x, 'Cmax limit', GX - 10, gy(S.hi) - 3, { size: 11, color: C.warn, align: 'right' }); SC.text(x, 'Cmin target', GX - 10, gy(S.lo) + 12, { size: 11, color: C.warn, align: 'right' });
+        /* concentration-time plot */
+        function sx(t){ return PB.l + (t - x0) / (x1 - x0) * (PB.r - PB.l); } function sy(v){ return PB.b - Math.min(v, ym) / ym * (PB.b - PB.t); }
+        G.sy = sy;
+        x.strokeStyle = C.silver; x.fillStyle = C.mid; x.lineWidth = 1; x.font = '12px Aptos, "Segoe UI", sans-serif';
+        var yt = niceTicks(0, ym, 5), xt = niceTicks(x0, x1, 6); x.textAlign = 'right'; yt.v.forEach(function(v){ x.beginPath(); x.moveTo(PB.l, sy(v)); x.lineTo(PB.r, sy(v)); x.stroke(); x.fillText(tickText(v, yt.step), PB.l - 6, sy(v) + 4); });
+        x.textAlign = 'center'; xt.v.forEach(function(v){ x.beginPath(); x.moveTo(sx(v), PB.t); x.lineTo(sx(v), PB.b); x.stroke(); x.fillText(tickText(v, xt.step), sx(v), PB.b + 16); });
+        x.fillStyle = 'rgba(180,86,27,.10)'; x.fillRect(PB.l, sy(S.hi), PB.r - PB.l, sy(S.lo) - sy(S.hi));
+        x.strokeStyle = C.warn; x.lineWidth = 1.4; x.setLineDash([5, 4]); x.beginPath(); x.moveTo(PB.l, sy(S.hi)); x.lineTo(PB.r, sy(S.hi)); x.moveTo(PB.l, sy(S.lo)); x.lineTo(PB.r, sy(S.lo)); x.stroke();
+        x.strokeStyle = C.char; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(PB.l, sy(D.css)); x.lineTo(PB.r, sy(D.css)); x.stroke(); x.setLineDash([]);
+        SC.text(x, 'Cmax limit (drag)', PB.r - 6, sy(S.hi) - 5, { size: 11, bold: true, color: C.warn, align: 'right' }); SC.text(x, 'Cmin target (drag)', PB.r - 6, sy(S.lo) + 14, { size: 11, bold: true, color: C.warn, align: 'right' });
+        SC.text(x, 'Css,avg = F x dose / (CL x tau)', PB.l + 6, sy(D.css) - 5, { size: 11, bold: true });
+        if (D.t90 >= x0 && D.t90 <= x1) { var tx = sx(D.t90), rgt = tx > PB.r - 190; x.strokeStyle = C.mid; x.lineWidth = 1; x.setLineDash([3, 4]); x.beginPath(); x.moveTo(tx, PB.t); x.lineTo(tx, PB.b); x.stroke(); x.setLineDash([]); SC.text(x, '90% of steady state, ' + fx(D.t90) + ' h', tx + (rgt ? -4 : 4), PB.t + 12, { size: 11, color: C.mid, align: rgt ? 'right' : 'left' }); }
+        pins.forEach(function(q){ x.strokeStyle = GREY; x.lineWidth = 1.6; x.setLineDash([5, 4]); x.beginPath(); for (i = 0; i <= 200; i++) { var t2 = x0 + (x1 - x0) * i / 200, yy = sy(concReg(q, t2)); i ? x.lineTo(sx(t2), yy) : x.moveTo(sx(t2), yy); } x.stroke(); x.setLineDash([]); });
+        if (pts.length) { x.strokeStyle = C.red; x.lineWidth = 2.6; x.lineJoin = 'round'; x.beginPath(); pts.forEach(function(q, k){ k ? x.lineTo(sx(q[0]), sy(q[1])) : x.moveTo(sx(q[0]), sy(q[1])); }); x.stroke(); }
+        doses.forEach(function(o){ if (o.t < x0 || o.t > x1) return; var px = sx(o.t); x.fillStyle = o.x ? C.warn : C.char; x.beginPath(); x.moveTo(px - 4, PB.b); x.lineTo(px + 4, PB.b); x.lineTo(px, PB.b - 8); x.fill(); });
+        if (tm >= x0 && tm <= x1) { SC.dot(x, sx(tm), sy(Cp), 5, C.red, '#FFFFFF'); }
+        x.strokeStyle = C.char; x.lineWidth = 1.2; x.beginPath(); x.moveTo(PB.l, PB.b); x.lineTo(PB.r, PB.b); x.moveTo(PB.l, PB.t); x.lineTo(PB.l, PB.b); x.stroke();
+        SC.text(x, 'Time after the first dose (h)', (PB.l + PB.r) / 2, PB.b + 32, { bold: true, align: 'center' });
+        x.save(); x.translate(14, (PB.t + PB.b) / 2); x.rotate(-Math.PI / 2); SC.text(x, 'C (mg/L)', 0, 0, { bold: true, align: 'center' }); x.restore();
+      }
+      function upd(){
+        if (!D) derive(); var ss = D.ss, okLo = ss.mn >= S.lo, okHi = ss.mx <= S.hi;
+        qs('.dv', c1).textContent = S.d; qs('.tauv', c2).textContent = S.tau; qs('.clv', c3).textContent = S.cl; qs('.vv', c4).textContent = S.v; qs('.fv', c5).textContent = S.f.toFixed(2); qs('.kav', c6).textContent = S.ka.toFixed(1); qs('.spv', c7).textContent = S.sp.toFixed(1);
+        qs('.sd', side).innerHTML = fTile('Css,avg', fx(D.css) + ' mg/L', 'F x dose / (CL x tau)') + fRows([['Cmax,ss', fx(ss.mx) + ' mg/L'], ['Cmin,ss', fx(ss.mn) + ' mg/L'], ['Accumulation ratio R', fx(D.R)], ['Half-life, 0.693 V / CL', fx(D.th) + ' h'], ['Time to 90% of steady state', fx(D.t90) + ' h'], ['Cmin,ss at or above the target', okLo ? 'yes' : 'no'], ['Cmax,ss at or below the limit', okHi ? 'yes' : 'no'], ['Peak to trough', fx(ss.mx / Math.max(ss.mn, 1e-9))]]) + '<div class="hint" style="font-size:11.5px;margin-top:8px">R = 1 / (1 - exp(-k tau)), k = CL / V; 90% of steady state is reached after 3.32 half-lives. Drag the drain edge to set CL and the dashed limits on the plot to set the window.</div>';
+        api.stat('Css,avg ' + fx(D.css) + ' mg/L, Cmax,ss ' + fx(ss.mx) + ' and Cmin,ss ' + fx(ss.mn) + ' mg/L, ' + (okLo && okHi ? 'within the window' : 'outside the window'));
+      }
+      function onParam(){ var t0 = S.tau; derive(); if (lastSched > -1e8) nextT = lastSched + t0; upd(); }
+      CTL.forEach(function(r){ qs('.' + r[0], r[1]).addEventListener('input', function(){ S[r[0]] = +this.value; IX.save('dsx', S); onParam(); }); });
+      qs('.gv', c8).addEventListener('click', function(){ giveNow(); });
+      qs('.rs', c8).addEventListener('click', function(){ restart(); });
+      IX.tools(api, { pin: function(){ pins.push(P()); if (pins.length > 2) pins.shift(); }, clear: function(){ pins = []; }, canvases: function(){ return [cvs]; }, name: 'dosing-regimen-schematic',
+        csv: function(){ var p = P(), rows = [['t (h)', 'C (mg/L)', 'Depot amount (mg)']], i, T = Math.max(tm, 1e-6); for (i = 0; i <= 240; i++) rows.push([T * i / 240, concAt(p, T * i / 240), depotAt(p, T * i / 240)]); rows.push([], ['Dose times retained (h)'].concat(doses.map(function(o){ return o.t; })), ['Css,avg (mg/L)', D.css], ['Cmax,ss (mg/L)', D.ss.mx], ['Cmin,ss (mg/L)', D.ss.mn], ['Accumulation ratio R', D.R], ['Time to 90% of steady state (h)', D.t90]); return IX.csv(rows); } });
+      function onDrain(p){ return G && Math.hypot(p.x - (CX + G.dw / 2), p.y - (CB + 10)) < 11; }
+      function onLine(p, v){ return G && G.sy && p.x >= PB.l && p.x <= PB.r && near(p.y, G.sy(v), 7); }
+      IX.attach(cvs, {
+        move: function(p){ cvs.style.cursor = onDrain(p) ? 'ew-resize' : ((onLine(p, S.hi) || onLine(p, S.lo)) ? 'ns-resize' : 'default'); },
+        down: function(p){ if (onDrain(p)) return { k: 'cl' }; if (onLine(p, S.hi)) { lockYm = G.ym; return { k: 'hi' }; } if (onLine(p, S.lo)) { lockYm = G.ym; return { k: 'lo' }; } return null; },
+        drag: function(d, p){
+          if (d.k === 'cl') { var w = cl(2 * Math.abs(p.x - CX), 6, 54); S.cl = cl(Math.round(1 + (w - 6) / 48 * 49), 1, 50); sync(); onParam(); return; }
+          var v = Math.max((PB.b - p.y) / (PB.b - PB.t) * lockYm, 0.01);
+          if (d.k === 'hi') S.hi = Math.max(Math.round(v * 20) / 20, S.lo + 0.05); else S.lo = cl(Math.round(v * 20) / 20, 0.05, S.hi - 0.05); D.ss = ssv(P()); upd(); },
+        up: function(){ lockYm = null; IX.save('dsx', S); }
+      });
+      sync(); derive();
+      SC.run(cvs, function(dt){ frame(dt); });
+      return { render: function(){ upd(); frame(0); } };
+    } });
+
   /* ===== step 1: dose and steady state ===== */
   DOSE.add({ short: 'Dose and steady state', level: 'foundations', ord: 10, title: 'Dose, interval and steady state',
     build: function(api){

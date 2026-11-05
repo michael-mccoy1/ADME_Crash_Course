@@ -214,3 +214,183 @@ DIS.add({ short: 'Sensitivity of Vss', level: 'advanced', title: 'Sensitivity of
     qs('.a', c1).addEventListener('input', function(){ lf = +this.value; draw(); }); qs('.b', c2).addEventListener('input', function(){ lt = +this.value; draw(); }); qs('.p', c3).addEventListener('input', function(){ f = +this.value; draw(); });
     return { render: draw };
   } });
+
+/* ---------- binding schematic (sorted first: ord -1) ----------
+   Two compartments at equilibrium. Vp = 0.0436 L/kg and Vt = 0.151 + 0.38 L/kg for 70 kg, the same constants as the step 'What Vss measures'.
+   Particle model: each molecule is a four-state Markov chain (plasma or tissue, bound or unbound). Binding and unbinding are first order with
+   kon + koff = KB and koff / (kon + koff) = fu (plasma) or fu,t (tissue). Unbound transfer is first order with the same permeability-surface
+   product PS in both directions, kPT = PS / Vp and kTP = PS / Vt, so unbound concentrations equalize. Positions are drawn only: unbound molecules
+   move by Brownian motion (Ornstein-Uhlenbeck velocity); a transfer event sends the molecule through the nearest pore of the capillary wall. */
+(function(){
+  var W = 70, VP = OT.Vp * W, ND = 200, KB = 2, OCC = 0.5, TAVG = 15, TAU = 0.35, SIG = 230, PS = 4;
+  var PX0 = 10, PX1 = 210, WX1 = 222, TX1 = 614, BY0 = 32, BY1 = 296, MR = 3.6, BX0 = 84, BX1 = 600;
+  var GREY = '#A1B1C4';
+  function fx(v){ if (!isFinite(v)) return 'n/a'; return v < 0.01 ? String(+v.toPrecision(2)) : (v < 1 ? v.toFixed(3) : (v < 10 ? v.toFixed(2) : (v < 1000 ? v.toFixed(1) : Math.round(v).toLocaleString()))); }
+  function tile(label, value, sub){ return '<div class="score" style="margin-bottom:8px"><b>' + label + '</b><div class="v" style="font-size:1.5rem">' + value + '</div>' + (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>'; }
+  function rows(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:4px 0;font-size:12.5px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
+  function cl(v, a, b){ return Math.max(a, Math.min(b, v)); }
+  function gauss(r){ var u = 1 - r(), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2831853 * v); }
+  function blobR(s, a){ return s.R * (1 + 0.13 * Math.sin(3 * a + s.ph) + 0.07 * Math.sin(5 * a + 2 * s.ph)); }
+  function blobPath(x, s, cx, cy){ x.beginPath(); for (var i = 0; i <= 28; i++) { var a = i / 28 * 6.2832, r = blobR(s, a); if (i) x.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a)); else x.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a)); } x.closePath(); }
+  function pore(y){ return ((y - BY0) % 22) > 14; }
+  function noAnim(){ return typeof ANIM !== 'undefined' && !ANIM; }
+
+  DIS.add({ short: 'Binding schematic', level: 'foundations', ord: -1, title: 'Binding and volume of distribution',
+    build: function(api){
+      var S = IX.state('dsx', { lf: -1, lt: -0.7, vt: 37.2, alb: 100, sp: 6, cmp: 0 });
+      var rnd = SC.rand(808), mol = [], alb = [], sites = [], tsim = 0, avg = { np: 0, nt: 0, nup: 0, nut: 0 }, lock = null, hovB = false, lastSide = 0, scale = 1, endX = 0, loop = null, force = true;
+      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
+      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="sd"></div>');
+      var c1 = api.addControl(IX.slider('xf', 'fu', -2, 0, 0.05, S.lf)), c2 = api.addControl(IX.slider('xt', 'fu,t', -2, 0, 0.05, S.lt)), c3 = api.addControl(IX.slider('xv', 'Vt', 10, 80, 0.5, S.vt, 'L'));
+      var c4 = api.addControl(IX.slider('xa', 'Albumin', 25, 200, 5, S.alb, '% of normal')), c5 = api.addControl(IX.slider('xs', 'Speed', 1, 20, 1, S.sp, 'x real time'));
+      var c6 = api.addControl('<label style="display:inline-flex;gap:5px;align-items:center"><input type="checkbox" class="xc"' + (S.cmp ? ' checked' : '') + '> Displacing drug</label> <button type="button" class="btn sm ghost xd">Dose into plasma</button> <button type="button" class="btn sm ghost xe">Equilibrate</button>');
+
+      function par(){
+        var fu = Math.pow(10, S.lf), fut = Math.pow(10, S.lt), a = S.alb / 100, occ = S.cmp ? OCC : 0;
+        var fuE = 1 / (1 + (1 / fu - 1) * a * (1 - occ)), Kp = fuE / fut, Vt = S.vt, Vss = VP + Vt * Kp;
+        return { fu: fu, fut: fut, fuE: fuE, Kp: Kp, Vt: Vt, Vss: Vss, kPT: PS / VP, kTP: PS / Vt };
+      }
+      /* tissue binding sites (lipid droplets and membrane patches), fixed */
+      (function(){ var i, j, cw = (TX1 - WX1) / 4, rh = (BY1 - BY0) / 4; for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) sites.push({ kind: 't', x: WX1 + cw * (i + 0.5) + (rnd() - 0.5) * 28, y: BY0 + rh * (j + 0.5) + (rnd() - 0.5) * 20, rx: 12 + rnd() * 5, ry: 8 + rnd() * 4 }); })();
+      function newAlb(){ var R = 10 + rnd() * 3; return { kind: 'a', R: R, ph: rnd() * 6.28, x: PX0 + 26 + rnd() * (PX1 - PX0 - 52), y: BY0 + 26 + rnd() * (BY1 - BY0 - 52), vx: 0, vy: 0 }; }
+      function setAlb(){
+        var n = Math.max(2, Math.round(12 * S.alb / 100));
+        while (alb.length < n) alb.push(newAlb());
+        while (alb.length > n) { var s = alb.pop(); mol.forEach(function(m){ if (m.b === s) release(m); }); }
+      }
+      function inBox(m){ if (m.side === 0) m.x = cl(m.x, PX0 + MR, PX1 - MR); else m.x = cl(m.x, WX1 + MR, TX1 - MR); m.y = cl(m.y, BY0 + MR, BY1 - MR); }
+      function bpos(m){ var s = m.b; if (s.kind === 'a') { var r = blobR(s, m.a) + MR + 0.5 + m.o; return [s.x + r * Math.cos(m.a), s.y + r * Math.sin(m.a)]; } return [s.x + (s.rx + MR + 0.5 + m.o) * Math.cos(m.a), s.y + (s.ry + MR + 0.5 + m.o) * Math.sin(m.a)]; }
+      function bind(m){ m.pend = false; m.fly = false; m.side = m.c; var L = m.c === 0 ? alb : sites, best = null, bd = 1e9; L.forEach(function(s){ var d = (s.x - m.x) * (s.x - m.x) + (s.y - m.y) * (s.y - m.y); if (d < bd) { bd = d; best = s; } }); if (!best) return; m.b = best; m.a = Math.atan2(m.y - best.y, m.x - best.x) + (rnd() - 0.5) * 0.6; m.o = rnd() < 0.6 ? 0 : 6.5; }
+      function release(m){ var p = bpos(m); m.b = null; m.pend = false; m.fly = false; m.side = m.c; m.x = p[0]; m.y = p[1]; m.vx = Math.cos(m.a) * 60; m.vy = Math.sin(m.a) * 60; inBox(m); }
+      function place(m){ m.b = null; m.pend = false; m.fly = false; m.side = m.c; m.vx = gauss(rnd) * 60; m.vy = gauss(rnd) * 60; m.y = BY0 + MR + rnd() * (BY1 - BY0 - 2 * MR); m.x = m.c === 0 ? PX0 + MR + rnd() * (PX1 - PX0 - 2 * MR) : WX1 + MR + rnd() * (TX1 - WX1 - 2 * MR); }
+      function counts(){ var o = { np: 0, nt: 0, nup: 0, nut: 0 }; mol.forEach(function(m){ var u = !m.b && !m.pend; if (m.c === 0) { o.np++; if (u) o.nup++; } else { o.nt++; if (u) o.nut++; } }); return o; }
+      function resetAvg(){ avg = counts(); }
+      function dose(){ mol = []; for (var i = 0; i < ND; i++) { var m = { c: 0 }; place(m); mol.push(m); } tsim = 0; resetAvg(); }
+      function equil(){ var P = par(), fp = VP / P.Vss; mol.forEach(function(m){ m.c = rnd() < fp ? 0 : 1; place(m); if (rnd() < 1 - (m.c ? P.fut : P.fuE)) bind(m); }); resetAvg(); }
+
+      function sim(h, P){
+        var sq = Math.sqrt(h), da = Math.exp(-h / 0.6);
+        alb.forEach(function(s){ s.vx = s.vx * da + 14 * sq * gauss(rnd); s.vy = s.vy * da + 14 * sq * gauss(rnd); s.x += s.vx * h; s.y += s.vy * h; var mx = s.R * 1.25 + MR + 8;
+          if (s.x < PX0 + mx) { s.x = PX0 + mx; s.vx = Math.abs(s.vx); } if (s.x > PX1 - mx) { s.x = PX1 - mx; s.vx = -Math.abs(s.vx); } if (s.y < BY0 + mx) { s.y = BY0 + mx; s.vy = Math.abs(s.vy); } if (s.y > BY1 - mx) { s.y = BY1 - mx; s.vy = -Math.abs(s.vy); } });
+        var pOffP = 1 - Math.exp(-KB * P.fuE * h), pOffT = 1 - Math.exp(-KB * P.fut * h), pOnP = 1 - Math.exp(-KB * (1 - P.fuE) * h), pOnT = 1 - Math.exp(-KB * (1 - P.fut) * h), dv = Math.exp(-h / TAU);
+        var qT = [1 - Math.exp(-P.kPT * h), 1 - Math.exp(-P.kTP * h)];
+        mol.forEach(function(m){
+          var bound = m.b || m.pend;
+          if (bound) { if (rnd() < (m.c ? pOffT : pOffP)) { if (m.b) release(m); else m.pend = false; } if (m.b) return; }
+          else {
+            if (rnd() < (m.c ? pOnT : pOnP)) { if (m.fly) m.pend = true; else { bind(m); return; } }
+            else if (rnd() < qT[m.c]) { m.c = 1 - m.c; m.fly = m.side !== m.c; }
+          }
+          /* motion of an unattached molecule: Brownian, with a drift toward the nearest pore while it is transferring */
+          var nz = m.fly ? 0.35 : 1;
+          m.vx = m.vx * dv + nz * SIG * sq * gauss(rnd); m.vy = m.vy * dv + nz * SIG * sq * gauss(rnd);
+          var dx = 0, dy = 0;
+          if (m.fly) { var wx = m.side === 0 ? PX1 : WX1, py = BY0 + 22 * Math.round((m.y - BY0 - 18) / 22) + 18; py = cl(py, BY0 + 18, BY1 - 4); var ex = wx - m.x, ey = py - m.y, dd = Math.sqrt(ex * ex + ey * ey) || 1, sp = Math.max(160, dd / 0.6); dx = sp * ex / dd; dy = sp * ey / dd; }
+          var nx = m.x + (m.vx + dx) * h, ny = m.y + (m.vy + dy) * h;
+          if (ny < BY0 + MR) { ny = 2 * (BY0 + MR) - ny; m.vy = -m.vy; } else if (ny > BY1 - MR) { ny = 2 * (BY1 - MR) - ny; m.vy = -m.vy; }
+          if (m.side === 0) {
+            if (nx < PX0 + MR) { nx = 2 * (PX0 + MR) - nx; m.vx = -m.vx; }
+            else if (nx > PX1 - MR) { if (m.fly && pore(ny)) { m.side = 1; nx = WX1 + MR + 1; m.vx = Math.abs(m.vx); } else { nx = 2 * (PX1 - MR) - nx; m.vx = -m.vx; } }
+          } else {
+            if (nx > TX1 - MR) { nx = 2 * (TX1 - MR) - nx; m.vx = -m.vx; }
+            else if (nx < WX1 + MR) { if (m.fly && pore(ny)) { m.side = 0; nx = PX1 - MR - 1; m.vx = -Math.abs(m.vx); } else { nx = 2 * (WX1 + MR) - nx; m.vx = -m.vx; } }
+          }
+          m.x = nx; m.y = ny; inBox(m);
+          if (m.fly && m.side === m.c && (m.side === 1 ? m.x > WX1 + 14 : m.x < PX1 - 14)) { m.fly = false; if (m.pend) bind(m); }
+        });
+        var k = counts(), w = 1 - Math.exp(-h / TAVG); avg.np += (k.np - avg.np) * w; avg.nt += (k.nt - avg.nt) * w; avg.nup += (k.nup - avg.nup) * w; avg.nut += (k.nut - avg.nut) * w;
+      }
+
+      function bar(x, g, y, v, mx, lab, hl){
+        var wp = Math.min(VP, mx) * scale, wt = Math.max(0, Math.min(v, mx) - VP) * scale; SC.text(x, lab, 10, y + 13, { size: 11.5 });
+        x.fillStyle = GREY; x.fillRect(BX0, y, wp, 18); x.fillStyle = C.red; x.fillRect(BX0 + wp, y, wt, 18);
+        if (hl) { x.strokeStyle = C.char; x.lineWidth = 2; x.strokeRect(BX0 + 0.5, y + 0.5, wp + wt - 1, 17); }
+        var ex = BX0 + wp + wt, t = (v > mx ? 'above ' : '') + (isFinite(v) ? fx(Math.min(v, 1e6)) + ' L' : 'no molecules in plasma'); x.font = '600 11.5px Aptos, "Segoe UI", sans-serif'; var tw = x.measureText(t).width;
+        if (ex + 6 + tw <= g.w - 4) SC.text(x, t, ex + 6, y + 13, { size: 11.5, bold: true }); else SC.text(x, t, ex - 6, y + 13, { size: 11.5, bold: true, align: 'right', color: '#FFFFFF' });
+        return ex;
+      }
+
+      function frame(dt){
+        var P = par();
+        if (dt > 0) { var T = dt * S.sp, n = Math.ceil(T / 0.02), h = T / n, i; for (i = 0; i < n; i++) sim(h, P); tsim += T; }
+        var g = cv(cvs), x = g.x, k = counts(), yy;
+        /* compartments */
+        x.fillStyle = 'rgba(140,199,217,0.18)'; SC.rr(x, PX0, BY0, PX1 - PX0, BY1 - BY0, 6); x.fill(); x.strokeStyle = C.red; x.lineWidth = 1.5; x.stroke();
+        x.fillStyle = C.light; SC.rr(x, WX1, BY0, TX1 - WX1, BY1 - BY0, 6); x.fill(); x.strokeStyle = GREY; x.lineWidth = 1.5; x.stroke();
+        /* capillary wall: endothelial cells with pores */
+        x.fillStyle = C.silver; x.strokeStyle = GREY; x.lineWidth = 1; for (yy = BY0; yy < BY1; yy += 22) { SC.rr(x, PX1 + 1, yy, WX1 - PX1 - 2, Math.min(14, BY1 - yy), 3); x.fill(); x.stroke(); }
+        SC.text(x, 'Plasma, Vp = ' + VP.toFixed(2) + ' L', (PX0 + PX1) / 2, 22, { bold: true, align: 'center' });
+        SC.text(x, 'capillary wall', (PX1 + WX1) / 2, 22, { size: 11, align: 'center', color: C.mid });
+        SC.text(x, 'Tissue, Vt = ' + S.vt.toFixed(1) + ' L (not to scale)', (WX1 + TX1) / 2 + 10, 22, { bold: true, align: 'center' });
+        SC.text(x, 't = ' + Math.round(tsim) + ' s', TX1, 22, { size: 11, align: 'right', color: C.mid });
+        /* tissue binding sites */
+        sites.forEach(function(s){ x.beginPath(); x.ellipse(s.x, s.y, s.rx, s.ry, 0, 0, 6.2832); x.fillStyle = '#D5DCE3'; x.fill(); x.strokeStyle = GREY; x.lineWidth = 1.2; x.stroke(); });
+        /* albumin, with the displacing drug on two sites of each molecule */
+        alb.forEach(function(s){ blobPath(x, s, s.x, s.y); x.fillStyle = GREY; x.fill(); x.strokeStyle = '#7F8FA3'; x.lineWidth = 1; x.stroke();
+          if (S.cmp) [s.ph + 0.9, s.ph + 3.6].forEach(function(a){ var r = blobR(s, a) + MR + 0.5; SC.dot(x, s.x + r * Math.cos(a), s.y + r * Math.sin(a), MR, C.warn, '#7A3A12'); }); });
+        /* drug */
+        mol.forEach(function(m){ if (m.b) { var p = bpos(m); SC.dot(x, p[0], p[1], MR, C.dred, '#FFFFFF'); } });
+        mol.forEach(function(m){ if (!m.b) SC.dot(x, m.x, m.y, MR, m.pend ? C.dred : C.red, '#FFFFFF'); });
+        /* counts and concentrations under the compartments */
+        var cP = avg.np / VP, cuP = avg.nup / VP, cT = avg.nt / P.Vt, cuT = avg.nut / P.Vt;
+        SC.text(x, 'n = ' + k.np + ' total, ' + k.nup + ' unbound', (PX0 + PX1) / 2, 312, { size: 11.5, align: 'center' });
+        SC.text(x, 'C = ' + fx(cP) + ', Cu = ' + fx(cuP) + ' per L', (PX0 + PX1) / 2, 328, { size: 11.5, align: 'center', bold: true, color: C.dred });
+        SC.text(x, 'n = ' + k.nt + ' total, ' + k.nut + ' unbound', (WX1 + TX1) / 2, 312, { size: 11.5, align: 'center' });
+        SC.text(x, 'C = ' + fx(cT) + ', Cu = ' + fx(cuT) + ' per L (molecules, ' + TAVG + ' s average)', (WX1 + TX1) / 2, 328, { size: 11.5, align: 'center', bold: true, color: C.dred });
+        /* apparent volume bars */
+        var phys = VP + P.Vt, mx = lock ? lock.mx : Math.max(P.Vss, phys) * 1.15; scale = (BX1 - BX0) / mx;
+        var vS = avg.np > 0.05 ? VP * ND / avg.np : Infinity;
+        SC.text(x, 'Apparent volume, Vss = Vp + Vt x Kp (L)', 10, 350, { bold: true });
+        endX = bar(x, g, 358, P.Vss, mx, 'Equation', hovB || !!lock); bar(x, g, 384, vS, mx, 'Particles', false);
+        var px = BX0 + Math.min(phys, mx) * scale; x.strokeStyle = C.char; x.lineWidth = 1.2; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(px, 354); x.lineTo(px, 408); x.stroke(); x.setLineDash([]);
+        var pl = 'Vp + Vt = ' + fx(phys) + ' L, physical volume', right = px > BX1 - 200; SC.text(x, pl, right ? px - 4 : px + 4, 421, { size: 11, align: right ? 'right' : 'left', color: C.mid });
+        if (hovB || lock) SC.text(x, 'drag the bar end to set Kp through fu,t', BX0, 436, { size: 11, color: C.red });
+        /* legend */
+        var L1 = 450, L2 = 474;
+        SC.dot(x, 16, L1 - 4, MR, C.red, '#FFFFFF'); SC.text(x, 'Unbound drug', 26, L1, { size: 11.5 });
+        x.beginPath(); x.arc(160, L1 - 4, 7, 2.2, 4.1); x.strokeStyle = GREY; x.lineWidth = 3; x.stroke(); SC.dot(x, 163, L1 - 4, MR, C.dred, '#FFFFFF'); SC.text(x, 'Bound drug', 173, L1, { size: 11.5 });
+        blobPath(x, { R: 7, ph: 0.5 }, 318, L1 - 4); x.fillStyle = GREY; x.fill(); SC.text(x, 'Albumin', 330, L1, { size: 11.5 });
+        x.beginPath(); x.ellipse(452, L1 - 4, 9, 6, 0, 0, 6.2832); x.fillStyle = '#D5DCE3'; x.fill(); x.strokeStyle = GREY; x.lineWidth = 1.2; x.stroke(); SC.text(x, 'Tissue binding site', 466, L1, { size: 11.5 });
+        SC.dot(x, 16, L2 - 4, MR, C.warn, '#7A3A12'); SC.text(x, 'Displacing drug', 26, L2, { size: 11.5 });
+        x.fillStyle = C.silver; x.strokeStyle = GREY; x.lineWidth = 1; SC.rr(x, 156, L2 - 11, 10, 14, 3); x.fill(); x.stroke(); SC.text(x, 'Endothelial cell', 173, L2, { size: 11.5 });
+        x.fillStyle = GREY; x.fillRect(312, L2 - 10, 12, 10); SC.text(x, 'Vp', 330, L2, { size: 11.5 });
+        x.fillStyle = C.red; x.fillRect(360, L2 - 10, 12, 10); SC.text(x, 'Vt x Kp', 378, L2, { size: 11.5 });
+        x.strokeStyle = C.char; x.lineWidth = 1.2; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(452, L2 - 11); x.lineTo(452, L2 + 2); x.stroke(); x.setLineDash([]); SC.text(x, 'Physical volume', 466, L2, { size: 11.5 });
+        var now = performance.now(); if (now - lastSide > 250 || force) { lastSide = now; force = false; sidePanel(P, k); }
+      }
+
+      function sidePanel(P, k){
+        var a = avg, KpS = a.np > 0.05 ? (a.nt / P.Vt) / (a.np / VP) : NaN, VssS = a.np > 0.05 ? VP * ND / a.np : NaN, cu = a.nup > 0.2 ? (a.nut / P.Vt) / (a.nup / VP) : NaN, eP = ND * VP / P.Vss;
+        qs('.sd', side).innerHTML = tile('Vss, equation', fx(P.Vss) + ' L', fx(P.Vss / W) + ' L/kg at 70 kg; Vp + Vt x fu / fu,t') + rows([
+          ['fu set, effective', fx(P.fu) + ', ' + fx(P.fuE)], ['fu,t', fx(P.fut)], ['Kp = fu / fu,t, equation', fx(P.Kp)], ['Kp = C tissue / C plasma, particles', fx(KpS)],
+          ['Vss, particles', isFinite(VssS) ? fx(VssS) + ' L' : 'n/a'], ['Cu tissue / Cu plasma, particles', isFinite(cu) ? fx(cu) : 'too few unbound in plasma'],
+          ['Molecules in plasma, tissue', k.np + ', ' + k.nt], ['Expected at equilibrium', eP.toFixed(1) + ', ' + (ND - eP).toFixed(1)]]) +
+          '<div class="hint" style="font-size:11.5px;margin-top:8px">' + ND + ' drug molecules. Particle values are averaged over about ' + TAVG + ' s of simulated time. Effective fu = 1 / (1 + (1/fu - 1) x albumin fraction x (1 - occupancy)); the displacing drug occupies ' + (OCC * 100) + '% of albumin sites. Drag the end of the equation bar to set Kp.</div>';
+        api.stat('Vss ' + fx(P.Vss) + ' L, Kp ' + fx(P.Kp) + ', effective fu ' + fx(P.fuE));
+      }
+      function labels(){ qs('.xfv', c1).textContent = fx(Math.pow(10, S.lf)); qs('.xtv', c2).textContent = fx(Math.pow(10, S.lt)); qs('.xvv', c3).textContent = S.vt.toFixed(1); qs('.xav', c4).textContent = S.alb; qs('.xsv', c5).textContent = S.sp; }
+      function sync(){ qs('.xf', c1).value = S.lf; qs('.xt', c2).value = S.lt; qs('.xv', c3).value = S.vt; qs('.xa', c4).value = S.alb; qs('.xs', c5).value = S.sp; }
+      function redraw(){ force = true; if (loop) loop.redraw(); }
+      function changed(){ IX.save('dsx', S); setAlb(); labels(); if (noAnim()) equil(); redraw(); }
+      [['xf', c1, 'lf'], ['xt', c2, 'lt'], ['xv', c3, 'vt'], ['xa', c4, 'alb'], ['xs', c5, 'sp']].forEach(function(r){ qs('.' + r[0], r[1]).addEventListener('input', function(){ S[r[2]] = +this.value; changed(); }); });
+      qs('.xc', c6).addEventListener('change', function(){ S.cmp = this.checked ? 1 : 0; changed(); });
+      qs('.xd', c6).addEventListener('click', function(){ dose(); if (noAnim()) equil(); redraw(); });
+      qs('.xe', c6).addEventListener('click', function(){ equil(); redraw(); });
+      IX.tools(api, { canvases: function(){ return [cvs]; }, name: 'binding-schematic', csv: function(){ var P = par(), k = counts();
+        return IX.csv([['Quantity', 'Value'], ['fu set', P.fu], ['fu effective', P.fuE], ['fu,t', P.fut], ['Albumin (% of normal)', S.alb], ['Displacing drug', S.cmp ? 'on' : 'off'], ['Vp (L)', VP], ['Vt (L)', P.Vt], ['Kp equation', P.Kp], ['Vss equation (L)', P.Vss],
+          ['Simulated time (s)', tsim], ['Molecules plasma', k.np], ['Molecules tissue', k.nt], ['Unbound plasma', k.nup], ['Unbound tissue', k.nut], ['Averaged molecules plasma', avg.np], ['Averaged molecules tissue', avg.nt], ['Averaged unbound plasma', avg.nup], ['Averaged unbound tissue', avg.nut]]); } });
+      function onBar(p){ return Math.abs(p.x - endX) < 9 && p.y >= 354 && p.y <= 380; }
+      IX.attach(cvs, {
+        move: function(p){ var o = onBar(p); cvs.style.cursor = o ? 'ew-resize' : 'default'; if (o !== hovB) { hovB = o; redraw(); } },
+        leave: function(){ if (hovB) { hovB = false; redraw(); } },
+        down: function(p){ if (!onBar(p)) return null; lock = { mx: (BX1 - BX0) / scale }; return { k: 'v' }; },
+        drag: function(d, p){ var P = par(), v = (cl(p.x, BX0, BX1) - BX0) / scale, Kp = Math.max((v - VP) / P.Vt, 1e-6), lt = Math.log10(P.fuE / Kp); S.lt = +cl(Math.round(lt / 0.05) * 0.05, -2, 0).toFixed(2); sync(); labels(); if (noAnim()) equil(); redraw(); },
+        up: function(){ lock = null; IX.save('dsx', S); redraw(); }
+      });
+      setAlb(); dose(); if (noAnim()) equil();
+      sync(); labels();
+      loop = SC.run(cvs, function(dt){ frame(dt); });
+      function draw(){ labels(); redraw(); }
+      return { render: draw };
+    } });
+})();

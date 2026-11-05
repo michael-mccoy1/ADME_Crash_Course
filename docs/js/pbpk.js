@@ -58,6 +58,139 @@ PB.noOpts = true;
   }
   function interp(pts, t){ var lo = 0, hi = pts.length - 1; if (t <= pts[0][0]) return pts[0][1]; if (t >= pts[hi][0]) return pts[hi][1]; while (hi - lo > 1) { var m = (lo + hi) >> 1; if (pts[m][0] <= t) lo = m; else hi = m; } var f = (t - pts[lo][0]) / (pts[hi][0] - pts[lo][0]); return pts[lo][1] + f * (pts[hi][1] - pts[lo][1]); }
   function clh(P){ return QL * P.fu * P.cli / (QL + P.fu * P.cli); }
+
+  /* ===== step 0: whole-body model schematic (animated) ===== */
+  /* RK4 of the same three-compartment model as simulate(), also returning liver and rest-of-body concentrations and the
+     cumulative amounts metabolized and excreted. Rows every 0.1 h: [t, Cb, C liver, C rest, mg metabolized, mg excreted]. */
+  function simAll(P, T, dt){
+    var kl = P.kl, kr = P.kr, fu = P.fu, cli = P.cli, clr = P.clr, QR = QCO - QL, y = [DOSE / VB, 0, 0, 0, 0], n = Math.round(T / dt), out = [[0, y[0], 0, 0, 0, 0]], i, j;
+    function f(s){ var b = s[0], l = s[1], r = s[2]; return [(QL * (l / kl) + QR * (r / kr) - QCO * b - clr * b) / VB, (QL * (b - l / kl) - fu * cli * (l / kl)) / VL, (QR * (b - r / kr)) / VR, fu * cli * (l / kl), clr * b]; }
+    function ad(s, k, h){ var o = [], q; for (q = 0; q < 5; q++) o.push(s[q] + h * k[q]); return o; }
+    for (i = 1; i <= n; i++) { var k1 = f(y), k2 = f(ad(y, k1, dt / 2)), k3 = f(ad(y, k2, dt / 2)), k4 = f(ad(y, k3, dt)); for (j = 0; j < 5; j++) y[j] += dt / 6 * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]); if (i % 10 === 0) out.push([i * dt, y[0], y[1], y[2], y[3], y[4]]); }
+    return out;
+  }
+  function rowAt(sim, t){ var h = sim[1][0] - sim[0][0], u = Math.max(0, Math.min(sim.length - 1.000001, t / h)), i = Math.floor(u), f = u - i, a = sim[i], b = sim[Math.min(i + 1, sim.length - 1)], o = [], q; for (q = 0; q < 6; q++) o.push(a[q] + f * (b[q] - a[q])); return o; }
+  PB.add({ short: 'Body schematic', level: 'foundations', ord: 5, title: 'Whole-body model schematic',
+    build: function(api){
+      var S = IX.state('pbx', { kl: 4, kr: 1.5, fu: 0.2, cli: 2, clr: 1, t: 0.5, sel: 'l' }), TMAX = 48, play = true, ph = 0, dirty = true, sideT = -1, sideClock = 0, sim = null, rmax = 1, hov = null;
+      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
+      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="sd"></div>');
+      var c1 = api.addControl(IX.slider('kl', 'Kp liver', 0.5, 20, 0.5, S.kl)), c2 = api.addControl(IX.slider('kr', 'Kp rest of body', 0.2, 10, 0.1, S.kr)), c3 = api.addControl(IX.slider('fu', 'fu', 0.01, 1, 0.01, S.fu)), c4 = api.addControl(IX.slider('cli', 'CLint', -1, 3.3, 0.05, S.cli, 'L/h')), c5 = api.addControl(IX.slider('clr', 'CLr', 0, 10, 0.5, S.clr, 'L/h'));
+      var c6 = api.addControl(IX.slider('t', 'Time', 0, TMAX, 0.1, S.t, 'h') + ' <button type="button" class="btn sm ghost pbx-play">Pause</button>');
+      function P(){ return { kl: S.kl, kr: S.kr, fu: S.fu, cli: Math.pow(10, S.cli), clr: S.clr }; }
+      function sync(){ qs('.kl', c1).value = S.kl; qs('.kr', c2).value = S.kr; qs('.fu', c3).value = S.fu; qs('.cli', c4).value = S.cli; qs('.clr', c5).value = S.clr; qs('.t', c6).value = S.t; }
+      function resim(){ var p = P(); sim = simAll(p, TMAX, 0.01); rmax = 1e-9; sim.forEach(function(r){ rmax = Math.max(rmax, p.fu * p.cli * r[2] / p.kl, p.clr * r[1]); }); dirty = true; }
+      IX.tools(api, { canvases: function(){ return [cvs]; }, name: 'whole-body-model-schematic',
+        csv: function(){ var rows = [['t (h)', 'Blood (mg/L)', 'Liver (mg/L)', 'Rest of body (mg/L)', 'Metabolized (mg)', 'Excreted in urine (mg)']]; sim.forEach(function(r){ rows.push(r.slice()); }); return IX.csv(rows); } });
+      /* geometry: organ area proportional to the square root of volume; pipe width proportional to blood flow */
+      function box(cx, cy, V, asp){ var A = 2957 * Math.sqrt(V), w = Math.sqrt(A * asp), h = Math.sqrt(A / asp); return { x: cx - w / 2, y: cy - h / 2, w: w, h: h, cx: cx, cy: cy }; }
+      var BB = box(90, 165, VB, 0.8), BL = box(300, 85, VL, 1.6), BR = box(300, 230, VR, 1.545), BK = { x: 64, y: 240, w: 52, h: 30, cx: 90, cy: 255 };
+      var QR = QCO - QL, PW = function(q){ return q / QCO * 14; };
+      var PIPES = [
+        { p: [[90, BB.y], [90, 36], [430, 36], [430, 85]], q: QCO, c: 'a' },
+        { p: [[430, 85], [430, 230]], q: QR, c: 'a' },
+        { p: [[430, 85], [BL.x + BL.w, 85]], q: QL, c: 'a' },
+        { p: [[430, 230], [BR.x + BR.w, 230]], q: QR, c: 'a' },
+        { p: [[BL.x, 85], [160, 85], [160, 165]], q: QL, c: 'vl' },
+        { p: [[BR.x, 230], [160, 230], [160, 165]], q: QR, c: 'vr' },
+        { p: [[160, 165], [BB.x + BB.w, 165]], q: QCO, c: 'vm' }
+      ];
+      PIPES.forEach(function(o){ var L = 0, i; o.seg = []; for (i = 1; i < o.p.length; i++) { var d = Math.hypot(o.p[i][0] - o.p[i - 1][0], o.p[i][1] - o.p[i - 1][1]); o.seg.push(d); L += d; } o.len = L; });
+      function along(o, s){ var i; for (i = 0; i < o.seg.length; i++) { if (s <= o.seg[i] || i === o.seg.length - 1) { var f = Math.min(1, s / o.seg[i]); return [o.p[i][0] + f * (o.p[i + 1][0] - o.p[i][0]), o.p[i][1] + f * (o.p[i + 1][1] - o.p[i][1])]; } s -= o.seg[i]; } return o.p[0]; }
+      var LMIN = -2, LMAX = 1.5;
+      function fr(c){ return cl((Math.log10(Math.max(c, 1e-9)) - LMIN) / (LMAX - LMIN), 0, 1); }
+      function col(c){ return SC.mix(C.light, C.red, fr(c)); }
+      function dec(e){ return e < 0 ? Math.pow(10, e).toFixed(-e) : String(Math.pow(10, e)); }
+      function tcol(c){ return fr(c) > 0.55 ? C.white : C.char; }
+      function line(x, pts){ x.beginPath(); pts.forEach(function(q, i){ i ? x.lineTo(q[0], q[1]) : x.moveTo(q[0], q[1]); }); }
+      function organ(x, B, name, vol, c, key){
+        SC.rr(x, B.x, B.y, B.w, B.h, 8); x.fillStyle = col(c); x.fill(); x.lineWidth = S.sel === key ? 2.6 : (hov === key ? 1.8 : 1.2); x.strokeStyle = S.sel === key ? C.warn : C.char; x.stroke();
+        var tc = tcol(c), y0 = B.cy - (key === 'l' ? 11 : 8);
+        SC.text(x, name, B.cx, y0, { bold: true, size: 12, color: tc, align: 'center' }); SC.text(x, vol, B.cx, y0 + 13, { size: 11, color: tc, align: 'center' }); SC.text(x, fx(c) + ' mg/L', B.cx, y0 + 26, { size: 11, color: tc, align: 'center' });
+      }
+      function elim(x, x1, y1, x2, y2, rate, lbl, ext, lx, ly){
+        if (rate <= rmax * 1e-4) { SC.text(x, lbl, lx, ly, { bold: true, size: 11, color: C.warn }); SC.text(x, '0 mg/h' + ext, lx, ly + 14, { size: 11, color: C.warn }); return; }
+        var w = 1.5 + 10.5 * Math.min(1, rate / rmax), L = Math.hypot(x2 - x1, y2 - y1), k;
+        x.globalAlpha = 0.85; SC.arrow(x, x1, y1, x2, y2, C.warn, w, Math.max(9, w * 1.7)); x.globalAlpha = 1;
+        for (k = 0; k < 4; k++) { var s = ((ph * 26 + k * L / 4) % (L * 0.8)), f = s / L; SC.dot(x, x1 + f * (x2 - x1), y1 + f * (y2 - y1), Math.min(2.4, w / 2), C.white); }
+        SC.text(x, lbl, lx, ly, { bold: true, size: 11, color: C.warn }); SC.text(x, fx(rate) + ' mg/h' + ext, lx, ly + 14, { size: 11, color: C.warn });
+      }
+      function frame(){
+        if (!sim) resim();
+        var g = cv(cvs), x = g.x, p = P(), r = rowAt(sim, S.t), cb = r[1], cL = r[2], cR = r[3], cvl = cL / S.kl, cvr = cR / S.kr, cvm = (QL * cvl + QR * cvr) / QCO, cc = { a: cb, vl: cvl, vr: cvr, vm: cvm };
+        x.lineCap = 'round'; x.lineJoin = 'round';
+        /* pipes */
+        PIPES.forEach(function(o){ var w = PW(o.q); line(x, o.p); x.strokeStyle = C.bg; x.lineWidth = w + 2; x.stroke(); line(x, o.p); x.strokeStyle = col(cc[o.c]); x.lineWidth = w; x.stroke(); });
+        line(x, [[90, BB.y + BB.h], [90, BK.y]]); x.strokeStyle = C.bg; x.lineWidth = 5; x.stroke(); line(x, [[90, BB.y + BB.h], [90, BK.y]]); x.strokeStyle = col(cb); x.lineWidth = 3; x.stroke();
+        /* flow particles: spacing 18 px, speed proportional to flow */
+        PIPES.forEach(function(o){ var w = PW(o.q), sp = o.q * 0.3, off = (ph * sp) % 18, s, c = cc[o.c], pc = fr(c) < 0.5 ? C.dred : C.light; x.globalAlpha = 0.35 + 0.65 * fr(c);
+          for (s = off; s < o.len; s += 18) { var q = along(o, s); SC.dot(x, q[0], q[1], Math.max(1.4, Math.min(2.6, w / 2 - 0.4)), pc); } x.globalAlpha = 1; });
+        /* organs */
+        organ(x, BB, 'Blood', '3 L', cb, 'b'); organ(x, BL, 'Liver', '1.8 L', cL, 'l'); organ(x, BR, 'Rest of body', '40 L', cR, 'r');
+        x.beginPath(); x.ellipse(BK.cx, BK.cy, BK.w / 2, BK.h / 2, 0, 0, 6.2832); x.fillStyle = C.light; x.fill(); x.lineWidth = S.sel === 'k' ? 2.6 : (hov === 'k' ? 1.8 : 1.2); x.strokeStyle = S.sel === 'k' ? C.warn : C.char; x.stroke();
+        SC.text(x, 'Kidney', BK.cx, BK.cy + 4, { bold: true, size: 11, align: 'center' });
+        /* flow labels */
+        SC.text(x, 'arterial blood, cardiac output 300 L/h', 260, 24, { size: 11, color: C.char, align: 'center' });
+        SC.text(x, '90 L/h', 385, 77, { size: 11, align: 'center' }); SC.text(x, '210 L/h', 421, 166, { size: 11, align: 'right' });
+        SC.text(x, 'venous', 167, 135, { size: 11 }); SC.text(x, 'return', 167, 148, { size: 11 });
+        /* elimination */
+        var rh = p.fu * p.cli * cvl, rr = p.clr * cb, E = p.fu * p.cli / (QL + p.fu * p.cli);
+        elim(x, 300, BL.y + BL.h, 300, 160, rh, 'metabolism', ', E ' + E.toFixed(2), 312, 132);
+        elim(x, 90, BK.y + BK.h, 90, 308, rr, 'urine, CLr x Cb', '', 102, 290);
+        /* right column: time, color scale, fate of the dose */
+        SC.text(x, 't = ' + S.t.toFixed(2) + ' h', 456, 62, { bold: true, size: 15 });
+        SC.text(x, 'Concentration (mg/L)', 456, 84, { size: 11 });
+        var gx = 456, gw = 150, k; for (k = 0; k < gw; k++) { x.fillStyle = SC.mix(C.light, C.red, k / (gw - 1)); x.fillRect(gx + k, 90, 1.2, 12); }
+        x.strokeStyle = C.char; x.lineWidth = 1; x.strokeRect(gx, 90, gw, 12);
+        [-2, -1, 0, 1].forEach(function(e){ var px = gx + (e - LMIN) / (LMAX - LMIN) * gw; x.beginPath(); x.moveTo(px, 102); x.lineTo(px, 106); x.stroke(); SC.text(x, dec(e), px, 118, { size: 11, align: 'center' }); });
+        var am = [['Blood', cb * VB, C.red], ['Liver', cL * VL, C.tint], ['Rest of body', cR * VR, C.bg], ['Metabolized', r[4], C.warn], ['Excreted', r[5], C.char]], bx0 = 456;
+        SC.text(x, 'Fate of the 100 mg dose', 456, 146, { size: 11 });
+        am.forEach(function(a){ var w = gw * Math.max(0, a[1]) / DOSE; x.fillStyle = a[2]; x.fillRect(bx0, 152, w, 14); bx0 += w; }); x.strokeStyle = C.char; x.strokeRect(456, 152, gw, 14);
+        am.forEach(function(a, i){ var yy = 186 + i * 16; x.fillStyle = a[2]; x.fillRect(456, yy - 9, 10, 10); SC.text(x, a[0], 472, yy, { size: 11 }); SC.text(x, (100 * a[1] / DOSE).toFixed(1) + '%', 606, yy, { size: 11, align: 'right' }); });
+        SC.text(x, 'Click an organ to plot it.', 456, 278, { size: 11, color: C.char });
+        /* inset: concentration-time curves */
+        var ib = { l: 60, r: 612, t: 338, b: 456 }, cmax = 0; sim.forEach(function(q){ cmax = Math.max(cmax, q[1], q[2], q[3]); });
+        var yh = Math.log10(cmax) + 0.15, yl = yh - 4, sx = function(t){ return ib.l + t / TMAX * (ib.r - ib.l); }, sy = function(c){ return ib.b - (cl(Math.log10(Math.max(c, 1e-12)), yl, yh) - yl) / (yh - yl) * (ib.b - ib.t); };
+        x.strokeStyle = C.silver; x.lineWidth = 1;
+        for (k = Math.ceil(yl); k <= Math.floor(yh); k++) { x.beginPath(); x.moveTo(ib.l, sy(Math.pow(10, k))); x.lineTo(ib.r, sy(Math.pow(10, k))); x.stroke(); SC.text(x, dec(k), ib.l - 6, sy(Math.pow(10, k)) + 4, { size: 11, color: C.mid, align: 'right' }); }
+        for (k = 0; k <= TMAX; k += 6) { x.beginPath(); x.moveTo(sx(k), ib.t); x.lineTo(sx(k), ib.b); x.stroke(); SC.text(x, String(k), sx(k), ib.b + 14, { size: 11, color: C.mid, align: 'center' }); }
+        x.strokeStyle = C.char; x.lineWidth = 1.2; x.beginPath(); x.moveTo(ib.l, ib.t); x.lineTo(ib.l, ib.b); x.lineTo(ib.r, ib.b); x.stroke();
+        SC.text(x, 'Time after a 100 mg IV bolus (h)', (ib.l + ib.r) / 2, 486, { bold: true, size: 11, align: 'center' });
+        var sk = S.sel === 'k' ? 'b' : S.sel, CUR = [['b', 1, C.red, 'blood'], ['l', 2, C.warn, 'liver'], ['r', 3, C.char, 'rest of body']], nm = { b: 'blood', l: 'liver', r: 'rest of body' }[sk];
+        SC.text(x, S.sel === 'k' ? 'Blood concentration seen by the kidney (mg/L)' : nm.charAt(0).toUpperCase() + nm.slice(1) + ' concentration (mg/L, log scale)', ib.l, 330, { bold: true, size: 12 });
+        CUR.forEach(function(cu){ var on = cu[0] === sk; x.strokeStyle = cu[2]; x.lineWidth = on ? 2.6 : 1.2; x.globalAlpha = on ? 1 : 0.55; x.beginPath(); sim.forEach(function(q, i){ i ? x.lineTo(sx(q[0]), sy(q[cu[1]])) : x.moveTo(sx(q[0]), sy(q[cu[1]])); }); x.stroke(); x.globalAlpha = 1; });
+        var kx = 612; CUR.slice().reverse().forEach(function(cu){ x.font = '11px Aptos, "Segoe UI", sans-serif'; var tw = x.measureText(cu[3]).width; SC.text(x, cu[3], kx, 330, { size: 11, color: cu[2], align: 'right', bold: cu[0] === sk }); x.strokeStyle = cu[2]; x.lineWidth = 2.4; x.beginPath(); x.moveTo(kx - tw - 22, 326); x.lineTo(kx - tw - 6, 326); x.stroke(); kx -= tw + 34; });
+        x.strokeStyle = C.mid; x.setLineDash([2, 3]); x.lineWidth = 1; x.beginPath(); x.moveTo(sx(S.t), ib.t); x.lineTo(sx(S.t), ib.b); x.stroke(); x.setLineDash([]);
+        CUR.forEach(function(cu){ var on = cu[0] === sk; SC.dot(x, sx(S.t), sy(r[cu[1]]), on ? 5 : 3.5, cu[2], C.white); });
+        return { r: r, p: p, rh: rh, rr: rr };
+      }
+      function sidePanel(o){
+        var r = o.r, p = o.p, vss = VB + VL * S.kl + VR * S.kr, ch = clh(p), cl0 = ch + S.clr, te = 0.693 * vss / cl0;
+        function a(v){ return fx(v) + ' mg (' + (100 * v / DOSE).toFixed(1) + '%)'; }
+        qs('.sd', side).innerHTML = fTile('Blood concentration', fx(r[1]) + ' mg/L', 't = ' + S.t.toFixed(2) + ' h after 100 mg IV') + fRows([['Blood', a(r[1] * VB)], ['Liver', a(r[2] * VL)], ['Rest of body', a(r[3] * VR)], ['Metabolized', a(r[4])], ['Excreted in urine', a(r[5])], ['Metabolic rate', fx(o.rh) + ' mg/h'], ['Renal rate', fx(o.rr) + ' mg/h'], ['Vss', fx(vss) + ' L'], ['CLh, well-stirred', fx(ch) + ' L/h'], ['CL = CLh + CLr', fx(cl0) + ' L/h'], ['Half-life, 0.693 Vss / CL', fx(te) + ' h']]) + '<div class="hint" style="font-size:11.5px;margin-top:8px">Organ area is proportional to the square root of volume; pipe width is proportional to blood flow; arrow width is proportional to the elimination rate.</div>';
+        api.stat('t ' + S.t.toFixed(1) + ' h: blood ' + fx(r[1]) + ' mg/L, Vss ' + fx(vss) + ' L, CL ' + fx(cl0) + ' L/h, half-life ' + fx(te) + ' h');
+      }
+      function draw(force){
+        qs('.klv', c1).textContent = S.kl.toFixed(1); qs('.krv', c2).textContent = S.kr.toFixed(1); qs('.fuv', c3).textContent = S.fu.toFixed(2); qs('.cliv', c4).textContent = fx(Math.pow(10, S.cli)); qs('.clrv', c5).textContent = S.clr.toFixed(1); qs('.tv', c6).textContent = S.t.toFixed(1);
+        var o = frame(); if (force || (Math.abs(S.t - sideT) > 1e-9 && sideClock > 0.15)) { sidePanel(o); sideT = S.t; sideClock = 0; } dirty = false;
+      }
+      SC.run(cvs, function(dt){
+        if (dt > 0) { ph += dt; sideClock += dt; if (play) { var u = Math.sqrt(S.t / TMAX) + dt / 18; if (u >= 1) u = 0; S.t = TMAX * u * u; qs('.t', c6).value = S.t; } }
+        if (dt > 0 || dirty) draw(dirty);
+      });
+      var pb = qs('.pbx-play', c6);
+      pb.addEventListener('click', function(){ play = !play; pb.textContent = play ? 'Pause' : 'Play'; if (!play) IX.save('pbx', S); draw(true); });
+      [['kl', c1], ['kr', c2], ['fu', c3], ['cli', c4], ['clr', c5]].forEach(function(rw){ qs('.' + rw[0], rw[1]).addEventListener('input', function(){ S[rw[0]] = +this.value; IX.save('pbx', S); resim(); draw(true); }); });
+      qs('.t', c6).addEventListener('input', function(){ S.t = +this.value; play = false; pb.textContent = 'Play'; IX.save('pbx', S); draw(true); });
+      function hit(p){ var L = [['b', BB], ['l', BL], ['r', BR], ['k', BK]], i; for (i = 0; i < L.length; i++) { var B = L[i][1]; if (p.x >= B.x - 3 && p.x <= B.x + B.w + 3 && p.y >= B.y - 3 && p.y <= B.y + B.h + 3) return L[i][0]; } return null; }
+      IX.attach(cvs, {
+        move: function(p){ var h0 = hit(p); if (h0 !== hov) { hov = h0; dirty = true; } cvs.style.cursor = hov ? 'pointer' : 'default'; },
+        leave: function(){ hov = null; dirty = true; },
+        click: function(p){ var h0 = hit(p); if (h0) { S.sel = h0; IX.save('pbx', S); draw(true); } }
+      });
+      sync(); resim();
+      return { render: function(){ sync(); if (!sim) resim(); draw(true); } };
+    } });
   PB.add({ short: 'Minimal whole-body model', level: 'foundations', ord: 20, title: 'A minimal whole-body model',
     build: function(api){
       var S = IX.state('pb2', { kl: 4, kr: 1.5, fu: 0.2, cli: 2, clr: 1, ax: 'log' }), pins = [], hv = null, M = null;

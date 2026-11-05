@@ -30,6 +30,8 @@ Tab 14, brain penetration, has five steps: total and unbound brain exposure (Kp,
 
 Tab 15, PBPK basics, has three steps: a flow-limited organ and its time constant, a minimal whole-body model (blood, liver, rest of body) compared with a one-compartment model of the same Vss and CL, and the effect of interindividual variability in intrinsic clearance on AUC for low- and high-extraction compounds. No data set is used; organ volumes and flows are round reference values set in the code.
 
+Tabs 08 to 15 each open with an animated mechanism schematic (docs/js/schem.js provides the shared animation helper): binding and volume of distribution (08), the oral absorption pathway (09), enzyme competition (10), hepatocyte uptake and efflux (11), nephron handling (12), a dosing regimen and body compartments (13), the blood-brain barrier (14) and a whole-body PBPK diagram (15). Each simulation is stochastic or numerical and is displayed next to the equation it must reproduce.
+
 The quiz (tab 16) has 138 questions on tabs 01 to 15. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally

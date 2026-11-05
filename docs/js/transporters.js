@@ -223,4 +223,189 @@ var TPROBE = [
       }
       return { render: draw };
     } });
+
+  /* ===== schematic (first step): hepatocyte uptake, metabolism and efflux as a particle simulation of the extended clearance model =====
+     Blood discs are held at a fixed number (unbound blood concentration clamped). Each blood disc enters with hazard h0 Kpuu / W split between OATP and
+     passive diffusion in proportion PSact : PSdif; each cytosol disc leaves with hazard h0 split in proportion CLint,met : CLint,bile : PSeff,act : PSdif.
+     The time-averaged ratio of cytosol to blood discs (times the disc weight W) is then PSinf / (PSeff + PSint), the equation value of Kpuu. */
+  TP.add({ short: 'Hepatocyte schematic', level: 'foundations', ord: 5, title: 'Hepatocyte uptake and efflux',
+    build: function(api){
+      var S = IX.state('tpx', { ua: 2, pd: 0.5, cm: 1.5, cb: 0.5, ef: -0.5, k: 0 }), FB = 0.1, QH = 21, H0 = 0.35, TAU = 20, FV = 45, BV = 30;
+      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
+      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="sd"></div>');
+      var c1 = api.addControl(IX.slider('ua', 'OATP uptake PSact', -1, 3, 0.05, S.ua, 'mL/min/kg')), c2 = api.addControl(IX.slider('pd', 'Passive PSdif', -1, 3, 0.05, S.pd, 'mL/min/kg')), c3 = api.addControl(IX.slider('cm', 'CLint,met', -2, 3, 0.05, S.cm, 'mL/min/kg')), c4 = api.addControl(IX.slider('cb', 'CLint,bile', -2, 3, 0.05, S.cb, 'mL/min/kg')), c5 = api.addControl(IX.slider('ef', 'Basolateral efflux PSeff,act', -2, 3, 0.05, S.ef, 'mL/min/kg'));
+      var c6 = api.addControl('<button type="button" class="btn sm ghost ih">Inhibit uptake</button> <button type="button" class="btn sm ghost rs">Restart</button>');
+      var SL = [['ua', c1], ['pd', c2], ['cm', c3], ['cb', c4], ['ef', c5]];
+      var OAT = [70, 130, 250, 320], EFB = 190, CAN = [[110, 'MRP2'], [190, 'BCRP'], [270, 'P-gp']], FREE = [[36, 58], [82, 118], [142, 178], [202, 238], [262, 308], [332, 366]];
+      var CYP = { x: 270, y: 92, w: 70, h: 36 }, NUC = { x: 320, y: 272, r: 40 }, GATE = [], rnd = SC.rand(11), P = [], R = null, W = 1, NB = 30, acc = null, hov = null, dragI = null, tside = 0, i;
+      OAT.forEach(function(y){ GATE.push({ x: 152, y: y, o: 0, busy: 0 }); }); GATE.push({ x: 152, y: EFB, o: 0, busy: 0 }); CAN.forEach(function(c){ GATE.push({ x: 450, y: c[0], o: 0, busy: 0 }); });
+      function nblk(){ var n = 0, j; for (j = 0; j < 4; j++) if (S.k & (1 << j)) n++; return n; }
+      function blk(j){ return !!(S.k & (1 << j)); }
+      function mdl(){
+        var nf = 4 - nblk(), ua0 = Math.pow(10, S.ua), ua = ua0 * nf / 4, pd = Math.pow(10, S.pd), ef = Math.pow(10, S.ef), cm = Math.pow(10, S.cm), cb = Math.pow(10, S.cb), psinf = ua + pd, pseff = pd + ef, psint = cm + cb, out = pseff + psint;
+        var r = ecm({ pi: Math.log10(psinf), pe: Math.log10(pseff), m: S.cm, b: S.cb }, QH, FB), r0 = ecm({ pi: Math.log10(ua0 + pd), pe: Math.log10(pseff), m: S.cm, b: S.cb }, QH, FB);
+        return { ua0: ua0, ua: ua, pd: pd, ef: ef, cm: cm, cb: cb, psinf: psinf, pseff: pseff, psint: psint, kp: psinf / out, fm: cm / out, fbi: cb / out, fbk: pseff / out, r: r, r0: r0 };
+      }
+      function rin(a, b){ return a + (b - a) * rnd(); }
+      function freeY(){ var s = FREE[Math.floor(rnd() * FREE.length)]; return rin(s[0], s[1]); }
+      function cellPt(){ var x = 300, y = 200, j; for (j = 0; j < 30; j++) { x = rin(178, 428); y = rin(42, 360); if (Math.hypot(x - NUC.x, y - NUC.y) > NUC.r + 6) break; } return [x, y]; }
+      function mk(s, x, y, o){ var p = { s: s, x: x, y: y, vx: 0, vy: 0, met: false, f: 0, g: -1, life: 0, tm: 0 }, k; if (o) for (k in o) p[k] = o[k]; P.push(p); return p; }
+      function go(p, pts, sp, nx, g){ p.s = 'mv'; p.path = pts; p.sp = sp; p.nx = nx; p.g = g === undefined ? -1 : g; }
+      function land(p){ p.s = p.nx; p.path = null; p.g = -1; p.vx = 0; p.vy = 0; if (p.s === 'cyp') p.tm = 0.4; if (p.s === 'bl' || p.s === 'mb') p.life = 2.5; if (p.s === 'rb') p.life = 1.6; }
+      function scale(){ NB = Math.round(cl(70 / R.kp, 8, 40)); return Math.max(1, R.kp * NB / 80); }
+      function count(s){ var n = 0; P.forEach(function(p){ if (p.s === s) n++; }); return n; }
+      function zero(){ acc = { met: 0, bile: 0, blood: 0, ic: 0, ib: 0 }; }
+      function seed(){
+        R = mdl(); W = scale(); P = []; zero(); var nc = Math.min(200, Math.round(R.kp * NB / W)), ex = nc * H0, q, j;
+        for (j = 0; j < NB; j++) mk('b', rin(16, 126), rin(34, 366));
+        for (j = 0; j < nc; j++) { q = cellPt(); mk('c', q[0], q[1]); }
+        for (j = 0; j < Math.min(40, Math.round(ex * R.fbi * 2.5)); j++) mk('bl', rin(466, 516), rin(40, 366), { life: rin(0.3, 2.5) });
+        for (j = 0; j < Math.min(30, Math.round(ex * R.fm * 2.5)); j++) mk('mb', rin(16, 126), rin(40, 366), { met: true, f: 1, life: rin(0.3, 2.5) });
+        for (j = 0; j < Math.min(20, Math.round(ex * R.fbk * 1.6)); j++) mk('rb', rin(96, 126), rin(40, 366), { life: rin(0.3, 1.6) });
+        for (j = 0; j < 3 * nblk(); j++) mk('inh', rin(16, 126), rin(34, 366));
+      }
+      function rescale(){
+        var w0 = W, nb0 = NB; R = mdl(); W = scale();
+        if (w0 !== W) { var cs = P.filter(function(p){ return p.s === 'c'; }), tgt = Math.round(cs.length * w0 / W), q;
+          if (tgt < cs.length) { var drop = cs.slice(0); while (drop.length > tgt) { var k = Math.floor(rnd() * drop.length); P.splice(P.indexOf(drop[k]), 1); drop.splice(k, 1); } }
+          else while (tgt-- > cs.length && P.length < 300) { q = cellPt(); mk('c', q[0], q[1]); } }
+        if (NB < nb0) { var bs = P.filter(function(p){ return p.s === 'b'; }); while (bs.length > NB) { var m = Math.floor(rnd() * bs.length); P.splice(P.indexOf(bs[m]), 1); bs.splice(m, 1); } }
+        else if (NB > nb0) { var add = NB - count('b'); while (add-- > 0) mk('b', rin(16, 126), rin(34, 366)); }
+      }
+      function adv(dt){
+        var dec = Math.exp(-dt / TAU), nb = 0, nc = 0, hin = H0 * R.kp / W, pa = R.ua / R.psinf, pIn = 1 - Math.exp(-hin * dt), pOut = 1 - Math.exp(-H0 * dt), free = [], j, p, y, g, u;
+        ['met', 'bile', 'blood', 'ic', 'ib'].forEach(function(k){ acc[k] *= dec; });
+        for (j = 0; j < 4; j++) if (!blk(j)) free.push(j);
+        GATE.forEach(function(G){ G.busy = Math.max(0, G.busy - dt); });
+        for (j = P.length - 1; j >= 0; j--) {
+          p = P[j];
+          if (p.s === 'b' || p.s === 'mb' || p.s === 'rb' || p.s === 'inh') {
+            p.y += FV * dt; p.x = cl(p.x + (rnd() - 0.5) * 60 * dt, 14, 128);
+            if (p.s === 'mb' || p.s === 'rb') p.life -= dt;
+            if (p.y > 368 || ((p.s === 'mb' || p.s === 'rb') && p.life <= 0)) { P.splice(j, 1); continue; }
+            if (p.s === 'b') { nb++;
+              if (rnd() < pIn) {
+                if (free.length && rnd() < pa) { g = free[Math.floor(rnd() * free.length)]; y = OAT[g]; go(p, [[134, y], [170, y], [rin(182, 204), y + rin(-10, 10)]], 80, 'c', g); }
+                else { y = freeY(); go(p, [[134, y], [170, y], [rin(180, 198), y]], 45, 'c'); } } }
+          } else if (p.s === 'bl') {
+            p.y += BV * dt; p.x = cl(p.x + (rnd() - 0.5) * 40 * dt, 466, 516); p.life -= dt; if (p.y > 368 || p.life <= 0) { P.splice(j, 1); continue; }
+          } else if (p.s === 'c') { nc++;
+            p.vx += (rnd() - 0.5) * 260 * dt; p.vy += (rnd() - 0.5) * 260 * dt; p.vx *= 1 - Math.min(1, 1.2 * dt); p.vy *= 1 - Math.min(1, 1.2 * dt);
+            var sp = Math.hypot(p.vx, p.vy); if (sp > 30) { p.vx *= 30 / sp; p.vy *= 30 / sp; }
+            p.x += p.vx * dt; p.y += p.vy * dt;
+            if (p.x < 176) { p.x = 176; p.vx = Math.abs(p.vx); } if (p.x > 430) { p.x = 430; p.vx = -Math.abs(p.vx); } if (p.y < 40) { p.y = 40; p.vy = Math.abs(p.vy); } if (p.y > 362) { p.y = 362; p.vy = -Math.abs(p.vy); }
+            var dn = Math.hypot(p.x - NUC.x, p.y - NUC.y); if (dn < NUC.r + 5) { var ux = (p.x - NUC.x) / (dn || 1), uy = (p.y - NUC.y) / (dn || 1); p.x = NUC.x + ux * (NUC.r + 5); p.y = NUC.y + uy * (NUC.r + 5); p.vx = ux * 15; p.vy = uy * 15; }
+            if (rnd() < pOut) {
+              u = rnd() * (R.pseff + R.psint);
+              if (u < R.cm) { acc.met++; go(p, [[rin(CYP.x + 10, CYP.x + CYP.w - 10), rin(CYP.y + 8, CYP.y + CYP.h - 8)]], 70, 'cyp'); }
+              else if (u < R.cm + R.cb) { acc.bile++; g = Math.floor(rnd() * 3); y = CAN[g][0]; go(p, [[432, y], [468, y], [rin(476, 510), y + rin(-8, 8)]], 80, 'bl', 5 + g); }
+              else if (u < R.cm + R.cb + R.ef) { acc.blood++; go(p, [[172, EFB], [134, EFB], [rin(104, 124), EFB]], 80, 'rb', 4); }
+              else { acc.blood++; y = freeY(); go(p, [[170, y], [134, y], [rin(104, 124), y]], 45, 'rb'); } }
+          } else if (p.s === 'mv') {
+            var tg = p.path[0], dx = tg[0] - p.x, dy = tg[1] - p.y, d = Math.hypot(dx, dy), st = p.sp * dt;
+            if (d <= st) { p.x = tg[0]; p.y = tg[1]; p.path.shift(); if (!p.path.length) land(p); } else { p.x += dx / d * st; p.y += dy / d * st; }
+            if (p.g >= 0 && Math.hypot(p.x - GATE[p.g].x, p.y - GATE[p.g].y) < 20) GATE[p.g].busy = 0.12;
+          } else if (p.s === 'cyp') {
+            p.tm -= dt; p.f = cl(1 - p.tm / 0.4, 0, 1); if (p.tm <= 0) { p.met = true; p.f = 1; y = freeY(); go(p, [[172, y], [134, y], [rin(104, 124), y]], 50, 'mb'); }
+          }
+        }
+        acc.ic += nc * W * dt; acc.ib += nb * dt;
+        var def = NB - count('b'); while (def-- > 0) mk('b', rin(16, 126), def > 3 ? rin(34, 366) : rin(32, 40));
+        if (count('inh') < 3 * nblk() && P.length < 300 && rnd() < 4 * dt) mk('inh', rin(16, 126), 32);
+        GATE.forEach(function(G, k){ var on = k < 4 && blk(k) ? 0 : (G.busy > 0 ? 1 : 0); G.o += (on - G.o) * Math.min(1, dt * 14); });
+      }
+      function sim(){ var n = acc.met + acc.bile + acc.blood; return { n: n, ok: ANIM && n > 15, fm: n ? acc.met / n : 0, fbi: n ? acc.bile / n : 0, fbk: n ? acc.blood / n : 0, kp: acc.ib > 0.5 ? acc.ic / acc.ib : NaN }; }
+      function reg(){ var f = R.r.frac; return f > 0.7 ? 'uptake (PSinf)' : (f < 0.3 ? 'intracellular elimination' : 'uptake and elimination both'); }
+
+      function bil(x, x0){ var y; x.fillStyle = C.light; x.fillRect(x0, 30, 20, 342); x.fillStyle = C.bg; for (y = 33; y < 372; y += 6) { x.beginPath(); x.arc(x0 + 3, y, 2, 0, 6.2832); x.arc(x0 + 17, y, 2, 0, 6.2832); x.fill(); } }
+      function gate(x, G, col, isBlk, hl){
+        var gp = 2 + 6 * G.o; x.fillStyle = col; SC.rr(x, G.x - 13, G.y - gp - 10, 26, 10, 4); x.fill(); SC.rr(x, G.x - 13, G.y + gp, 26, 10, 4); x.fill();
+        if (isBlk) SC.dot(x, G.x - 6, G.y, 4.5, C.warn, '#fff');
+        if (hl) { x.strokeStyle = C.char; x.lineWidth = 1.5; SC.rr(x, G.x - 16, G.y - 22, 32, 44, 6); x.stroke(); }
+      }
+      function draw(){
+        var g = cv(cvs), x = g.x, j, sm = sim(), nbk = nblk();
+        /* compartments */
+        x.fillStyle = '#F6ECE8'; SC.rr(x, 6, 30, 140, 342, 10); x.fill();
+        x.fillStyle = '#FFFFFF'; x.fillRect(142, 30, 318, 342); x.strokeStyle = C.silver; x.lineWidth = 1; x.strokeRect(142, 30, 318, 342);
+        x.fillStyle = '#F3F0DE'; x.fillRect(460, 30, 62, 342);
+        x.fillStyle = '#F6F8F9'; SC.rr(x, 522, 30, 96, 342, 10); x.fill(); bil(x, 522);
+        bil(x, 142); bil(x, 440);
+        x.strokeStyle = C.silver; x.setLineDash([3, 6]); [40, 72, 104].forEach(function(xx){ x.beginPath(); x.moveTo(xx, 40); x.lineTo(xx, 360); x.stroke(); }); x.setLineDash([]);
+        SC.arrow(x, 70, 350, 70, 368, C.bg, 2, 8); SC.arrow(x, 491, 350, 491, 368, C.bg, 2, 8);
+        SC.text(x, 'Sinusoidal blood', 76, 20, { bold: true, align: 'center' }); SC.text(x, 'Hepatocyte', 301, 20, { bold: true, align: 'center' }); SC.text(x, 'Bile canaliculus', 491, 20, { bold: true, align: 'center' });
+        SC.text(x, 'Adjacent', 584, 196, { size: 11, color: C.bg, align: 'center' }); SC.text(x, 'hepatocyte', 584, 210, { size: 11, color: C.bg, align: 'center' });
+        /* nucleus and CYP */
+        x.beginPath(); x.arc(NUC.x, NUC.y, NUC.r, 0, 6.2832); x.fillStyle = C.light; x.fill(); x.strokeStyle = C.silver; x.lineWidth = 1.5; x.stroke(); SC.text(x, 'Nucleus', NUC.x, NUC.y + 4, { size: 11, color: C.bg, align: 'center' });
+        x.fillStyle = '#E9EEF2'; SC.rr(x, CYP.x, CYP.y, CYP.w, CYP.h, 12); x.fill(); x.strokeStyle = hov && hov.k === 'cyp' ? C.char : C.bg; x.lineWidth = 1.5; x.stroke();
+        SC.text(x, 'CYP', CYP.x + CYP.w / 2, CYP.y - 6, { bold: true, size: 11, align: 'center', color: C.char });
+        /* passive path */
+        x.setLineDash([4, 3]); SC.arrow(x, 128, 96, 176, 96, C.bg, 1.4, 7); SC.arrow(x, 176, 104, 128, 104, C.bg, 1.4, 7); x.setLineDash([]);
+        SC.text(x, 'passive', 182, 104, { size: 11, bold: true, color: C.mid });
+        /* transporters */
+        for (j = 0; j < 4; j++) { gate(x, GATE[j], C.dred, blk(j), hov && hov.k === 'g' && hov.i === j); SC.text(x, 'OATP', 172, OAT[j] + 4, { size: 11, bold: true, color: C.dred }); }
+        gate(x, GATE[4], '#4C93AC', false, hov && hov.k === 'g' && hov.i === 4); SC.text(x, 'MRP3', 172, EFB + 4, { size: 11, bold: true, color: '#2F6F86' });
+        for (j = 0; j < 3; j++) { gate(x, GATE[5 + j], '#4C93AC', false, hov && hov.k === 'g' && hov.i === 5 + j); SC.text(x, CAN[j][1], 432, CAN[j][0] + 4, { size: 11, bold: true, color: '#2F6F86', align: 'right' }); }
+        /* particles */
+        P.forEach(function(p){
+          var col = p.s === 'inh' ? C.warn : (p.met ? C.bg : (p.s === 'cyp' ? SC.mix(C.red, C.bg, p.f) : C.red)), a = (p.s === 'bl' || p.s === 'mb' || p.s === 'rb') ? cl(p.life / 0.6, 0, 1) : 1;
+          x.globalAlpha = a; SC.dot(x, p.x, p.y, p.s === 'inh' ? 4.2 : 3.6, col, '#fff'); x.globalAlpha = 1; });
+        if (dragI) SC.dot(x, dragI.x, dragI.y, 6, C.warn, '#fff');
+        /* fate bars */
+        SC.text(x, 'Fate of drug entering the hepatocyte (bar: simulated, tick: equation)', 8, 396, { size: 11.5, bold: true });
+        [['Metabolism (CYP)', sm.fm, R.fm, C.bg], ['Bile', sm.fbi, R.fbi, '#C98A5B'], ['Back to blood', sm.fbk, R.fbk, C.red]].forEach(function(r, k){
+          var y = 404 + k * 19; SC.text(x, r[0], 8, y + 10, { size: 11 }); x.fillStyle = C.light; x.fillRect(128, y, 280, 12);
+          if (sm.ok) { x.fillStyle = r[3]; x.fillRect(128, y, 280 * r[1], 12); }
+          x.fillStyle = C.char; x.fillRect(128 + 280 * r[2] - 1, y - 3, 2.5, 18);
+          SC.text(x, (sm.ok ? r[1].toFixed(2) : 'n/a') + '   equation ' + r[2].toFixed(2), 418, y + 10, { size: 11 }); });
+        /* legend */
+        var ly = 478; SC.dot(x, 14, ly - 4, 4, C.red, '#fff'); SC.text(x, 'Drug', 22, ly, { size: 11 }); SC.dot(x, 64, ly - 4, 4, C.bg, '#fff'); SC.text(x, 'Metabolite', 72, ly, { size: 11 });
+        SC.dot(x, 144, ly - 4, 6, C.warn, '#fff'); SC.text(x, 'Inhibitor (drag onto an OATP)', 154, ly, { size: 11 });
+        x.fillStyle = C.dred; SC.rr(x, 330, ly - 12, 16, 5, 2); x.fill(); SC.rr(x, 330, ly - 3, 16, 5, 2); x.fill(); SC.text(x, 'Uptake transporter', 352, ly, { size: 11 });
+        x.fillStyle = '#4C93AC'; SC.rr(x, 462, ly - 12, 16, 5, 2); x.fill(); SC.rr(x, 462, ly - 3, 16, 5, 2); x.fill(); SC.text(x, 'Efflux transporter', 484, ly, { size: 11 });
+        if (hov) IX.tip({ x: x, box: { l: 0, r: 624, t: 0, b: 490 } }, hov.x, hov.y, tipLines(hov));
+      }
+      function tipLines(h){
+        if (h.k === 'cyp') return ['CYP (cytochrome P450)', 'CLint,met ' + fx(R.cm) + ' mL/min/kg', 'share of exits ' + R.fm.toFixed(2)];
+        if (h.k === 'pas') return ['Passive diffusion, both directions', 'PSdif ' + fx(R.pd) + ' mL/min/kg'];
+        if (h.i < 4) return ['OATP, site ' + (h.i + 1) + ' of 4', blk(h.i) ? 'blocked by inhibitor' : 'active', 'PSact ' + fx(R.ua) + ' of ' + fx(R.ua0) + ' mL/min/kg', blk(h.i) ? 'drag the inhibitor off to unblock' : 'click to block'];
+        if (h.i === 4) return ['MRP3, basolateral efflux', 'PSeff,act ' + fx(R.ef) + ' mL/min/kg'];
+        return [CAN[h.i - 5][1] + ', canalicular efflux', 'CLint,bile ' + fx(R.cb) + ' mL/min/kg', 'shared by MRP2, BCRP and P-gp'];
+      }
+      function hit(p){
+        var j; for (j = 0; j < GATE.length; j++) if (Math.abs(p.x - GATE[j].x) < 16 && Math.abs(p.y - GATE[j].y) < 20) return { k: 'g', i: j, x: p.x, y: p.y };
+        if (p.x >= CYP.x && p.x <= CYP.x + CYP.w && p.y >= CYP.y - 16 && p.y <= CYP.y + CYP.h) return { k: 'cyp', x: p.x, y: p.y };
+        if (p.y > 30 && p.y < 372 && ((p.x > 140 && p.x < 164) || (p.x > 120 && p.x < 226 && p.y > 88 && p.y < 110))) return { k: 'pas', x: p.x, y: p.y };
+        return null;
+      }
+      function panel(){
+        var sm = sim(), nbk = nblk(), rows = [['PSinf = PSact + PSdif', fx(R.psinf) + ' mL/min/kg'], ['PSeff = PSdif + PSeff,act', fx(R.pseff)], ['PSint = CLint,met + CLint,bile', fx(R.psint)], ['CLint,all', fx(R.r.all) + ' mL/min/kg'], ['CLh, fu,b 0.1, Qh 21', R.r.cl.toFixed(2) + ' mL/min/kg'], ['Hepatic extraction, CLh / Qh', (R.r.cl / QH).toFixed(3)], ['Rate-determining step', reg()]];
+        if (nbk) rows.push(['OATP sites blocked', nbk + ' of 4' + (nbk < 4 ? ', Iu / Ki = ' + fx(nbk / (4 - nbk)) : '')], ['CLh ratio, control / inhibited', (R.r0.cl / R.r.cl).toFixed(2)]);
+        rows.push(['Simulated exits counted', sm.ok ? Math.round(sm.n) + ' (last ' + TAU + ' s)' : 'n/a']);
+        qs('.sd', side).innerHTML = fTile('Kpuu, cytosol / blood', fx(R.kp), 'PSinf / (PSeff + PSint); simulated ' + (sm.ok && isFinite(sm.kp) ? fx(sm.kp) : 'n/a')) + fRows(rows) + '<div class="hint" style="font-size:11.5px;margin-top:8px">Unbound blood concentration held constant. Click an OATP to block it or drag the orange inhibitor onto it.' + (W > 1.01 ? ' Each cytosol disc represents ' + fx(W) + ' blood-disc equivalents.' : '') + '</div>';
+        qs('.ih', c6).textContent = nbk ? 'Remove inhibitor' : 'Inhibit uptake';
+        api.stat('Kpuu ' + fx(R.kp) + ', CLh ' + R.r.cl.toFixed(2) + ' mL/min/kg, rate-determining step: ' + reg());
+      }
+      function labels(){ SL.forEach(function(r){ qs('.' + r[0] + 'v', r[1]).textContent = fx(Math.pow(10, S[r[0]])); }); }
+      function sync(){ SL.forEach(function(r){ qs('.' + r[0], r[1]).value = S[r[0]]; }); }
+      function changed(){ IX.save('tpx', S); labels(); rescale(); if (!ANIM) seed(); render(); }
+      function render(){ labels(); draw(); panel(); }
+      IX.tools(api, { canvases: function(){ return [cvs]; }, name: 'hepatocyte-schematic',
+        csv: function(){ var sm = sim(); return IX.csv([['Quantity', 'Equation', 'Simulated'], ['PSact (mL/min/kg)', R.ua, ''], ['PSdif (mL/min/kg)', R.pd, ''], ['CLint,met (mL/min/kg)', R.cm, ''], ['CLint,bile (mL/min/kg)', R.cb, ''], ['PSeff,act (mL/min/kg)', R.ef, ''], ['OATP sites blocked of 4', nblk(), ''], ['Kpuu', R.kp, sm.ok ? sm.kp : ''], ['Fraction metabolized', R.fm, sm.ok ? sm.fm : ''], ['Fraction to bile', R.fbi, sm.ok ? sm.fbi : ''], ['Fraction back to blood', R.fbk, sm.ok ? sm.fbk : ''], ['CLint,all (mL/min/kg)', R.r.all, ''], ['CLh (mL/min/kg)', R.r.cl, '']]); } });
+      SL.forEach(function(r){ qs('.' + r[0], r[1]).addEventListener('input', function(){ S[r[0]] = +this.value; changed(); }); });
+      qs('.ih', c6).addEventListener('click', function(){ S.k = nblk() ? 0 : 7; changed(); });
+      qs('.rs', c6).addEventListener('click', function(){ seed(); render(); });
+      function onOat(p){ var j; for (j = 0; j < 4; j++) if (Math.abs(p.x - GATE[j].x) < 18 && Math.abs(p.y - GATE[j].y) < 20) return j; return -1; }
+      IX.attach(cvs, {
+        move: function(p){ hov = hit(p); var o = onOat(p); cvs.style.cursor = Math.hypot(p.x - 144, p.y - 474) < 12 || (o >= 0 && blk(o)) ? 'grab' : (o >= 0 ? 'pointer' : 'default'); if (!ANIM) draw(); },
+        leave: function(){ hov = null; if (!ANIM) draw(); },
+        down: function(p){ var o = onOat(p); if (Math.hypot(p.x - 144, p.y - 474) < 12) { dragI = { x: p.x, y: p.y, from: -1, x0: p.x, y0: p.y }; return { k: 'inh' }; } if (o >= 0 && blk(o)) { S.k &= ~(1 << o); dragI = { x: p.x, y: p.y, from: o, x0: p.x, y0: p.y }; changed(); return { k: 'inh' }; } return null; },
+        drag: function(d, p){ dragI.x = p.x; dragI.y = p.y; hov = null; if (!ANIM) draw(); },
+        up: function(d, p){ var o = onOat(p), moved = Math.hypot(p.x - dragI.x0, p.y - dragI.y0) > 4; if (o >= 0 && (moved || o !== dragI.from)) S.k |= 1 << o; dragI = null; changed(); },
+        click: function(p){ var o = onOat(p); if (o >= 0 && !blk(o)) { S.k |= 1 << o; changed(); } }
+      });
+      sync(); seed(); labels();
+      SC.run(cvs, function(dt){ if (dt > 0) adv(dt); draw(); tside += dt; if (tside > 0.25) { tside = 0; panel(); } });
+      return { render: render };
+    } });
 })();

@@ -22,6 +22,251 @@ function aSpearman(xs, ys){ var a = aRank(xs), b = aRank(ys), n = a.length, ma =
 function aAUC(pos, neg){ var all = pos.concat(neg), r = aRank(all), sp = 0, i; for (i = 0; i < pos.length; i++) sp += r[i]; return (sp - pos.length * (pos.length + 1) / 2) / (pos.length * neg.length); }
 function aRows(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:3px 0;font-size:12px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
 
+/* ---------- step 1: oral absorption pathway (animated schematic) ----------
+   Seven transit compartments (Yu and Amidon, 1999; Tsi 3.32 h), V 250 mL, first-order dissolution limited by saturation in each compartment,
+   gross absorption rate ka = 0.54 Peff x 7 / Tsi, efflux as return to the lumen, Qgut model for Fg, Fh = 1 - Eh.
+   Each molecule is a tracer: its hazards use the saturation computed from the mass balance, so simulated fractions converge to the equations. */
+(function(){
+  var V = 250, TSI = 3.32, NC = 7, KT = NC / TSI, HODE = 0.01, TEND = 30, NX = 12, UPX = 10, SP = 0.6, HDT = 0.02;
+  var LX0 = 12, LX1 = 158, LY0 = 30, LY1 = 394, SEG = (LY1 - LY0) / NC, EX0 = 166, EX1 = 252, PVX = 286, PVY = 84;
+  var LV = { x0: 336, x1: 470, y0: 28, y1: 140 }, SB = { x0: 488, x1: 612, y0: 28, y1: 140 }, GT = { x0: 368, x1: 456, y: 122 };
+  var WF = { l: 366, r: 606, t: 190, b: 368 };
+  var GREY = '#A1B1C4';
+  function tile(label, value, sub){ return '<div class="score" style="margin-bottom:8px"><b>' + label + '</b><div class="v" style="font-size:1.5rem">' + value + '</div>' + (sub ? '<div class="s">' + sub + '</div>' : '') + '</div>'; }
+  function rws(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:4px 0;font-size:12.5px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
+  function cl(v, a, b){ return Math.max(a, Math.min(b, v)); }
+  function f2(v){ return v.toFixed(2); }
+  function fd(v){ return v < 10 ? v.toFixed(1) : String(Math.round(v)); }
+  function fg3(v){ return v >= 1000 ? Math.round(v).toLocaleString() : String(+v.toPrecision(2)); }
+  function cellY(c){ return LY0 + c * SEG + SEG / 2; }
+
+  /* mass balance in fractions of the dose: s_i solid, d_i dissolved, i = 1..7; phi_i = max(0, 1 - C_i / S) with C_i / S = 7 D0 d_i */
+  function model(S){
+    var dose = Math.pow(10, S.ld), sol = Math.pow(10, S.ls), d0 = dose / (V * sol), peff = Math.pow(10, S.lp), ka = 0.54 * peff * KT, kan = ka * (1 - S.fe), kd = S.kd;
+    var n = Math.round(TEND / HODE), phi = new Float32Array((n + 1) * NC), ab = new Float32Array(n + 1), y = new Float64Array(2 * NC + 1), i, k;
+    function der(yy, o){ var a = 0; for (var j = 0; j < NC; j++) { var s = yy[j], d = yy[NC + j], si = j ? yy[j - 1] : 0, di = j ? yy[NC + j - 1] : 0, ph = Math.max(0, 1 - NC * d0 * d); o[j] = KT * (si - s) - kd * ph * s; o[NC + j] = KT * (di - d) + kd * ph * s - kan * d; a += kan * d; } o[2 * NC] = a; }
+    var k1 = new Float64Array(2 * NC + 1), k2 = new Float64Array(2 * NC + 1), k3 = new Float64Array(2 * NC + 1), k4 = new Float64Array(2 * NC + 1), tmp = new Float64Array(2 * NC + 1), m = 2 * NC + 1;
+    y[0] = 1;
+    for (k = 0; k <= n; k++) {
+      for (i = 0; i < NC; i++) phi[k * NC + i] = Math.max(0, 1 - NC * d0 * y[NC + i]);
+      ab[k] = y[2 * NC]; if (k === n) break;
+      der(y, k1); for (i = 0; i < m; i++) tmp[i] = y[i] + 0.5 * HODE * k1[i];
+      der(tmp, k2); for (i = 0; i < m; i++) tmp[i] = y[i] + 0.5 * HODE * k2[i];
+      der(tmp, k3); for (i = 0; i < m; i++) tmp[i] = y[i] + HODE * k3[i];
+      der(tmp, k4); for (i = 0; i < m; i++) y[i] += HODE / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
+    }
+    var fa = y[2 * NC], fgv = 1 / (1 + S.rg), fh = 1 - S.eh;
+    return { dose: dose, sol: sol, d0: d0, peff: peff, ka: ka, kan: kan, kd: kd, fe: S.fe, rg: S.rg, eh: S.eh, n: n, phi: phi, ab: ab,
+      fa: fa, fg: fgv, fh: fh, F: fa * fgv * fh, faPerm: 1 - Math.pow(1 + 0.54 * peff * (1 - S.fe), -7), mad: sol * V * kan * TSI };
+  }
+  function phiAt(M, c, tau){ var k = Math.min(M.n, Math.max(0, Math.floor(tau / HODE))); return M.phi[k * NC + c]; }
+
+  /* fast Monte Carlo of the same tracer process, without drawing */
+  function headless(M, nd, st, R){
+    var N = nd * NX * UPX, u;
+    for (u = 0; u < N; u++) {
+      var c = 0, tau = 0, solid = true, out = null, guard = 0;
+      while (!out && guard++ < 100000) {
+        if (solid) {
+          var h = KT + M.kd * phiAt(M, c, tau + HDT / 2);
+          if (R() < 1 - Math.exp(-h * HDT)) { if (R() * h < KT) { c++; if (c >= NC) out = 'col'; } else solid = false; }
+          tau += HDT;
+        } else {
+          var hh = KT + M.ka;
+          if (R() * hh < KT) { c++; if (c >= NC) out = 'col'; }
+          else if (R() >= M.fe) out = R() < 1 - M.fg ? 'gm' : (R() < M.eh ? 'hep' : 'sys');
+        }
+      }
+      st[out || 'col']++; st.n++;
+    }
+    st.doses += nd;
+  }
+
+  ABS.add({ short: 'Absorption schematic', level: 'foundations', title: 'Oral absorption pathway',
+    build: function(api){
+      var S = IX.state('abx', { ld: 2, ls: -1, kd: 2, lp: 0.1, fe: 0.3, rg: 0.5, eh: 0.4 }), R = SC.rand(20261105), M = null, st, co, loop = null, pins = [], tmr = null, hoverG = false;
+      var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
+      var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="sd"></div>');
+      var c1 = api.addControl(IX.slider('ld', 'Dose', 0, 3, 0.05, S.ld, 'mg')), c2 = api.addControl(IX.slider('ls', 'Solubility S', -3, 1, 0.1, S.ls, 'mg/mL')), c3 = api.addControl(IX.slider('kd', 'Dissolution kd', 0.2, 6, 0.1, S.kd, '1/h'));
+      var c4 = api.addControl(IX.slider('lp', 'Peff', -1.3, 0.9, 0.05, S.lp, 'x 10^-4 cm/s')), c5 = api.addControl(IX.slider('fe', 'P-gp efflux, fraction returned', 0, 0.9, 0.05, S.fe)), c6 = api.addControl(IX.slider('rg', 'Gut CYP3A, fu,gut CLint,gut / Qgut', 0, 4, 0.1, S.rg)), c7 = api.addControl(IX.slider('eh', 'Hepatic Eh', 0, 0.95, 0.01, S.eh));
+      var cb = api.addControl('<button type="button" class="btn sm ghost ab-run">Simulate 200 more doses</button>');
+      var CT = [['ld', c1], ['ls', c2], ['kd', c3], ['lp', c4], ['fe', c5], ['rg', c6], ['eh', c7]];
+      function labels(){
+        qs('.ldv', c1).textContent = fd(Math.pow(10, S.ld)); qs('.lsv', c2).textContent = fg3(Math.pow(10, S.ls)); qs('.kdv', c3).textContent = S.kd.toFixed(1);
+        qs('.lpv', c4).textContent = fg3(Math.pow(10, S.lp)); qs('.fev', c5).textContent = S.fe.toFixed(2); qs('.rgv', c6).textContent = S.rg.toFixed(1); qs('.ehv', c7).textContent = S.eh.toFixed(2);
+      }
+      function sync(){ CT.forEach(function(r){ qs('.' + r[0], r[1]).value = S[r[0]]; }); labels(); }
+      function resetStats(){ st = { n: 0, col: 0, gm: 0, hep: 0, sys: 0, doses: 0 }; }
+      function newCohort(){
+        co = { t: 0, cr: [], u: [], tot: NX * UPX, done: 0, res: { n: 0, col: 0, gm: 0, hep: 0, sys: 0 }, closed: false, wait: 0 };
+        for (var k = 0; k < NX; k++) { var vf = []; for (var j = 0; j < 7; j++) vf.push(0.75 + 0.4 * R()); var x0 = LX0 + 16 + R() * (LX1 - LX0 - 32), y0 = LY0 + 9 + R() * (SEG - 18); co.cr.push({ c: 0, n: UPX, x: x0, y: y0, tx: x0, ty: y0, vf: vf, rot: R() * 6.28 }); }
+      }
+      function simF(){ if (!st.n) return null; var ab = st.gm + st.hep + st.sys, por = st.hep + st.sys; return { fa: ab / st.n, fg: ab ? por / ab : 0, fh: por ? st.sys / por : 0, F: st.sys / st.n }; }
+      function side_(){
+        var q = simF(), sv = function(k){ return q ? f2(q[k]) : 'n/a'; };
+        qs('.sd', side).innerHTML = tile('Bioavailability F', f2(M.F), 'simulation ' + sv('F') + ' (' + st.doses + ' doses, ' + st.n.toLocaleString() + ' molecules)') +
+          rws([['Dose number D0', fg3(M.d0)], ['Fa, equations / simulation', f2(M.fa) + ' / ' + sv('fa')], ['Fg, equations / simulation', f2(M.fg) + ' / ' + sv('fg')], ['Fh, equations / simulation', f2(M.fh) + ' / ' + sv('fh')],
+            ['Fa limit, dissolved dose', f2(M.faPerm)], ['Maximum absorbable dose', fg3(M.mad) + ' mg'], ['ka, net of efflux', fg3(M.kan) + ' 1/h']]) +
+          '<div class="hint" style="font-size:11.5px;margin-top:8px">D0 = Dose / (V S), V = 250 mL. Fa: mass balance over seven transit compartments, Tsi = 3.32 h; for dissolved drug Fa = 1 - (1 + 0.54 Peff (1 - fe))^-7. Fg = 1 / (1 + fu,gut CLint,gut / Qgut). F = Fa x Fg x Fh. Drag the handle in the liver to set Eh.</div>';
+        api.stat('F = ' + f2(M.F) + ' from the equations, ' + (q ? f2(q.F) : 'n/a') + ' simulated');
+      }
+      function changed(){
+        IX.save('abx', S); labels(); M = model(S); resetStats(); newCohort(); side_(); redraw();
+        if (tmr) clearTimeout(tmr); tmr = setTimeout(function(){ tmr = null; headless(M, 40, st, R); side_(); redraw(); }, 150);
+      }
+      function resolve(k){ co.done++; co.res[k]++; co.res.n++; }
+      function mv(u, tx, ty, sp, dt){ var dx = tx - u.x, dy = ty - u.y, d = Math.sqrt(dx * dx + dy * dy), s = sp * dt; if (d <= s || d < 0.01) { u.x = tx; u.y = ty; return true; } u.x += dx / d * s; u.y += dy / d * s; return false; }
+      function wander(u){ u.tx = LX0 + 8 + R() * (LX1 - LX0 - 16); u.ty = LY0 + u.c * SEG + 6 + R() * (SEG - 12); }
+      function arrive(u){
+        var cy = cellY(u.c);
+        if (u.st === 'in') {
+          if (R() < M.fe) { u.st = 'ef'; u.ring = 1; u.sp = 90; u.path = [[EX0 + 1, cy - 12], [LX1 - 10 - R() * 40, cy - 12 + R() * 12 - 6]]; }
+          else if (R() < 1 - M.fg) { u.st = 'met'; u.fade = 1; }
+          else { u.st = 'bl'; u.sp = 70; u.path = [[EX1 - 2, u.y], [PVX - 6 + R() * 12, u.y]]; }
+        } else if (u.st === 'ef') { u.st = 'lum'; wander(u); }
+        else if (u.st === 'bl') { u.st = 'por'; u.sp = 130; var jx = u.x; u.path = [[jx, PVY + 2 + R() * 8], [LV.x0 + 6, PVY - 6 + R() * 12]]; }
+        else if (u.st === 'por') { u.st = 'liv'; u.sp = 60; u.path = [[(LV.x0 + LV.x1) / 2 + R() * 24 - 12, PVY - 7 + R() * 14]]; }
+        else if (u.st === 'liv') { if (R() < M.eh) { u.st = 'hep'; u.fade = 1; } else { u.st = 'tos'; u.sp = 100; u.path = [[LV.x1 + 4, PVY - 4 + R() * 8], [SB.x0 + 12 + R() * (SB.x1 - SB.x0 - 24), 74 + R() * 56]]; } }
+        else if (u.st === 'tos') { u.st = 'sys'; u.ph = R() * 6.28; resolve('sys'); }
+        else if (u.st === 'out') { u.st = 'gone'; resolve('col'); }
+      }
+      function advance(dt){
+        var dtm = dt * SP, i, j, u;
+        if (co.closed) { co.wait += dt; if (co.wait > 1.5) newCohort(); return; }
+        for (i = co.cr.length - 1; i >= 0; i--) {
+          var cr = co.cr[i];
+          if (R() < 1 - Math.exp(-KT * dtm)) { cr.c++; if (cr.c >= NC) { for (j = 0; j < cr.n; j++) resolve('col'); co.cr.splice(i, 1); continue; } cr.tx = LX0 + 16 + R() * (LX1 - LX0 - 32); cr.ty = LY0 + cr.c * SEG + 9 + R() * (SEG - 18); }
+          var pd = 1 - Math.exp(-M.kd * phiAt(M, cr.c, co.t) * dtm), nd = 0;
+          for (j = 0; j < cr.n; j++) if (R() < pd) nd++;
+          for (j = 0; j < nd; j++) { u = { st: 'lum', c: cr.c, tau: co.t, x: cr.x + R() * 6 - 3, y: cr.y + R() * 6 - 3, ring: 0 }; wander(u); co.u.push(u); }
+          cr.n -= nd; if (cr.n <= 0) { co.cr.splice(i, 1); continue; }
+          var dx = cr.tx - cr.x, dy = cr.ty - cr.y; cr.x += dx * Math.min(1, dt * 2.5); cr.y += dy * Math.min(1, dt * 2.5); cr.rot += dt * 0.3;
+        }
+        co.t += dtm;
+        for (i = 0; i < co.u.length; i++) {
+          u = co.u[i]; if (u.ring > 0) u.ring = Math.max(0, u.ring - dt * 0.8);
+          if (u.st === 'lum') {
+            u.tau += dtm; var h = KT + M.ka;
+            if (R() < 1 - Math.exp(-h * dtm)) {
+              if (R() * h < KT) { u.c++; if (u.c >= NC) { u.st = 'out'; u.sp = 40; u.path = [[u.x, LY1 + 6]]; } else wander(u); }
+              else { u.st = 'in'; u.sp = 80; var cy = cellY(u.c); u.path = [[EX0 + 3, cy + R() * 16 - 8], [200 + R() * 30, cy + R() * 20 - 10]]; }
+            }
+            if (u.st === 'lum' && mv(u, u.tx, u.ty, 45, dt)) wander(u);
+          } else if (u.st === 'met' || u.st === 'hep') {
+            u.fade -= dt / 1.4; if (u.fade <= 0) { u.st = 'gone'; resolve(u.st === 'met' ? 'gm' : 'hep'); }
+          } else if (u.path && u.path.length) {
+            if (mv(u, u.path[0][0], u.path[0][1], u.sp, dt)) { u.path.shift(); if (!u.path.length) arrive(u); }
+          }
+        }
+        co.u = co.u.filter(function(q){ return q.st !== 'gone'; });
+        if (co.done >= co.tot && !co.closed) { co.closed = true; ['n', 'col', 'gm', 'hep', 'sys'].forEach(function(k){ st[k] += co.res[k]; }); st.doses++; side_(); }
+      }
+      function crystal(x, cx, cy, r, vf, rot, alpha){
+        x.beginPath(); for (var k = 0; k < 7; k++) { var a = rot + k * 6.2832 / 7, rr = r * vf[k]; k ? x.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : x.moveTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } x.closePath();
+        x.globalAlpha = alpha || 1; x.fillStyle = SC.mix(GREY, '#FFFFFF', 0.25); x.fill(); x.strokeStyle = C.char; x.lineWidth = 1.2; x.stroke(); x.globalAlpha = 1;
+      }
+      function pump(x, px, py, a){ x.globalAlpha = a; x.fillStyle = C.warn; SC.rr(x, px - 3, py - 6, 7, 12, 2); x.fill(); x.globalAlpha = 1; }
+      function hex(x, px, py, r, a){ x.globalAlpha = a; x.beginPath(); for (var k = 0; k < 6; k++) { var an = k * 1.0472 + 0.5236; k ? x.lineTo(px + Math.cos(an) * r, py + Math.sin(an) * r) : x.moveTo(px + Math.cos(an) * r, py + Math.sin(an) * r); } x.closePath(); x.fillStyle = C.char; x.fill(); x.globalAlpha = 1; }
+      function draw(tt){
+        var g = cv(cvs), x = g.x, i, k, q = simF();
+        /* headers */
+        SC.text(x, 'Intestinal lumen', (LX0 + LX1) / 2, 18, { bold: true, align: 'center' }); SC.text(x, 'Enterocytes', (EX0 + EX1) / 2, 18, { bold: true, align: 'center' }); SC.text(x, 'Portal vein', PVX, 18, { bold: true, align: 'center' });
+        /* lumen segments shaded by C / S from the mass balance */
+        for (i = 0; i < NC; i++) { var sat = 1 - phiAt(M, i, co.t); x.fillStyle = SC.mix('#F3F7F9', C.tint, 0.12 + 0.6 * sat); x.fillRect(LX0, LY0 + i * SEG, LX1 - LX0, SEG); }
+        x.strokeStyle = C.silver; x.lineWidth = 1; x.setLineDash([4, 4]); for (i = 1; i < NC; i++) { x.beginPath(); x.moveTo(LX0, LY0 + i * SEG); x.lineTo(LX1, LY0 + i * SEG); x.stroke(); } x.setLineDash([]);
+        x.strokeStyle = C.bg; x.lineWidth = 1.2; x.strokeRect(LX0, LY0, LX1 - LX0, LY1 - LY0);
+        SC.arrow(x, (LX0 + LX1) / 2, LY1 + 2, (LX0 + LX1) / 2, LY1 + 9, C.bg, 1.5, 6);
+        SC.text(x, 'To colon, not absorbed', (LX0 + LX1) / 2, 412, { size: 11, align: 'center', color: C.char });
+        SC.text(x, 'Time after dose ' + co.t.toFixed(1) + ' h', (EX0 + EX1) / 2 + 4, 412, { size: 11, align: 'center', color: C.char });
+        /* brush border, enterocytes, P-gp, CYP3A */
+        x.strokeStyle = C.bg; x.lineWidth = 1; for (k = LY0 + 2; k < LY1; k += 4) { x.beginPath(); x.moveTo(LX1, k); x.lineTo(EX0, k); x.stroke(); }
+        for (i = 0; i < NC; i++) {
+          var cy = cellY(i); SC.rr(x, EX0, LY0 + i * SEG + 2, EX1 - EX0, SEG - 4, 5); x.fillStyle = '#FBFCFD'; x.fill(); x.strokeStyle = C.bg; x.lineWidth = 1; x.stroke();
+          if (M.fe > 0) pump(x, EX0, cy - 12, 0.35 + 0.65 * M.fe / 0.9);
+          if (M.rg > 0) hex(x, EX1 - 12, cy + 12, 5, 0.3 + 0.7 * Math.min(1, M.rg / 2));
+        }
+        /* portal vein, liver, hepatic vein, systemic circulation */
+        x.strokeStyle = SC.mix(C.tint, '#FFFFFF', 0.45); x.lineWidth = 24; x.lineCap = 'butt'; x.lineJoin = 'round'; x.beginPath(); x.moveTo(PVX, LY1); x.lineTo(PVX, PVY + 14); x.quadraticCurveTo(PVX, PVY, PVX + 14, PVY); x.lineTo(LV.x0, PVY); x.stroke();
+        x.lineWidth = 16; x.beginPath(); x.moveTo(LV.x1, PVY); x.lineTo(SB.x0, PVY); x.stroke(); x.lineJoin = 'miter';
+        SC.arrow(x, PVX, 330, PVX, 300, C.red, 1.6, 7); SC.arrow(x, PVX, 200, PVX, 170, C.red, 1.6, 7);
+        SC.rr(x, LV.x0, LV.y0, LV.x1 - LV.x0, LV.y1 - LV.y0, 10); x.fillStyle = SC.mix(C.warn, '#FFFFFF', 0.82); x.fill(); x.strokeStyle = C.warn; x.lineWidth = 1.4; x.stroke();
+        x.fillStyle = SC.mix(C.warn, '#FFFFFF', 0.6); x.fillRect(LV.x0 + 1, PVY - 10, LV.x1 - LV.x0 - 2, 20);
+        SC.text(x, 'Liver', LV.x0 + 10, 46, { bold: true }); SC.text(x, 'Eh = ' + f2(M.eh) + ', Fh = ' + f2(M.fh), LV.x0 + 10, 64, { size: 11 });
+        SC.text(x, 'Eh', LV.x0 + 10, GT.y + 4, { size: 11, bold: true });
+        x.strokeStyle = C.char; x.lineWidth = 3; x.lineCap = 'round'; x.beginPath(); x.moveTo(GT.x0, GT.y); x.lineTo(GT.x1, GT.y); x.stroke(); x.lineCap = 'butt';
+        x.strokeStyle = C.warn; x.lineWidth = 5; x.beginPath(); x.moveTo(GT.x0, GT.y); x.lineTo(GT.x0 + M.eh * (GT.x1 - GT.x0), GT.y); x.stroke();
+        SC.dot(x, GT.x0 + M.eh * (GT.x1 - GT.x0), GT.y, hoverG ? 8 : 7, C.warn, '#FFFFFF');
+        SC.rr(x, SB.x0, SB.y0, SB.x1 - SB.x0, SB.y1 - SB.y0, 10); x.fillStyle = SC.mix(C.red, '#FFFFFF', 0.88); x.fill(); x.strokeStyle = C.red; x.lineWidth = 1.4; x.stroke();
+        SC.text(x, 'Systemic circulation', SB.x0 + 6, 46, { bold: true, size: 11 }); SC.text(x, 'F = ' + f2(M.F), SB.x0 + 6, 62, { size: 11 });
+        /* crystals and molecules */
+        co.cr.forEach(function(cr){ crystal(x, cr.x, cr.y, 2.5 + 2.2 * Math.sqrt(cr.n), cr.vf, cr.rot); });
+        co.u.forEach(function(u){
+          var px = u.x, py = u.y;
+          if (u.st === 'sys') { px += Math.sin(tt * 1.7 + u.ph) * 1.5; py += Math.cos(tt * 1.3 + u.ph) * 1.5; }
+          if (u.st === 'met' || u.st === 'hep') { x.globalAlpha = Math.max(0, u.fade); SC.dot(x, px, py, 3.2, GREY, C.char); x.globalAlpha = 1; return; }
+          if (u.st === 'out') x.globalAlpha = 0.5;
+          SC.dot(x, px, py, 3.2, C.red);
+          if (u.ring > 0 || u.st === 'ef') { x.globalAlpha = u.st === 'ef' ? 1 : u.ring; x.strokeStyle = C.warn; x.lineWidth = 1.8; x.beginPath(); x.arc(px, py, 5, 0, 6.2832); x.stroke(); }
+          x.globalAlpha = 1;
+        });
+        /* waterfall: dose, Fa, Fa x Fg, F */
+        SC.text(x, 'Fraction of the dose at each stage', LV.x0, 170, { bold: true });
+        x.strokeStyle = C.silver; x.lineWidth = 1; [0, 0.25, 0.5, 0.75, 1].forEach(function(v){ var yy = WF.b - v * (WF.b - WF.t); x.beginPath(); x.moveTo(WF.l, yy); x.lineTo(WF.r, yy); x.stroke(); SC.text(x, v.toFixed(2), WF.l - 5, yy + 4, { size: 11, align: 'right', color: C.char }); });
+        var lv = [1, M.fa, M.fa * M.fg, M.F], sl = q ? [1, q.fa, q.fa * q.fg, q.F] : null, nm = ['Dose', 'Fa', 'Fa x Fg', 'F'], sw = (WF.r - WF.l) / 4, bw = 34, sy = function(v){ return WF.b - v * (WF.b - WF.t); };
+        for (k = 0; k < 4; k++) {
+          var cx = WF.l + sw * (k + 0.5), bx = cx - bw / 2;
+          if (k) { x.fillStyle = C.warn; x.globalAlpha = 0.35; x.fillRect(bx, sy(lv[k - 1]), bw, sy(lv[k]) - sy(lv[k - 1])); x.globalAlpha = 1; x.strokeStyle = C.bg; x.setLineDash([3, 3]); x.beginPath(); x.moveTo(bx - sw + bw, sy(lv[k - 1])); x.lineTo(bx, sy(lv[k - 1])); x.stroke(); x.setLineDash([]); }
+          x.fillStyle = C.red; x.fillRect(bx, sy(lv[k]), bw, WF.b - sy(lv[k]));
+          pins.forEach(function(p){ x.strokeStyle = GREY; x.lineWidth = 1.6; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(bx - 4, sy(p[k])); x.lineTo(bx + bw + 4, sy(p[k])); x.stroke(); x.setLineDash([]); });
+          if (sl) { x.strokeStyle = C.char; x.lineWidth = 2.6; x.beginPath(); x.moveTo(bx - 5, sy(sl[k])); x.lineTo(bx + bw + 5, sy(sl[k])); x.stroke(); }
+          var ty = Math.min(sy(lv[k]), sl ? sy(sl[k]) : 999) - 5; SC.text(x, f2(lv[k]), cx, Math.max(ty, WF.t - 4), { size: 11, bold: true, align: 'center' });
+          SC.text(x, nm[k], cx, WF.b + 16, { size: 11, bold: true, align: 'center' });
+        }
+        x.strokeStyle = C.char; x.lineWidth = 1.2; x.beginPath(); x.moveTo(WF.l, WF.b); x.lineTo(WF.r, WF.b); x.stroke();
+        /* legend */
+        var L = [[14, 438, 'cr', 'Undissolved drug'], [168, 438, 'dot', 'Dissolved drug'], [322, 438, 'ef', 'Returned by P-gp'], [476, 438, 'met', 'Metabolite'],
+          [14, 458, 'pg', 'P-gp efflux pump'], [168, 458, 'hx', 'CYP3A, gut wall'], [322, 458, 'sh', 'Lumen shade, C / S'], [476, 458, 'eh', 'Eh handle (drag)'],
+          [14, 478, 'bar', 'Bar: equations'], [168, 478, 'sim', 'Line: simulation'], [322, 478, 'loss', 'Loss at each stage'], [476, 478, 'pin', 'Pinned']];
+        L.forEach(function(it){
+          var ix = it[0] + 6, iy = it[1] - 4;
+          if (it[2] === 'cr') crystal(x, ix, iy, 6, [1, 0.85, 1.1, 0.9, 1, 0.8, 1.05], 0.3);
+          else if (it[2] === 'dot') SC.dot(x, ix, iy, 3.5, C.red);
+          else if (it[2] === 'ef') { SC.dot(x, ix, iy, 3.5, C.red); x.strokeStyle = C.warn; x.lineWidth = 1.8; x.beginPath(); x.arc(ix, iy, 5.5, 0, 6.2832); x.stroke(); }
+          else if (it[2] === 'met') SC.dot(x, ix, iy, 3.5, GREY, C.char);
+          else if (it[2] === 'pg') pump(x, ix, iy, 1);
+          else if (it[2] === 'hx') hex(x, ix, iy, 5, 1);
+          else if (it[2] === 'sh') { x.fillStyle = SC.mix('#F3F7F9', C.tint, 0.72); x.fillRect(ix - 6, iy - 6, 12, 12); }
+          else if (it[2] === 'eh') SC.dot(x, ix, iy, 5, C.warn, '#FFFFFF');
+          else if (it[2] === 'bar') { x.fillStyle = C.red; x.fillRect(ix - 5, iy - 6, 10, 12); }
+          else if (it[2] === 'sim') { x.strokeStyle = C.char; x.lineWidth = 2.6; x.beginPath(); x.moveTo(ix - 7, iy); x.lineTo(ix + 7, iy); x.stroke(); }
+          else if (it[2] === 'loss') { x.fillStyle = C.warn; x.globalAlpha = 0.35; x.fillRect(ix - 5, iy - 6, 10, 12); x.globalAlpha = 1; }
+          else if (it[2] === 'pin') { x.strokeStyle = GREY; x.lineWidth = 1.6; x.setLineDash([4, 3]); x.beginPath(); x.moveTo(ix - 7, iy); x.lineTo(ix + 7, iy); x.stroke(); x.setLineDash([]); }
+          SC.text(x, it[3], it[0] + 18, it[1], { size: 11 });
+        });
+      }
+      function frame(dt, t){ if (!M) return; if (dt > 0) advance(dt); draw(t); }
+      function redraw(){ if (loop) loop.redraw(); }
+      CT.forEach(function(r){ qs('.' + r[0], r[1]).addEventListener('input', function(){ S[r[0]] = +this.value; changed(); }); });
+      qs('.ab-run', cb).addEventListener('click', function(){ headless(M, 200, st, R); side_(); redraw(); });
+      IX.tools(api, { pin: function(){ pins.push([1, M.fa, M.fa * M.fg, M.F]); if (pins.length > 3) pins.shift(); redraw(); }, clear: function(){ pins = []; redraw(); }, canvases: function(){ return [cvs]; }, name: 'oral-absorption-pathway',
+        csv: function(){ var q = simF(), rows = [['Quantity', 'Equations', 'Simulation']];
+          rows.push(['Fa', M.fa, q ? q.fa : ''], ['Fg', M.fg, q ? q.fg : ''], ['Fh', M.fh, q ? q.fh : ''], ['F', M.F, q ? q.F : ''], ['Molecules simulated', '', st.n], [],
+            ['Dose (mg)', M.dose, ''], ['S (mg/mL)', M.sol, ''], ['D0', M.d0, ''], ['kd (1/h)', M.kd, ''], ['Peff (10^-4 cm/s)', M.peff, ''], ['Fraction returned by efflux', M.fe, ''], ['fu,gut CLint,gut / Qgut', M.rg, ''], ['Eh', M.eh, ''], [], ['t (h)', 'Fraction of dose absorbed', '']);
+          for (var k = 0; k <= M.n; k += 50) rows.push([k * HODE, M.ab[k], '']); return IX.csv(rows); } });
+      function onG(p){ return p.x >= GT.x0 - 10 && p.x <= GT.x1 + 10 && Math.abs(p.y - GT.y) <= 11; }
+      function setEh(p){ S.eh = Math.round(cl((p.x - GT.x0) / (GT.x1 - GT.x0), 0, 0.95) * 100) / 100; sync(); changed(); }
+      IX.attach(cvs, {
+        move: function(p){ var o = onG(p); cvs.style.cursor = o ? 'ew-resize' : 'default'; if (o !== hoverG) { hoverG = o; redraw(); } },
+        leave: function(){ if (hoverG) { hoverG = false; redraw(); } },
+        down: function(p){ if (onG(p)) { setEh(p); return { k: 'eh' }; } return null; },
+        drag: function(d, p){ setEh(p); },
+        up: function(){ IX.save('abx', S); }
+      });
+      labels(); M = model(S); resetStats(); newCohort(); headless(M, 40, st, R); side_();
+      return { render: function(){ if (!loop) loop = SC.run(cvs, frame); else loop.redraw(); } };
+    } });
+})();
+
 /* ---------- step 2 ---------- */
 ABS.add({ short: 'Hepatic first-pass limit', level: 'foundations', title: 'Hepatic first-pass limit',
   build: function(api){

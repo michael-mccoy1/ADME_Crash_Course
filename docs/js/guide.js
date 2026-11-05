@@ -1137,6 +1137,30 @@ var GUIDE = {
     },
     "pbpk/Variability in clearance": {
       "notice": "At the same CV of CLint, the high-extraction compound has the narrower AUC distribution."
+    },
+    "ddi/Enzyme competition": {
+      "notice": "At [I]/Ki = 1 and [S]/Km = 0.1, 48% of the CYP molecules are inhibitor-bound and metabolite formation falls to 52% of control."
+    },
+    "tp/Hepatocyte schematic": {
+      "notice": "With the default parameters, blocking 3 of 4 OATP sites (Iu / Ki = 3) lowers Kpuu from 2.70 to 0.74 and CLh from 6.48 to 2.28 mL/min/kg; the fraction metabolized per entry stays at 0.83."
+    },
+    "rn/Nephron schematic": {
+      "notice": "At fu 0.5, a glomerular filtration rate of 120 mL/min, CLsec 150 mL/min and FR 0.2, CLr is 168 mL/min, 2.8 times fu x GFR, which indicates net secretion."
+    },
+    "dose/Regimen schematic": {
+      "notice": "With the default regimen (200 mg every 12 h, CL 5 L/h, V 100 L, F 0.8), Cmin,ss is 2.01 mg/L and Cmax,ss is 3.24 mg/L, both inside the 1.5 to 4 mg/L window, and 90% of steady state is reached at 46 h, after four doses."
+    },
+    "bbb/Barrier schematic": {
+      "notice": "In 16 simulated runs of 2,000 s at A_out/P = 3 the simulated Kp,uu was within 4.1 percent of the equation value of 0.25; inhibiting P-gp raises Kp,uu to 1.0 and Kp from 0.50 to 2.0 at fu,p 0.1 and fu,brain 0.05."
+    },
+    "pbpk/Body schematic": {
+      "notice": "At the default settings the rest of body holds 76 percent of the dose at 0.1 h and 52 percent at 2 h, while 39 percent has been metabolized by 2 h."
+    },
+    "dist/Binding schematic": {
+      "notice": "At equilibrium the unbound concentration is equal in plasma and tissue, and the total concentrations differ by the factor Kp = fu / fu,t."
+    },
+    "abs/Absorption schematic": {
+      "notice": "At 100 mg and S = 0.1 mg/mL (D0 = 4), Fa is 0.54, below the dissolved-dose limit of 0.93, and F is 0.22."
     }
   }
 };
