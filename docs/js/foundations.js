@@ -15,7 +15,7 @@ var PATHN = [
   { k: 'blood', label: 'Blood and plasma', letter: 'D', what: 'Drug in the systemic circulation binds to plasma proteins and may partition into red cells. In the simple models used here, only unbound drug is cleared or distributes into tissue.', assay: 'Plasma protein binding, blood to plasma ratio', qty: 'fu, B:P', where: 'Tab 02 for the principles, tab 08 for prediction' },
   { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Drug distributes from blood into tissues, where it can bind. The extent of distribution is the volume of distribution.', assay: 'Tissue binding, or Vss from animal or human data', qty: 'Vss, fut', where: 'Tab 02 for the principles, tab 08 for prediction' },
   { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Drug leaves the body unchanged in urine and bile, or as metabolites. Renal and biliary clearance add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance, transporter assays', qty: 'CLr, CLbile', where: 'Routes are described in tab 05. The ECCS in tab 07 names them. Not predicted.' }];
-WHY.add({ short: 'Path of an oral dose', level: 'foundations', ord: 20, title: 'The path of an oral dose',
+WHY.add({ short: 'Path of an oral dose', level: 'foundations', ord: 20, title: 'Stages of an oral dose',
   build: function(api){
     var sel = 'dis';
     var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:8px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');
@@ -125,7 +125,7 @@ ELIM.add({ short: 'Repeat dosing', level: 'foundations', ord: 50, title: 'Accumu
     return { render: draw };
   } });
 
-ELIM.add({ short: 'Checking a record', level: 'foundations', ord: 60, title: 'Checking a pharmacokinetic record',
+ELIM.add({ short: 'Checking a record', level: 'foundations', ord: 60, title: 'Consistency of pharmacokinetic records',
   build: function(api){
     var cur = 'Verapamil', named = OBACH08.filter(function(d){ return d.name && d.cl > 0 && d.vss > 0 && d.mrt > 0 && d.t12 > 0; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; });
     var all = OBACH08.filter(function(d){ return d.cl > 0 && d.vss > 0 && d.mrt > 0 && d.t12 > 0; });
@@ -201,7 +201,7 @@ VITRO.add({ short: 'Average fold error and bias', level: 'foundations', ord: 40,
     return { render: draw };
   } });
 
-VITRO.add({ short: 'Why the log scale', level: 'foundations', ord: 50, title: 'Why a logarithmic scale',
+VITRO.add({ short: 'Why the log scale', level: 'foundations', ord: 50, title: 'Logarithmic scale',
   build: function(api){
     var ax = 'log';
     var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);

@@ -46,7 +46,7 @@ var ECCS = {
   '3B': ['Hepatic uptake or renal clearance', 'Low-permeability acids and zwitterions, MW above 400 Da.', false],
   '4': ['Renal clearance', 'Low-permeability bases and neutrals.', false]
 };
-HEP.add({ short: 'Choosing a method by class', level: 'advanced', title: 'Choosing a method by class',
+HEP.add({ short: 'Choosing a method by class', level: 'advanced', title: 'Clearance mechanism by class',
   build: function(api){
     var acid = true, mw = 350, papp = 10, ppb = 95;
     var pn = api.el('pn', 'left:28px;top:16px;width:520px;height:508px;padding:8px', '<canvas width="504" height="490" style="width:504px;height:490px;cursor:crosshair"></canvas>'), cvs = qs('canvas', pn);

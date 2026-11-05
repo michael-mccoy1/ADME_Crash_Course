@@ -1,7 +1,7 @@
 "use strict";
 /* Quiz questions for tabs 01 to 09. Figures are built when a question is shown, from the same data as the lessons. */
 (function(){
-  var B = QZ.bank, T1 = '07 Hepatic clearance', T2 = '08 Distribution', T3 = '09 Absorption', TW = '01 Why exposure matters', TU = '02 Amount and volume', TE = '03 Elimination', TO = '04 Getting a drug in', TM = '05 Metabolism and excretion', TV = '06 Test tube to patient';
+  var B = QZ.bank, T1 = '07 Hepatic clearance', T2 = '08 Distribution', T3 = '09 Absorption', TW = '01 Exposure and effect', TU = '02 Amount and volume', TE = '03 Elimination', TO = '04 Oral dosing', TM = '05 Metabolism and excretion', TV = '06 In vitro to in vivo';
   function add(q, fig){ q.fig = fig; B.push(q); }
   var CP = { base: '#0F6E8C', neutral: '#34373F', acid: '#B4561B' };
   var DL = ['Acids', 'Bases', 'Zwitterions', 'No pKa'];

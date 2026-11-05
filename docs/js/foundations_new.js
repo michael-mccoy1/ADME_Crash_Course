@@ -168,7 +168,7 @@
     } });
 
   /* ===== tab 04, step 2: bioavailability from the areas ===== */
-  ORAL.add({ short: 'Bioavailability from AUCs', level: 'foundations', ord: 20, title: 'Bioavailability from the areas',
+  ORAL.add({ short: 'Bioavailability from AUCs', level: 'foundations', ord: 20, title: 'Bioavailability from AUC',
     build: function(api){
       var Di = 50, Dp = 100, Ai = 10, Ap = 8;
       var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
@@ -229,7 +229,7 @@
     } });
 
   /* ===== tab 05, step 3: the depletion assay ===== */
-  MET.add({ short: 'Depletion assay', level: 'foundations', ord: 30, title: 'The substrate depletion assay',
+  MET.add({ short: 'Depletion assay', level: 'foundations', ord: 30, title: 'Substrate depletion assay',
     build: function(api){
       var th = 25, prot = 1;
       var pn = api.el('pn', 'left:28px;top:16px;width:452px;height:508px;padding:8px', '<canvas class="a" width="436" height="440" style="width:436px;height:440px"></canvas><div class="ra" style="font-size:12.5px;margin-top:6px"></div>'), ca = qs('.a', pn);
@@ -281,7 +281,7 @@
     { k: 'bp', name: 'Blood to plasma ratio', meas: 'Concentration in whole blood divided by concentration in plasma.', par: 'B:P.', link: 'Converts plasma clearance to blood clearance and fu(plasma) to fu(blood).', use: 'Tabs 07 and 08' },
     { k: 'caco', name: 'Caco-2 permeability', meas: 'Rate of appearance of the compound across a monolayer of intestinal cells.', par: 'Apparent permeability, Papp, in cm/s.', link: 'Compared with reference compounds to estimate the fraction absorbed.', use: 'Tab 09' },
     { k: 'sol', name: 'Solubility', meas: 'Concentration of dissolved compound at equilibrium in buffer, at a stated pH.', par: 'Solubility S in mg/mL or mol/L.', link: 'With the dose and the volume of fluid gives the dose number.', use: 'Tab 09' }];
-  VITRO.add({ short: 'What an assay measures', level: 'foundations', ord: 10, title: 'What an in vitro assay measures',
+  VITRO.add({ short: 'What an assay measures', level: 'foundations', ord: 10, title: 'Quantities measured by in vitro assays',
     build: function(api){
       var sel = 'mic';
       var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<div class="nd" style="display:flex;gap:10px;flex-wrap:wrap"></div><div class="dt" style="margin-top:16px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>');

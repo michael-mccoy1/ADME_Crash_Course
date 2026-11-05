@@ -7,12 +7,12 @@ var STEPTEXT = {
   "change": "EC50, h, dose, CL. Outputs: effect at C0, half-life, time above the EC50."
  },
  "why/Path of an oral dose": {
-  "watch": "After oral administration a dose passes through seven stages. Each stage belongs to absorption (A), distribution (D), metabolism (M) or excretion (E), is probed by an in vitro assay, and is quantified by a parameter that links the assay to the clinic. Tabs 02 to 05 define these parameters. Tabs 07 to 09 predict hepatic clearance, volume of distribution and absorption. Gut-wall metabolism, renal clearance and biliary clearance are not predicted, because no public per-compound data were used for them.",
+  "watch": "After oral administration a dose passes through seven stages. Each belongs to absorption (A), distribution (D), metabolism (M) or excretion (E), is probed by an in vitro assay, and is quantified by a parameter that relates the assay result to a clinical quantity. The stages, assays and parameters are tabulated below. Gut-wall metabolism, renal clearance and biliary clearance are described but not predicted, because no public per-compound data were used for them.",
   "legend": "Stages of an oral dose with the associated ADME category, assay, parameter and course location.",
   "change": "Stage. Outputs: process, assay, parameter, course location."
  },
  "why/Exposure measures": {
-  "watch": "A concentration-time profile is summarized by Cmax (peak concentration), tmax (time of Cmax), AUC (area under the curve, the total exposure), the terminal half-life and the trough (concentration at the end of a dosing interval). Toxicity related to the peak depends on Cmax. Efficacy that requires C above a threshold depends on the trough or the time above the EC50. For first-order absorption, C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)], and AUC(0 to infinity) = F D / CL.",
+  "watch": "A concentration-time profile is summarized by Cmax (peak concentration), tmax (time of Cmax), AUC (area under the curve, the total exposure), the terminal half-life and the trough (concentration at the end of a dosing interval). Where toxicity is related to the peak, exposure is assessed by Cmax. Where efficacy requires C above a threshold, it is assessed by the trough or the time above the EC50. For first-order absorption, C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)], and AUC(0 to infinity) = F D / CL.",
   "legend": "Oral profile (dose 100 mg, F = 0.6, V = 60 L) with the selected measure highlighted.",
   "change": "Measure, ka, CL. Outputs: Cmax, tmax, AUC(0 to 24 h), half-life, concentration at 12 h."
  },

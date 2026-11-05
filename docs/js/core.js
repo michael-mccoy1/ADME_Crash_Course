@@ -60,7 +60,7 @@ function seg(items, cur, attr){ return '<div class="seg" ' + attr + '>' + items.
 function optGroup(label, html, hint){ return '<div class="og"><div class="ol">' + label + '</div>' + html + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>'; }
 function optRange(id, label, min, max, step, val, hint){ return '<div class="og"><label class="row" for="' + id + '">' + label + '<output id="o-' + id + '">' + val + '</output></label><input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '">' + (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>'; }
 document.addEventListener('input', function(e){ var t = e.target; if (t && t.type === 'range') { var o = $('o-' + t.id); if (o) o.textContent = t.value; } });
-var LEVELS = [['foundations', 'Foundations', 'The standard method and its inputs.'], ['applied', 'Applied', 'Assumptions that change the prediction, and how much.'], ['advanced', 'Advanced', 'Limits of the method and where it needs another approach.']];
+var LEVELS = [['foundations', 'Foundations', 'Definitions and models.'], ['applied', 'Applied', 'Effect of each assumption on the prediction.'], ['advanced', 'Advanced', 'Limits of the methods.']];
 function levelOf(st){ return st.level || 'applied'; }
 function levelName(k){ for (var i = 0; i < LEVELS.length; i++) if (LEVELS[i][0] === k) return LEVELS[i][1]; return k; }
 function openAncestors(el){ for (var p = el; p; p = p.parentElement) if (p.tagName === 'DETAILS') p.open = true; }

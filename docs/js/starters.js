@@ -29,7 +29,7 @@ VITRO.add({ short: 'From assay to clearance', level: 'foundations', ord: 20, tit
   } });
 
 /* ---------- tab 08: what volume of distribution measures ---------- */
-DIS.add({ short: 'What Vss measures', level: 'foundations', ord: 0, title: 'What volume of distribution measures',
+DIS.add({ short: 'What Vss measures', level: 'foundations', ord: 0, title: 'Apparent volume of distribution',
   build: function(api){
     var lk = 0, dose = 100, W = 70;
     var pn = api.el('pn', 'left:28px;top:16px;width:904px;height:508px;padding:14px', '<canvas width="876" height="300" style="width:876px;height:300px"></canvas><div class="tm" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px"></div>'), cvs = qs('canvas', pn);

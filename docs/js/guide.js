@@ -3,11 +3,11 @@
 var GUIDE = {
   "intro": {
     "why": {
-      "scope": "Drug effect depends on the concentration at the target, and absorption, distribution, metabolism and excretion (ADME) determine that concentration over time. Dose, concentration and effect are related by a concentration-effect curve, the stages of an oral dose are mapped, and the measures that summarize a concentration-time profile are defined. Tabs 02 to 06 define amount, concentration and volume, elimination, oral dosing, metabolism and excretion, and the conversion of in vitro data to predictions. Tabs 07 to 09 predict hepatic clearance, volume of distribution and absorption from public data.",
+      "scope": "The effect of a drug is related to its concentration at the target, and absorption, distribution, metabolism and excretion (ADME) determine the concentration-time course. The concentration-effect relation is stated for an Emax model, the stages of an oral dose are classified by ADME category, assay and parameter, and the measures that summarize a concentration-time profile (Cmax, tmax, AUC, half-life and trough) are defined.",
       "goals": [
-        "Relate dose, concentration and effect with a concentration-effect curve.",
-        "Name the stages an oral dose passes through, and the assay and quantity that go with each.",
-        "Read Cmax, tmax, AUC, half-life and trough from a concentration-time profile."
+        "Relate concentration to effect with an Emax model and calculate the time above the EC50.",
+        "Classify the stages of an oral dose by ADME category and match each to its assay and parameter.",
+        "Determine Cmax, tmax, AUC, half-life and trough from a concentration-time profile."
       ],
       "notation": [
         [
