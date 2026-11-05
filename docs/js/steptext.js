@@ -233,7 +233,7 @@ var STEPTEXT = {
  },
  "ddi/Reversible inhibition": {
   "watch": "For a competitive inhibitor of the enzyme that clears the substrate, AUCR = 1 + [I] / Ki. With a fraction fm of clearance through the inhibited enzyme, AUCR = 1 / [fm / (1 + [I] / Ki) + 1 - fm], which approaches 1 / (1 - fm) as [I] / Ki increases. An AUC ratio of 2 or more is the usual positive threshold; it is reached at [I] / Ki = 1 when fm = 1.",
-  "legend": "AUC ratio against [I] / Ki for fm = 1, 0.9, 0.7, 0.5 and 0.3 (grey) and for the fm set (red). Dashed lines: AUC ratio 2, [I] / Ki = 1 and the ceiling 1 / (1 - fm). Grey dashed curves are pinned values of fm.",
+  "legend": "AUC ratio against [I] / Ki for fm = 1, 0.9, 0.7, 0.5 and 0.3 (grey) and for the fm set (teal). Dashed lines: AUC ratio 2, [I] / Ki = 1 and the ceiling 1 / (1 - fm). Grey dashed curves are pinned values of fm.",
   "change": "[I], Ki, fm; drag the point (horizontal sets [I], vertical sets fm); hover for the ratio at any [I] / Ki; Pin keeps up to three; PNG and CSV export. Outputs: AUC ratio, ceiling, clearance reduction."
  },
  "ddi/Inhibitor concentration": {
@@ -260,5 +260,35 @@ var STEPTEXT = {
   "watch": "Time-dependent inhibition lowers enzyme content at the rate kobs = kinact [I] / (KI + [I]), giving B = kdeg / (kdeg + kobs). Induction raises enzyme content, C = 1 + Emax [I] / (EC50 + [I]). With A = 1 / (1 + [I] / Ki) for reversible inhibition, the combined AUC ratio is 1 / [fm A B C + 1 - fm]. Intestinal terms are omitted. kdeg is the enzyme degradation rate constant; 0.019 per h is used here, of the order used for hepatic CYP3A. No in vivo data are plotted.",
   "legend": "AUC ratio against [I] for reversible inhibition, time-dependent inhibition, induction and their combination. Grey dashed curves are pinned parameter sets.",
   "change": "[I], fm, Ki, kinact, KI, kdeg, Emax, EC50; drag the [I] line; hover for each term; Pin keeps up to two; PNG and CSV export. Outputs: A, B, C and the AUC ratios."
+ },
+ "tp/Carrier-mediated uptake": {
+  "watch": "Uptake into hepatocytes or transfected cells is the sum of a saturable carrier-mediated term and passive diffusion, v = Vmax C / (Km + C) + Pdif C (Brouwer et al., 2013, Table 3). At C well below Km the carrier-mediated clearance is Vmax / Km. The carrier-mediated and passive terms are equal at C = Vmax / Pdif - Km.",
+  "legend": "Uptake rate against substrate concentration: passive (grey), carrier-mediated (dashed) and total (teal). The vertical dashed line marks the substrate concentration set.",
+  "change": "Vmax, Km, Pdif, substrate; drag the Vmax line, the Km point, the Pdif point or the substrate line; hover for the components; Pin keeps up to three; PNG and CSV export. Outputs: carrier-mediated share, carrier clearance, crossover concentration."
+ },
+ "tp/Inhibition of uptake": {
+  "watch": "For a competitive inhibitor of the carrier-mediated component, uptake relative to control is 1 / (1 + [I] / IC50), with IC50 = Ki (1 + S / Km); hence Ki = IC50 / (1 + S / Km) (the Cheng-Prusoff relation). The IC50 equals Ki only when S is much smaller than Km.",
+  "legend": "Carrier-mediated uptake as a percentage of control against inhibitor concentration, for substrate near zero (grey dashed) and at the concentration set (teal); the IC50 is marked.",
+  "change": "Ki, substrate, Km; drag the IC50 marker to set Ki; hover for values; Pin keeps up to three; PNG and CSV export. Outputs: IC50, IC50 over Ki."
+ },
+ "tp/Extended clearance model": {
+  "watch": "In the extended clearance model, CLint,all = PSinf PSint / (PSeff + PSint) with PSint = CLmet + CLbile, and CLh = Q fu,b CLint,all / (Q + fu,b CLint,all). When PSint is much greater than PSeff, CLint,all approaches PSinf (uptake-limited). When it is much smaller, CLint,all approaches PSinf PSint / PSeff (intracellular-limited).",
+  "legend": "Hepatic blood clearance against PSinf for the parameters set (teal), the uptake-limited ceiling (grey dashed) and blood flow.",
+  "change": "PSinf, PSeff, CLmet, CLbile, fu,b, Qh; drag the point along PSinf; hover for values; Pin keeps up to two; PNG and CSV export. Outputs: CLint,all, share of uptake eliminated, hepatic clearance, rate-determining step."
+ },
+ "tp/Uptake inhibition and AUC ratio": {
+  "watch": "An inhibitor that lowers PSinf by the factor 1 / (1 + Iu / Ki) changes the hepatic clearance by an amount that depends on how much uptake controls clearance. The clearance ratio approaches R = 1 + Iu / Ki for uptake-limited compounds with clearance well below blood flow, and is smaller when intracellular elimination or blood flow limits clearance. Regulatory screening criteria apply a cutoff to R, of the order of 1.1.",
+  "legend": "Hepatic clearance ratio against Iu / Ki for the parameters set (teal) and with intracellular clearance (CLmet and CLbile) divided and multiplied by 10; dashed grey, R = 1 + Iu / Ki.",
+  "change": "PSinf, PSeff, CLmet, CLbile, fu,b, Iu / Ki; drag the marker; hover for the four curves; PNG and CSV export. Outputs: clearance ratio, R, model over R."
+ },
+ "tp/ECCS class and biliary clearance": {
+  "watch": "In the 20 substrates tabulated by Miyake et al. (2023), human biliary clearance within ECCS class 3B spans 0.001 to 5.85 mL/min/kg (n = 12), a 5850-fold range, with a median of 0.29. ECCS assigns classes 1B and 3B (acids and zwitterions above 400 Da) to hepatic uptake as the expected rate-determining step.",
+  "legend": "Human biliary clearance of 20 substrates by ECCS class; bars, class medians.",
+  "change": "Hover a point for the compound; click a point for its values; PNG and CSV export. Outputs: class medians, selected compound."
+ },
+ "tp/Probe substrates and inhibitors": {
+  "watch": "Brouwer et al. (2013) recommend probe substrates, inhibitors and potential clinical probes for each transporter. Several inhibitors are listed for more than one transporter, so inhibition by one agent does not identify the transporter involved.",
+  "legend": "Inhibitors listed in Table 2 of Brouwer et al. (2013) against transporter; shaded cells mark an inhibitor recommended for that transporter.",
+  "change": "Click a transporter column for its systems, substrates, inhibitors and clinical probes; click an inhibitor row to see every transporter it is listed for; CSV export. Outputs: lists for the selection."
  }
 };

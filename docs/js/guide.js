@@ -171,6 +171,31 @@ var GUIDE = {
         "data": [
               "Ito K, Brown HS, Houston JB (2004), Br J Clin Pharmacol 57:473: AUC ratio, Ki and [I] / Ki for 190 of 193 in vivo studies (Tables 2 to 4; open access). Three studies with a missing inhibitor concentration are omitted."
         ]
+  },
+    "tp": {
+        "scope": "Carrier-mediated and passive uptake, the inhibition constant from an IC50, the extended clearance model for hepatic uptake, the effect of uptake inhibition on the hepatic clearance ratio, and public data on biliary clearance by ECCS class and on recommended probe substrates and inhibitors. The model steps use parameters set by the sliders, and no transporter kinetic database is analyzed. Renal transport and uptake into other tissues are not covered.",
+        "notation": [
+              [
+                    "PSinf",
+                    "sinusoidal uptake clearance into hepatocytes."
+              ],
+              [
+                    "PSeff",
+                    "efflux clearance from hepatocytes back to blood."
+              ],
+              [
+                    "PSint",
+                    "intracellular elimination clearance, CLmet + CLbile."
+              ],
+              [
+                    "ECCS",
+                    "extended clearance classification system (tab 07, step 8)."
+              ]
+        ],
+        "data": [
+              "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: ECCS class and human biliary clearance of 20 substrates, as collected there from the Drug Interaction Database and the literature.",
+              "Brouwer KLR et al., Clin Pharmacol Ther 94:95 (2013), Table 2: recommended probe substrates, inhibitors and potential clinical probes for each transporter (open access)."
+        ]
   }
   },
   "steps": {
@@ -329,6 +354,24 @@ var GUIDE = {
     },
     "ddi/Time-dependent inhibition and induction": {
       "notice": "Induction lowers the AUC ratio below 1, so the combined curve can cross 1 as [I] increases."
+    },
+    "tp/Carrier-mediated uptake": {
+      "notice": "Below Km the carrier-mediated uptake is linear in concentration with slope Vmax / Km, and above Km it saturates at Vmax."
+    },
+    "tp/Inhibition of uptake": {
+      "notice": "At a substrate concentration equal to Km, the IC50 is twice the Ki."
+    },
+    "tp/Extended clearance model": {
+      "notice": "Hepatic clearance cannot exceed the uptake-limited ceiling or the blood flow."
+    },
+    "tp/Uptake inhibition and AUC ratio": {
+      "notice": "The clearance ratio equals 1 + Iu / Ki only when uptake limits clearance and clearance is well below blood flow."
+    },
+    "tp/ECCS class and biliary clearance": {
+      "notice": "Biliary clearance within class 3B spans 0.001 to 5.85 mL/min/kg, a 5850-fold range."
+    },
+    "tp/Probe substrates and inhibitors": {
+      "notice": "Cyclosporin A, MK-571 and verapamil are each listed as inhibitors for four transporters."
     }
   }
 };

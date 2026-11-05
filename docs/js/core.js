@@ -49,7 +49,7 @@ function lineChart(el, series, o){
 /* =====================================================================
    Lesson framework
    ===================================================================== */
-var LESSONS = {}, LORDER = ['why', 'units', 'elim', 'oral', 'met', 'vitro', 'hep', 'dist', 'abs', 'ddi', 'quiz'], ACTIVE = 'why';
+var LESSONS = {}, LORDER = ['why', 'units', 'elim', 'oral', 'met', 'vitro', 'hep', 'dist', 'abs', 'ddi', 'tp', 'quiz'], ACTIVE = 'why';
 function Lesson(id, title){ this.id = id; this.title = title; this.steps = []; this.gloss = null; this.optsHTML = ''; this.onOpts = null; this.onData = null; LESSONS[id] = this; }
 Lesson.prototype.add = function(def){ this.steps.push(def); return this; };
 Lesson.prototype.glossary = function(items){ this.gloss = items; return this; };

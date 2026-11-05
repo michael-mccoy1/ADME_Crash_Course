@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ADME Crash Course | Quantitative DMPK</title>
-<link rel="stylesheet" href="css/site.css?v=e2">
+<link rel="stylesheet" href="css/site.css?v=e7">
 </head>
 <body>
 <div id="bar"></div>
@@ -27,9 +27,10 @@
 <button type="button" data-tab="dist" aria-selected="false"><b>08</b>Distribution</button>
 <button type="button" data-tab="abs" aria-selected="false"><b>09</b>Absorption</button>
 <button type="button" data-tab="ddi" aria-selected="false"><b>10</b>Drug interactions</button>
+<button type="button" data-tab="tp" aria-selected="false"><b>11</b>Transporters</button>
 </div>
 <div class="tg"><span class="tl">Check</span>
-<button type="button" class="qzt" data-tab="quiz" aria-selected="false"><b>11</b>Quiz</button>
+<button type="button" class="qzt" data-tab="quiz" aria-selected="false"><b>12</b>Quiz</button>
 </div>
 </div></nav>
 <main>
@@ -43,39 +44,42 @@
   <div class="lesson" id="lesson-dist" hidden></div>
   <div class="lesson" id="lesson-abs" hidden></div>
   <div class="lesson" id="lesson-ddi" hidden></div>
+  <div class="lesson" id="lesson-tp" hidden></div>
   <div class="lesson" id="lesson-quiz" hidden></div>
 </main>
-<footer class="site"><div>Data: Obach (1999), Drug Metab Dispos 27:1350, 29 drugs. Obach et al. (2008), Drug Metab Dispos 36:1385, human intravenous PK for 670 drugs, via ChEMBL (CC BY-SA 3.0). Human intestinal absorption (Hou et al., 2007), Caco-2 permeability (Wang et al., 2016) and AqSolDB (Sorkun et al., 2019) from Therapeutics Data Commons (CC BY 4.0), with RDKit descriptors. Oie-Tozer constants and the tissue binding equation as stated in Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0). AstraZeneca in vitro DMPK data deposited in ChEMBL (CHEMBL3301361), CC BY-SA 3.0. Extended clearance classification system: Varma et al. (2015), Pharm Res 32:3785. Every calculation runs in the browser. No data leave the page.</div></footer>
-<script src="js/core.js?v=e2"></script>
-<script src="js/steptext.js?v=e2"></script>
-<script src="js/interact.js?v=e2"></script>
-<script src="js/lessons.js?v=e2"></script>
-<script src="js/guide.js?v=e2"></script>
-<script src="js/obach99.js?v=e2"></script>
-<script src="js/az_clint.js?v=e2"></script>
-<script src="js/hepatic.js?v=e2"></script>
-<script src="js/hepatic2.js?v=e2"></script>
-<script src="js/hepatic3.js?v=e2"></script>
-<script src="js/obach08.js?v=e2"></script>
-<script src="js/distribution.js?v=e2"></script>
-<script src="js/absorb_data.js?v=e2"></script>
-<script src="js/absorption.js?v=e2"></script>
-<script src="js/ito_data.js?v=e2"></script>
-<script src="js/ddi.js?v=e2"></script>
-<script src="js/foundations.js?v=e2"></script>
-<script src="js/foundations_new.js?v=e2"></script>
-<script src="js/why_interactive.js?v=e2"></script>
-<script src="js/units_interactive.js?v=e2"></script>
-<script src="js/elim_interactive.js?v=e2"></script>
-<script src="js/oral_interactive.js?v=e2"></script>
-<script src="js/met_interactive.js?v=e2"></script>
-<script src="js/vitro_interactive.js?v=e2"></script>
-<script src="js/starters.js?v=e2"></script>
-<script src="js/xplore.js?v=e2"></script>
-<script src="js/quiz.js?v=e2"></script>
-<script src="js/quizfig.js?v=e2"></script>
-<script src="js/quiz_bank.js?v=e2"></script>
-<script src="js/quiz_ddi.js?v=e2"></script>
-<script src="js/main.js?v=e2"></script>
+<footer class="site"><div>Data: Obach (1999), Drug Metab Dispos 27:1350, 29 drugs. Obach et al. (2008), Drug Metab Dispos 36:1385, human intravenous PK for 670 drugs, via ChEMBL (CC BY-SA 3.0). Human intestinal absorption (Hou et al., 2007), Caco-2 permeability (Wang et al., 2016) and AqSolDB (Sorkun et al., 2019) from Therapeutics Data Commons (CC BY 4.0), with RDKit descriptors. Oie-Tozer constants and the tissue binding equation as stated in Coutinho et al. (2024), Pharm Res 41:1121 (CC BY 4.0). AstraZeneca in vitro DMPK data deposited in ChEMBL (CHEMBL3301361), CC BY-SA 3.0. Extended clearance classification system: Varma et al. (2015), Pharm Res 32:3785. Drug interactions: Ito et al. (2004), Br J Clin Pharmacol 57:473, Tables 2 to 4. Transporters: Miyake et al. (2023), J Pharmacol Exp Ther 387:135, Table 1; Brouwer et al. (2013), Clin Pharmacol Ther 94:95, Table 2. Every calculation runs in the browser. No data leave the page.</div></footer>
+<script src="js/core.js?v=e7"></script>
+<script src="js/steptext.js?v=e7"></script>
+<script src="js/interact.js?v=e7"></script>
+<script src="js/lessons.js?v=e7"></script>
+<script src="js/guide.js?v=e7"></script>
+<script src="js/obach99.js?v=e7"></script>
+<script src="js/az_clint.js?v=e7"></script>
+<script src="js/hepatic.js?v=e7"></script>
+<script src="js/hepatic2.js?v=e7"></script>
+<script src="js/hepatic3.js?v=e7"></script>
+<script src="js/obach08.js?v=e7"></script>
+<script src="js/distribution.js?v=e7"></script>
+<script src="js/absorb_data.js?v=e7"></script>
+<script src="js/absorption.js?v=e7"></script>
+<script src="js/ito_data.js?v=e7"></script>
+<script src="js/ddi.js?v=e7"></script>
+<script src="js/transporters.js?v=e7"></script>
+<script src="js/foundations.js?v=e7"></script>
+<script src="js/foundations_new.js?v=e7"></script>
+<script src="js/why_interactive.js?v=e7"></script>
+<script src="js/units_interactive.js?v=e7"></script>
+<script src="js/elim_interactive.js?v=e7"></script>
+<script src="js/oral_interactive.js?v=e7"></script>
+<script src="js/met_interactive.js?v=e7"></script>
+<script src="js/vitro_interactive.js?v=e7"></script>
+<script src="js/starters.js?v=e7"></script>
+<script src="js/xplore.js?v=e7"></script>
+<script src="js/quiz.js?v=e7"></script>
+<script src="js/quizfig.js?v=e7"></script>
+<script src="js/quiz_bank.js?v=e7"></script>
+<script src="js/quiz_ddi.js?v=e7"></script>
+<script src="js/quiz_tp.js?v=e7"></script>
+<script src="js/main.js?v=e7"></script>
 </body>
 </html>
