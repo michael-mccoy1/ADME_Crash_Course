@@ -1,4 +1,4 @@
-# ADME Crash Course
+# ADME Lab
 
 Interactive lessons on quantitative DMPK for working DMPK scientists. Every lesson uses public data and runs in the browser. A static site in `docs/`, suitable for GitHub Pages.
 
