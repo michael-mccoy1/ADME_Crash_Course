@@ -22,7 +22,9 @@ Tab 10, drug-drug interactions, has six steps: reversible inhibition and the AUC
 
 Tab 11, transporters, has six steps: carrier-mediated and passive uptake, inhibition of uptake (IC50 and Ki), the extended clearance model, uptake inhibition and the AUC ratio, biliary clearance by ECCS class, and probe substrates and inhibitors. The model steps use slider parameters. Data: Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1 (ECCS class and human biliary clearance of 20 substrates); Brouwer et al., Clin Pharmacol Ther 94:95 (2013), Table 2 (open access) and the kinetic equations of its Table 3.
 
-The quiz (tab 12) has 100 questions on tabs 01 to 11. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+Tab 12, renal and biliary excretion, has four steps: filtration and net renal clearance, renal impairment and the AUC ratio, the filtration limit across 554 drugs, and the biliary share of total clearance. Source data: Obach et al. (2008) total clearance and fu (554 drugs) and, for the biliary step, total clearance of 16 substrates that also appear in Table 1 of Miyake et al., J Pharmacol Exp Ther 387:135 (2023). No per-compound renal clearance or fe data are used; the renal steps use equations and the filtration limit fu x GFR.
+
+The quiz (tab 13) has 110 questions on tabs 01 to 12. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally
 

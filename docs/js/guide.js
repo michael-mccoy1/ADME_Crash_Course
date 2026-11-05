@@ -196,6 +196,31 @@ var GUIDE = {
               "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: ECCS class and human biliary clearance of 20 substrates, as collected there from the Drug Interaction Database and the literature.",
               "Brouwer KLR et al., Clin Pharmacol Ther 94:95 (2013), Table 2: recommended probe substrates, inhibitors and potential clinical probes for each transporter (open access)."
         ]
+  },
+    "rn": {
+        "scope": "Renal clearance as filtration plus net tubular transport, the effect of renal impairment on the AUC ratio, a filtration limit applied to 554 drugs, and the biliary share of total clearance for 16 substrates. No public per-compound renal clearance data were used, so renal excretion is analyzed through the filtration limit and the equations only. Transporter identity is covered in tab 11.",
+        "notation": [
+              [
+                    "fu",
+                    "fraction unbound in plasma."
+              ],
+              [
+                    "GFR",
+                    "glomerular filtration rate, 120 mL/min for a 70 kg adult or about 1.8 mL/min/kg."
+              ],
+              [
+                    "fe",
+                    "fraction of the dose excreted unchanged in urine."
+              ],
+              [
+                    "KF",
+                    "renal function relative to normal, GFR / normal GFR."
+              ]
+        ],
+        "data": [
+              "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (CC BY-SA 3.0): total clearance and fu of 554 drugs (step 3) and total clearance of 16 substrates (step 4).",
+              "Miyake et al., J Pharmacol Exp Ther 387:135 (2023), Table 1: human biliary clearance of 16 substrates that also have a total clearance in the Obach set."
+        ]
   }
   },
   "steps": {
@@ -372,6 +397,18 @@ var GUIDE = {
     },
     "tp/Probe substrates and inhibitors": {
       "notice": "Cyclosporin A, MK-571 and verapamil are each listed as inhibitors for four transporters."
+    },
+    "rn/Filtration and net renal clearance": {
+      "notice": "A renal clearance above fu x GFR requires net secretion, and one below it requires net reabsorption."
+    },
+    "rn/Renal impairment and AUC ratio": {
+      "notice": "The dose adjustment factor 1 - fe (1 - KF) equals the inverse of the AUC ratio."
+    },
+    "rn/Filtration limit across drugs": {
+      "notice": "At a GFR of 1.8 mL/min/kg, 40 of the 554 drugs have a total clearance below fu x GFR."
+    },
+    "rn/Biliary share of clearance": {
+      "notice": "Valsartan has the largest biliary share, 0.88 of total clearance, among the 16 substrates."
     }
   }
 };

@@ -290,5 +290,25 @@ var STEPTEXT = {
   "watch": "Brouwer et al. (2013) recommend probe substrates, inhibitors and potential clinical probes for each transporter. Several inhibitors are listed for more than one transporter, so inhibition by one agent does not identify the transporter involved.",
   "legend": "Inhibitors listed in Table 2 of Brouwer et al. (2013) against transporter; shaded cells mark an inhibitor recommended for that transporter.",
   "change": "Click a transporter column for its systems, substrates, inhibitors and clinical probes; click an inhibitor row to see every transporter it is listed for; CSV export. Outputs: lists for the selection."
+ },
+ "rn/Filtration and net renal clearance": {
+  "watch": "Free drug is filtered at the rate fu x GFR. Tubular secretion adds CLsec and reabsorption removes a fraction Fr of what is filtered and secreted, so CLr = (fu x GFR + CLsec) x (1 - Fr). A CLr above fu x GFR requires net secretion and a CLr below it requires net reabsorption.",
+  "legend": "Waterfall from filtration through secretion and reabsorption to the renal clearance.",
+  "change": "fu, GFR, CLsec, reabsorbed fraction; drag the top of the filtered, secreted or renal clearance bar; hover a bar for its value; PNG and CSV export. Outputs: CLr, CLr over filtration, net transport, CLr over GFR."
+ },
+ "rn/Renal impairment and AUC ratio": {
+  "watch": "With a fraction fe of clearance renal and the nonrenal clearance unchanged, a renal function KF relative to normal gives AUCR = 1 / (1 - fe + fe KF). The dose adjustment factor of Giusti and Hayton, Q = 1 - fe (1 - KF), is the inverse of the AUC ratio. At KF near 0 the ratio approaches 1 / (1 - fe).",
+  "legend": "AUC ratio against renal function for fe = 0.2, 0.5, 0.8 and 0.95 (grey) and the fe set (teal); bands mark mild, moderate and severe impairment.",
+  "change": "fe, renal function; drag the point (horizontal sets KF, vertical sets fe); hover for values; Pin keeps up to three; PNG and CSV export. Outputs: AUC ratio, dose adjustment factor, ceiling."
+ },
+ "rn/Filtration limit across drugs": {
+  "watch": "Filtration alone clears fu x GFR. For the 554 drugs with fu and total clearance in Obach et al. (2008), a total clearance below fu x GFR means that filtered drug is largely reabsorbed, and a total clearance above it requires secretion or nonrenal routes. At a GFR of 1.8 mL/min/kg, 40 of 554 drugs (7 percent) have CL below fu x GFR. The analysis assumes the reported CL is a plasma clearance.",
+  "legend": "Filtration clearance fu x GFR against total clearance for 554 drugs; the dashed line is equality; orange points have CL below fu x GFR.",
+  "change": "GFR; hover for names and values; drag a rectangle to select drugs; click a drug for its values; PNG and CSV export. Outputs: number below the limit, median CL over fu x GFR."
+ },
+ "rn/Biliary share of clearance": {
+  "watch": "For the 16 substrates tabulated by Miyake et al. (2023) that also have a total clearance in Obach et al. (2008), the biliary share CLbile / CL ranges from 0.001 (cefazolin) to 0.88 (valsartan); 7 of 16 have a share of at least 0.2. The two quantities come from different studies, so the shares are indicative.",
+  "legend": "Human biliary clearance as a fraction of total clearance for 16 substrates, colored by ECCS class.",
+  "change": "Hover a bar for the compound; click a bar for its values; PNG and CSV export. Outputs: compounds with at least 0.2 of clearance in bile, class 3B median, highest and lowest share."
  }
 };
