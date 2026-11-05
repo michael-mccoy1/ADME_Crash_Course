@@ -16,24 +16,6 @@ var PATHN = [
   { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Distribution into tissue, quantified by the volume of distribution.', assay: 'Tissue binding; Vss from animal or human data', qty: 'Vss, fut', where: 'Tabs 02 and 08' },
   { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Renal and biliary excretion add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance; transporter assays', qty: 'CLr, CLbile', where: 'Tab 05; not predicted' }];
 function ivPts(D, V, CL, T, step){ var k = CL / V, pts = [], t; for (t = 0; t <= T + 1e-9; t += step) pts.push([t, D / V * Math.exp(-k * t)]); return pts; }
-ORAL.add({ short: 'Oral profile', level: 'foundations', ord: 10, title: 'Concentration after an oral dose',
-  build: function(api){
-    var F = 0.5, CL = 10, V = 50, ka = 1, D = 100;
-    var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-    var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var c1 = api.addControl('F <input type="range" class="f" min="0.05" max="1" step="0.01" value="' + F + '" style="width:90px"> <b class="fv"></b>'), c2 = api.addControl('CL <input type="range" class="c" min="1" max="50" step="1" value="' + CL + '" style="width:90px"> <b class="cv"></b> L/h'), c3 = api.addControl('V <input type="range" class="v" min="10" max="300" step="5" value="' + V + '" style="width:90px"> <b class="vv"></b> L'), c4 = api.addControl('ka <input type="range" class="a" min="0.1" max="5" step="0.1" value="' + ka + '" style="width:90px"> <b class="av"></b> 1/h');
-    function draw(){
-      qs('.fv', c1).textContent = F.toFixed(2); qs('.cv', c2).textContent = CL; qs('.vv', c3).textContent = V; qs('.av', c4).textContent = ka.toFixed(1);
-      var ke = CL / V, kaa = Math.abs(ka - ke) < 1e-3 ? ka + 0.01 : ka, T = 24, iv = [], po = [], cmax = 0, tmax = 0, dt = 0.1, t, ci, cp;
-      for (t = 0; t <= T + 1e-9; t += dt) { ci = D / V * Math.exp(-ke * t); cp = F * D * kaa / (V * (kaa - ke)) * (Math.exp(-ke * t) - Math.exp(-kaa * t)); if (cp > cmax) { cmax = cp; tmax = t; } if (Math.abs(t * 2 - Math.round(t * 2)) < 1e-6) { iv.push([t, ci]); po.push([t, cp]); } }
-      lineChart(cvs, [{ pts: iv, color: C.mid, label: 'Intravenous', nodot: true }, { pts: po, color: C.red, label: 'Oral', nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: Math.max(D / V, cmax) * 1.1 });
-      qs('.tl', side).innerHTML = fTile('AUC, oral', (F * D / CL).toFixed(2), 'mg x h/L = F x dose / CL') + fTile('AUC, intravenous', (D / CL).toFixed(2), 'mg x h/L = dose / CL') + '<div style="font-size:12px;color:' + C.mid + ';line-height:1.5">Oral Cmax ' + cmax.toFixed(2) + ' mg/L at ' + tmax.toFixed(1) + ' h. Half-life ' + (0.693 * V / CL).toFixed(1) + ' h. Dose ' + D + ' mg.</div>';
-      api.stat('AUC oral ' + (F * D / CL).toFixed(2) + ', AUC intravenous ' + (D / CL).toFixed(2));
-    }
-    qs('.f', c1).addEventListener('input', function(){ F = +this.value; draw(); }); qs('.c', c2).addEventListener('input', function(){ CL = +this.value; draw(); }); qs('.v', c3).addEventListener('input', function(){ V = +this.value; draw(); }); qs('.a', c4).addEventListener('input', function(){ ka = +this.value; draw(); });
-    return { render: draw };
-  } });
-
 /* =========================== tab 02: pharmacokinetic parameters =========================== */
 MET.add({ short: 'Clearance and extraction', level: 'foundations', ord: 40, title: 'Clearance, flow and extraction',
   build: function(api){

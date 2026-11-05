@@ -63,18 +63,18 @@ var STEPTEXT = {
  },
  "oral/Oral profile": {
   "watch": "First-order absorption gives C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)] with ke = CL / V. tmax = ln(ka / ke) / (ka - ke), and AUC(0 to infinity) = F D / CL, the intravenous AUC multiplied by F.",
-  "legend": "Plasma concentration after oral and intravenous doses of 100 mg.",
-  "change": "F, CL, V, ka. Outputs: oral and intravenous AUC, Cmax, tmax, half-life."
+  "legend": "Plasma concentration after oral and intravenous doses of 100 mg; the shaded area under the oral curve is proportional to the oral AUC. Grey dashed curves are pinned oral profiles.",
+  "change": "F, CL, V, ka; drag the oral peak (vertical sets F, horizontal sets ka) or the intravenous starting point (sets V); hover for both concentrations; Pin keeps up to three; PNG and CSV export. Outputs: oral and intravenous AUC, Cmax, tmax, half-life."
  },
  "oral/Bioavailability from AUCs": {
   "watch": "F = (AUC_po / Dose_po) / (AUC_iv / Dose_iv) from crossover administration, assuming equal CL on both occasions and dose-independent CL. For 100 mg orally with AUC 8 mg x h/L and 50 mg intravenously with AUC 10 mg x h/L, F = 0.4.",
-  "legend": "Dose-normalized AUC for each route.",
-  "change": "Both doses and both AUCs. Output: F."
+  "legend": "Left: dose-normalized AUC for each route. Right: the intravenous and oral profiles implied by the AUCs (V = 50 L, ka = 1 per h, equal CL), with the area under each curve shaded.",
+  "change": "Both doses and both AUCs; drag a bar top to set its AUC; hover the profiles for concentration and AUC(0 to t); Pin lists F for kept scenarios; PNG and CSV export. Output: F."
  },
  "oral/Bioavailability as a product": {
   "watch": "F = Fa x Fg x Fh (fraction absorbed, fraction escaping gut-wall metabolism, fraction escaping hepatic first-pass extraction), with Fh = 1 - CLh / Q. Three terms of 0.7 give F = 0.34.",
-  "legend": "Fraction of the dose remaining after each stage.",
-  "change": "Fa, Fg, CLh, Q. Outputs: Fh, F, stage with the largest loss."
+  "legend": "Fraction of the dose remaining after each stage; dashed grey ticks mark pinned scenarios.",
+  "change": "Fa, Fg, CLh, Q; drag the end of a bar to set its factor (the last bar sets CLh through Fh = 1 - CLh / Q); hover for the loss at each stage; Pin; PNG and CSV export. Outputs: Fh, F, stage with the largest loss."
  },
  "met/Metabolic routes": {
   "watch": "An in vitro system measures a route only if it contains the enzyme and its cofactor. Liver microsomes contain cytochrome P450 and UDP-glucuronosyltransferases and, with NADPH, support P450 oxidation. Hepatocytes contain the hepatic enzymes of all four routes. The tab 07 predictions use microsomes with NADPH and cover oxidation only.",

@@ -15,25 +15,6 @@
     x.fillStyle = C.char; x.fillText(xl, (box.l + box.r) / 2, g.h - 6);
   }
 
-  /* ===== tab 04, step 2: bioavailability from the areas ===== */
-  ORAL.add({ short: 'Bioavailability from AUCs', level: 'foundations', ord: 20, title: 'Bioavailability from AUC',
-    build: function(api){
-      var Di = 50, Dp = 100, Ai = 10, Ap = 8;
-      var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-      var side = api.el('pn', 'left:604px;top:16px;width:328px;height:508px;overflow:auto', '<div class="tl"></div>');
-      var c1 = api.addControl(sld('a', 'Intravenous dose', 10, 200, 5, Di, 'mg')), c2 = api.addControl(sld('b', 'Intravenous AUC', 1, 40, 0.5, Ai, 'mg x h/L')), c3 = api.addControl(sld('c', 'Oral dose', 10, 400, 10, Dp, 'mg')), c4 = api.addControl(sld('d', 'Oral AUC', 0.5, 40, 0.5, Ap, 'mg x h/L'));
-      function draw(){
-        qs('.av', c1).textContent = Di; qs('.bv', c2).textContent = Ai.toFixed(1); qs('.cv', c3).textContent = Dp; qs('.dv', c4).textContent = Ap.toFixed(1);
-        var ni = Ai / Di, np = Ap / Dp, F = np / ni, g = cv(cvs), x = g.x, box = { l: 70, r: g.w - 30, t: 40, b: g.h - 60 }, mx = Math.max(ni, np) * 1.25;
-        [['Intravenous', ni, C.mid], ['Oral', np, C.red]].forEach(function(b, i){ var bx = box.l + 60 + i * 200, hg = b[1] / mx * (box.b - box.t); x.fillStyle = b[2]; x.fillRect(bx, box.b - hg, 110, hg); x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'center'; x.fillText(b[0], bx + 55, box.b + 18); x.fillText(b[1].toFixed(3), bx + 55, box.b - hg - 8); });
-        x.strokeStyle = C.char; x.lineWidth = 1.2; x.beginPath(); x.moveTo(box.l, box.b); x.lineTo(box.r, box.b); x.moveTo(box.l, box.t); x.lineTo(box.l, box.b); x.stroke(); x.save(); x.translate(18, (box.t + box.b) / 2); x.rotate(-Math.PI / 2); x.textAlign = 'center'; x.fillText('AUC / dose (h/L)', 0, 0); x.restore();
-        qs('.tl', side).innerHTML = fTile('Bioavailability F', F.toFixed(2), 'oral AUC per dose over intravenous AUC per dose') + fRows([['Intravenous, AUC / dose', ni.toFixed(3) + ' h/L'], ['Oral, AUC / dose', np.toFixed(3) + ' h/L'], ['Implied clearance, dose / AUC (IV)', (Di / Ai).toFixed(1) + ' L/h'], ['Fraction of the oral dose lost', (100 * (1 - Math.min(F, 1))).toFixed(0) + ' percent']]) + (F > 1 ? '<div class="hint" style="font-size:12px;margin-top:8px">F above 1 is not possible. The clearance or the AUCs differ between occasions.</div>' : '');
-        api.stat('F = ' + F.toFixed(2));
-      }
-      qs('.a', c1).addEventListener('input', function(){ Di = +this.value; draw(); }); qs('.b', c2).addEventListener('input', function(){ Ai = +this.value; draw(); }); qs('.c', c3).addEventListener('input', function(){ Dp = +this.value; draw(); }); qs('.d', c4).addEventListener('input', function(){ Ap = +this.value; draw(); });
-      return { render: draw };
-    } });
-
   /* ===== tab 05, step 1: routes of metabolism ===== */
   var ROUTES = [
     { k: 'ox', name: 'Oxidation', enz: 'Cytochrome P450 (endoplasmic reticulum); flavin-containing monooxygenases.', what: 'Oxygen insertion or dealkylation.', sys: 'Liver microsomes with NADPH; hepatocytes.', cov: 'Covered by the tab 07 prediction.' },

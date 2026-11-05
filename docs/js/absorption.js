@@ -22,25 +22,6 @@ function aSpearman(xs, ys){ var a = aRank(xs), b = aRank(ys), n = a.length, ma =
 function aAUC(pos, neg){ var all = pos.concat(neg), r = aRank(all), sp = 0, i; for (i = 0; i < pos.length; i++) sp += r[i]; return (sp - pos.length * (pos.length + 1) / 2) / (pos.length * neg.length); }
 function aRows(items){ return items.map(function(t){ return '<div style="display:flex;justify-content:space-between;gap:8px;border-top:1px solid ' + C.silver + ';padding:3px 0;font-size:12px"><span>' + t[0] + '</span><b style="text-align:right">' + t[1] + '</b></div>'; }).join(''); }
 
-/* ---------- step 1 ---------- */
-ORAL.add({ short: 'Bioavailability as a product', level: 'foundations', ord: 30, title: 'Bioavailability as a product',
-  build: function(api){
-    var fa = 0.9, fg = 0.8, cl = 8, q = 21;
-    var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-    var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var c1 = api.addControl('Fa <input type="range" class="a" min="0" max="1" step="0.01" value="' + fa + '" style="width:100px"> <b class="av"></b>'), c2 = api.addControl('Fg <input type="range" class="g" min="0" max="1" step="0.01" value="' + fg + '" style="width:100px"> <b class="gv"></b>'), c3 = api.addControl('CLh blood <input type="range" class="c" min="0" max="21" step="0.5" value="' + cl + '" style="width:100px"> <b class="cv"></b> mL/min/kg'), c4 = api.addControl('Liver blood flow <input type="range" class="q" min="15" max="30" step="1" value="' + q + '" style="width:80px"> <b class="qv"></b>');
-    function draw(){
-      var fh = Math.max(0, 1 - cl / q), f = fa * fg * fh; qs('.av', c1).textContent = fa.toFixed(2); qs('.gv', c2).textContent = fg.toFixed(2); qs('.cv', c3).textContent = cl.toFixed(1); qs('.qv', c4).textContent = q;
-      var g = cv(cvs), x = g.x, box = { l: 150, r: g.w - 20, t: 20, b: g.h - 20 }, st = [['Dose', 1, 1], ['After absorption (Fa)', fa, fa], ['After gut wall (Fg)', fa * fg, fg], ['After liver (Fh)', f, fh]], bh = (box.b - box.t) / st.length;
-      x.strokeStyle = C.silver; x.fillStyle = C.mid; x.lineWidth = 1; x.textAlign = 'center'; [0, 0.25, 0.5, 0.75, 1].forEach(function(v){ var xp = box.l + v * (box.r - box.l); x.beginPath(); x.moveTo(xp, box.t); x.lineTo(xp, box.b); x.stroke(); x.fillText(v.toFixed(2), xp, box.b + 14); });
-      st.forEach(function(s, i){ var y = box.t + i * bh + 10, w = s[1] * (box.r - box.l), prev = i ? st[i - 1][1] : 1; x.fillStyle = C.tint; x.fillRect(box.l, y, (prev) * (box.r - box.l), bh - 30); x.fillStyle = i === 3 ? C.dred : C.red; x.fillRect(box.l, y, w, bh - 30); x.fillStyle = C.char; x.textAlign = 'right'; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.fillText(s[0], box.l - 10, y + (bh - 30) / 2 + 4); x.textAlign = 'left'; x.fillText(s[1].toFixed(3), box.l + w + 8, y + (bh - 30) / 2 + 4); x.font = '12px Aptos, "Segoe UI", sans-serif'; });
-      qs('.tl', side).innerHTML = '<div class="score" style="margin-bottom:8px"><b>Oral bioavailability F</b><div class="v">' + f.toFixed(3) + '</div><div class="s">' + fa.toFixed(2) + ' x ' + fg.toFixed(2) + ' x ' + fh.toFixed(2) + '</div></div>' + aRows([['Hepatic extraction', (Math.min(1, cl / q)).toFixed(2)], ['Fh', fh.toFixed(2)], ['Largest loss', ['absorption', 'gut wall', 'liver'][[1 - fa, fa * (1 - fg), fa * fg * (1 - fh)].reduce(function(b, v, i, a){ return v > a[b] ? i : b; }, 0)]]]) + '<div class="hint" style="font-size:11.5px;margin-top:8px">Fh = 1 - CLh / Q. Clearance above the blood flow is not possible for a hepatic route.</div>';
-      api.stat('F = ' + f.toFixed(3));
-    }
-    qs('.a', c1).addEventListener('input', function(){ fa = +this.value; draw(); }); qs('.g', c2).addEventListener('input', function(){ fg = +this.value; draw(); }); qs('.c', c3).addEventListener('input', function(){ cl = +this.value; draw(); }); qs('.q', c4).addEventListener('input', function(){ q = +this.value; cl = Math.min(cl, q); draw(); });
-    return { render: draw };
-  } });
-
 /* ---------- step 2 ---------- */
 ABS.add({ short: 'Hepatic first-pass limit', level: 'foundations', title: 'Hepatic first-pass limit',
   build: function(api){
