@@ -335,5 +335,30 @@ var STEPTEXT = {
   "watch": "The FDA guidance converts a no-observed-adverse-effect level (NOAEL) in an animal species to a human equivalent dose (HED) with body-surface-area factors: HED = NOAEL x (animal factor / 37). The maximum recommended starting dose is the HED divided by a safety factor, 10 by default. The factors are 3 for mouse, 6 for rat, 12 for rabbit and monkey, 20 for dog and 37 for human, with reference body weights of 0.02, 0.15, 1.8, 3, 10 and 60 kg.",
   "legend": "The NOAEL in the selected species (teal bar) and the dose in each species with the same human equivalent dose; the dashed line marks the human equivalent dose.",
   "change": "NOAEL, species, safety factor; drag the top of the selected bar to set the NOAEL; hover a bar for the factor; export as an image (PNG) and a table (CSV). Outputs: HED, starting dose per kg and for a 60 kg adult."
+ },
+ "bbb/Brain exposure measures": {
+  "watch": "At steady state, Kp = Cbrain / Cplasma on total concentrations and logBB = log10 Kp. Only unbound drug crosses the barrier, so the unbound ratio is Kp,uu = Cu,brain / Cu,plasma = Kp x fu,brain / fu,p. Binding in brain tissue (low fu,brain) raises Kp without raising Kp,uu. Kp,uu of 1 indicates passive equilibrium of unbound drug, below 1 net efflux or restricted entry, and above 1 net active uptake.",
+  "legend": "Total (grey) and unbound (teal) concentration in plasma and brain, relative to the total plasma concentration, on a logarithmic axis.",
+  "change": "Kp, fu,p, fu,brain; drag the tops of the brain total, plasma unbound and brain unbound bars; hover for values; export as an image (PNG) and a table (CSV). Outputs: logBB, Kp,uu."
+ },
+ "bbb/Efflux and Kp,uu": {
+  "watch": "At steady state the unbound influx equals the unbound efflux: (P + A_in) Cu,plasma = (P + A_out) Cu,brain, where P is the passive clearance in each direction, A_in an active influx clearance and A_out an active efflux clearance. Hence Kp,uu = (1 + A_in / P) / (1 + A_out / P), and without active influx Kp,uu = 1 / (1 + A_out / P). An efflux clearance of 9 times P gives Kp,uu = 0.1.",
+  "legend": "Kp,uu against efflux clearance relative to passive clearance, without active influx (grey dashed) and at the influx set (teal); the lines mark Kp,uu = 1 and 0.1.",
+  "change": "Efflux clearance, active influx; drag the point (horizontal sets efflux, vertical sets influx); hover for values; Pin keeps up to three; export as an image (PNG) and a table (CSV). Outputs: Kp,uu, net efflux ratio."
+ },
+ "bbb/Measured logBB": {
+  "watch": "B3DB contains 1,058 compounds with a measured logBB (median -0.02, range -2.69 to 1.70); 930 have a logBB of -1 or above, a brain to plasma ratio of 0.1 or more, which B3DB labels BBB+. Total concentration ratios include tissue binding, so logBB does not by itself give the unbound exposure.",
+  "legend": "Histogram of logBB for 1,058 compounds; bars at or above the threshold are teal.",
+  "change": "Threshold; drag the threshold line; hover for bin counts; export as an image (PNG) and a table (CSV). Outputs: share above the threshold, median logBB."
+ },
+ "bbb/Polar surface area and penetration": {
+  "watch": "Compounds labeled BBB+ have a lower topological polar surface area (TPSA) than those labeled BBB-: the median is 54.0 A^2 for 4,956 BBB+ compounds and 115.1 A^2 for 2,849 BBB- compounds, and the median molecular weight (MW) is 330.5 and 424.5 Da. A rule that calls BBB+ at TPSA of 90 A^2 or below has an accuracy of 0.746, sensitivity 0.79 and specificity 0.67, against 0.635 for calling every compound BBB+.",
+  "legend": "Left: MW against TPSA for 7,805 compounds (teal BBB+, orange BBB-) with the TPSA cutoff. Right: sensitivity, specificity and accuracy against the cutoff.",
+  "change": "TPSA cutoff; drag the cutoff on either plot; hover a point for its name and descriptors; export as an image (PNG) and a table (CSV). Outputs: accuracy, sensitivity, specificity."
+ },
+ "bbb/Combined property rule": {
+  "watch": "Rules built from descriptors are applied in sequence: TPSA at most a cutoff, then also donors at most a number, then also MW at most a limit. Each added condition removes some BBB- compounds and also some BBB+ compounds. With TPSA at most 90 A^2, donors at most 3 and MW at most 450 Da, the accuracy is 0.725 (sensitivity 0.73, specificity 0.72), below the 0.746 of the TPSA rule alone.",
+  "legend": "Accuracy (dark), sensitivity (teal) and specificity (orange) of four nested rules; the first is calling every compound BBB+.",
+  "change": "TPSA, donors, MW cutoffs; hover a group for its counts; export as an image (PNG) and a table (CSV). Outputs: accuracy of the full rule, compounds called BBB+, baseline."
  }
 };

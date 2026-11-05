@@ -1,5 +1,5 @@
 "use strict";
-/* Quiz for tabs 01 to 13. Each round draws 10 questions at random. Question types: multiple choice, select all, numeric and ordering.
+/* Quiz for tabs 01 to 14. Each round draws 10 questions at random. Question types: multiple choice, select all, numeric and ordering.
    Every question has a schematic: q.fig = { name: 'xy', o: { ... } }. A schematic is a function in QZFIG that returns an SVG string. */
 var QZ = { bank: [], cur: [], i: 0, score: 0, log: [], root: null, drawn: false };
 var QZ_DRAW = 10;
@@ -76,6 +76,6 @@ function qzFinish(){
 var LQ = new Lesson('quiz', 'Quiz');
 LQ.custom = function(root){
   QZ.root = root; root.classList.add('qz');
-  root.innerHTML = '<div class="qpage"><div class="qwrap"><div class="qcard qintro"><div class="qtopic">Quiz</div><h3 class="qtext">Question set</h3><p>Ten questions per round, drawn at random from ' + QZ.bank.length + ' (tabs 01 to 13): multiple choice, select all, numeric (within the stated tolerance) and ordering.</p><div class="qact"><button type="button" class="btn" data-start>Start</button></div></div></div></div>';
+  root.innerHTML = '<div class="qpage"><div class="qwrap"><div class="qcard qintro"><div class="qtopic">Quiz</div><h3 class="qtext">Question set</h3><p>Ten questions per round, drawn at random from ' + QZ.bank.length + ' (tabs 01 to 14): multiple choice, select all, numeric (within the stated tolerance) and ordering.</p><div class="qact"><button type="button" class="btn" data-start>Start</button></div></div></div></div>';
   qs('[data-start]', root).addEventListener('click', function(){ qzDraw(); qzRender(); window.scrollTo({ top: 0 }); });
 };

@@ -26,7 +26,9 @@ Tab 12, renal and biliary excretion, has four steps: filtration and net renal cl
 
 Tab 13, human pharmacokinetics and dose, has five steps: dose, interval and steady state; allometric scaling of clearance; the daily dose implied by clearance across 667 drugs; the dosing interval implied by half-life; and the conversion of an animal no-observed-adverse-effect level to a starting dose. Source data: Obach et al. (2008) clearance and half-life, and the body-surface-area factors and reference body weights of the FDA guidance on maximum safe starting doses (2005). The allometry step uses illustrative values for one compound, set by dragging.
 
-The quiz (tab 14) has 120 questions on tabs 01 to 13. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
+Tab 14, brain penetration, has five steps: total and unbound brain exposure (Kp, logBB, Kp,uu), efflux and Kp,uu, the measured logBB of 1,058 compounds, polar surface area and penetration, and a combined property rule. Source data: B3DB, Meng et al., Sci Data 8:289 (2021), file B3DB_classification.tsv from github.com/theochem/B3DB (CC0 1.0): 7,805 of 7,807 structures parsed, labeled BBB+ or BBB-, 1,058 with a measured logBB. Molecular weight, TPSA, hydrogen-bond donors and Crippen logP were calculated with RDKit. The first two steps use equations only.
+
+The quiz (tab 15) has 130 questions on tabs 01 to 14. Each round draws 10 at random. Every question has a schematic, built from the same data as the lessons.
 
 ## Run locally
 

@@ -806,6 +806,54 @@ var GUIDE = {
               "Obach et al. (2008), Drug Metab Dispos 36:1385, via ChEMBL (public database of bioactive molecules, European Bioinformatics Institute; CC BY-SA 3.0): clearance and half-life of 667 drugs.",
               "FDA (2005), Estimating the Maximum Safe Starting Dose in Initial Clinical Trials for Therapeutics in Adult Healthy Volunteers: surface-area factors and reference body weights."
         ]
+  },
+    "bbb": {
+        "scope": "Brain exposure as the total brain to plasma concentration ratio (Kp), its logarithm (logBB) and the unbound ratio (Kp,uu); the effect of efflux at the blood-brain barrier (BBB) on Kp,uu; and a public database of 7,805 compounds labeled BBB+ or BBB- (B3DB) with polar surface area and other descriptors tested as rules. Brain tissue binding assays, regional distribution and cerebrospinal fluid are not covered.",
+        "notation": [
+              [
+                    "Kp",
+                    "total brain concentration divided by total plasma concentration at steady state."
+              ],
+              [
+                    "logBB",
+                    "log10 Kp."
+              ],
+              [
+                    "Kp,uu",
+                    "unbound brain concentration divided by unbound plasma concentration, Kp x fu,brain / fu,p."
+              ],
+              [
+                    "fu,p, fu,brain",
+                    "fraction unbound in plasma and in brain tissue."
+              ],
+              [
+                    "BBB+, BBB-",
+                    "labels for compounds that do and do not cross the BBB; B3DB labels BBB+ at a logBB of -1 or above."
+              ],
+              [
+                    "B3DB",
+                    "blood-brain barrier database of Meng et al. (2021), 7,807 compounds."
+              ],
+              [
+                    "TPSA",
+                    "topological polar surface area, in A^2."
+              ],
+              [
+                    "MW",
+                    "molecular weight."
+              ],
+              [
+                    "Donors",
+                    "hydrogen-bond donors, the number of N-H and O-H groups."
+              ],
+              [
+                    "RDKit",
+                    "open-source cheminformatics toolkit used here to calculate descriptors."
+              ]
+        ],
+        "data": [
+              "Meng F, Xi Y, Huang J, Ayers PW (2021), Sci Data 8:289: B3DB, 7,805 of 7,807 structures parsed (CC0 1.0), 1,058 with a measured logBB; github.com/theochem/B3DB. Molecular weight, TPSA, donors and Crippen logP were calculated here with RDKit."
+        ]
   }
   },
   "steps": {
@@ -1009,6 +1057,21 @@ var GUIDE = {
     },
     "dose/Starting dose from animal data": {
       "notice": "The human equivalent dose from a rat NOAEL is 6 / 37, or 0.16, of the rat dose."
+    },
+    "bbb/Brain exposure measures": {
+      "notice": "At a fixed Kp,uu, a lower fu,brain gives a higher Kp."
+    },
+    "bbb/Efflux and Kp,uu": {
+      "notice": "An efflux clearance of 9 times the passive clearance gives a Kp,uu of 0.1 without active influx."
+    },
+    "bbb/Measured logBB": {
+      "notice": "930 of the 1,058 compounds have a logBB of -1 or above."
+    },
+    "bbb/Polar surface area and penetration": {
+      "notice": "At a TPSA cutoff of 90 A^2 the accuracy is 0.746, against 0.635 for calling every compound BBB+."
+    },
+    "bbb/Combined property rule": {
+      "notice": "Adding donors and MW to a TPSA rule of 90 A^2 lowers the accuracy from 0.746 to 0.725 here."
     }
   }
 };
