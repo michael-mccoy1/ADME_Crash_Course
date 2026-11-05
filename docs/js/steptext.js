@@ -33,33 +33,33 @@ var STEPTEXT = {
  },
  "elim/First-order elimination": {
   "watch": "First-order elimination: dA/dt = -kA, A(t) = A0 exp(-kt), t1/2 = 0.693 / k; the fraction 1 - exp(-k) is eliminated per hour. Of a 100 mg dose, 50, 25 and 3.1 mg remain after 1, 2 and 5 half-lives.",
-  "legend": "Amount in the body after a 100 mg dose, with markers at multiples of the half-life; table of amount and elimination rate at each multiple.",
-  "change": "Half-life. Outputs: k, fraction eliminated per hour, amount and rate at each half-life."
+  "legend": "Amount in the body after a 100 mg dose, with markers at multiples of the half-life; table of amount and elimination rate at each multiple. Grey dashed curves are pinned half-lives.",
+  "change": "Half-life, axis; drag the half-life point; hover for amount and rate; Pin keeps up to three; PNG and CSV export. Outputs: k, fraction eliminated per hour, amount and rate at each half-life."
  },
  "elim/Clearance": {
   "watch": "With A = V C, the elimination rate is kVC. Defining CL = kV gives rate = CL x C and k = CL / V; CL is the volume of plasma cleared of drug per unit time.",
-  "legend": "Elimination rate against plasma concentration for two drugs; the slope of each line is CL.",
-  "change": "Concentration, V, CL of drugs A and B. Outputs: A, rate, k, half-life."
+  "legend": "Elimination rate against plasma concentration for two drugs; the slope of each line is CL. Grey lines are pinned values.",
+  "change": "Concentration, V, CL of drugs A and B; drag a point vertically to set CL, or the dashed line to set the concentration; hover for both rates; Pin; PNG and CSV export. Outputs: A, rate, k, half-life."
  },
  "elim/Intravenous profile": {
   "watch": "One-compartment bolus: C(t) = C0 exp(-kt), C0 = Dose / V, k = CL / V, t1/2 = 0.693 V / CL, AUC(0 to infinity) = Dose / CL. The log10 profile is linear with slope -k / 2.303; 50, 25 and 12.5% of C0 remain after 1, 2 and 3 half-lives.",
-  "legend": "Plasma concentration after an intravenous bolus; markers at 1, 2 and 3 half-lives.",
-  "change": "Dose, V, CL, axis. Outputs: C0, k, half-life, AUC."
+  "legend": "Plasma concentration after an intravenous bolus; markers at 1, 2 and 3 half-lives. Hovering shades AUC(0 to t); grey dashed curves are pinned scenarios.",
+  "change": "Dose, V, CL, axis; drag the dose point vertically and the half-life point horizontally; hover for C and AUC(0 to t); Pin keeps up to three; PNG and CSV export. Outputs: C0, k, half-life, AUC."
  },
  "elim/Volume and half-life": {
   "watch": "t1/2 = 0.693 V / CL. At equal dose and CL, a larger V gives a lower C0 and a longer t1/2; AUC = Dose / CL is independent of V.",
-  "legend": "Intravenous profiles of two drugs with equal dose and CL and different V.",
-  "change": "CL, V of drugs A and B. Outputs: half-lives, C0, AUC."
+  "legend": "Intravenous profiles of two drugs with equal dose and CL and different V; dots on the curves mark the half-lives.",
+  "change": "CL, V of drugs A and B, axis; drag the starting point of either curve to set V; hover for both concentrations; Pin; PNG and CSV export. Outputs: half-lives, C0, AUC."
  },
  "elim/Repeat dosing": {
   "watch": "Css,avg = F x Dose / (CL x tau), independent of V. The accumulation ratio is R = 1 / (1 - exp(-k tau)) with k = CL / V, and the steady-state peak is R times the first peak. Steady state is 90% approached after 3.3 half-lives.",
-  "legend": "Plasma concentration after repeated 100 mg intravenous boluses at interval tau; dashed line, Css,avg.",
-  "change": "tau, CL, V. Outputs: R, Css,avg, steady-state peak and trough, time to 90% of steady state."
+  "legend": "Plasma concentration after repeated 100 mg intravenous boluses at interval tau; dashed line, Css,avg; triangles mark the doses.",
+  "change": "tau, CL, V; drag the interval marker; hover for C and the number of doses given; Pin keeps a regimen; PNG and CSV export. Outputs: R, Css,avg, steady-state peak and trough, time to 90% of steady state."
  },
  "elim/Checking a record": {
   "watch": "MRT = Vss / CL; with Vss in L/kg and CL in mL/min/kg, MRT (h) = Vss / CL x 1000 / 60. For the 667 drugs of Obach et al. (2008), the calculated MRT is within 10% of the reported value for 637 (median ratio 1.00). 0.693 x MRT is below the reported t1/2 for most drugs (median ratio 0.76), consistent with multiphasic disposition.",
-  "legend": "Distributions of calculated over reported MRT and of 0.693 x MRT over reported t1/2 (n = 667); the selected drug is marked.",
-  "change": "Drug. Outputs: reported and calculated values and their ratios."
+  "legend": "Distributions of calculated over reported MRT and of 0.693 x MRT over reported t1/2 (n = 667); the dark line marks the selected drug in both panels and the grey line the pinned drug.",
+  "change": "Drug; drag the line in either histogram to select the nearest drug; click a bar to list its drugs; Pin keeps a drug; PNG and CSV export. Outputs: reported and calculated values and their ratios."
  },
  "oral/Oral profile": {
   "watch": "First-order absorption gives C(t) = F D ka / [V (ka - ke)] x [exp(-ke t) - exp(-ka t)] with ke = CL / V. tmax = ln(ka / ke) / (ka - ke), and AUC(0 to infinity) = F D / CL, the intravenous AUC multiplied by F.",

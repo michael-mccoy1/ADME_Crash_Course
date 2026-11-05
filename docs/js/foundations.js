@@ -16,25 +16,6 @@ var PATHN = [
   { k: 'tissue', label: 'Tissues', letter: 'D', what: 'Distribution into tissue, quantified by the volume of distribution.', assay: 'Tissue binding; Vss from animal or human data', qty: 'Vss, fut', where: 'Tabs 02 and 08' },
   { k: 'kidney', label: 'Kidney and bile', letter: 'E', what: 'Renal and biliary excretion add to hepatic metabolic clearance.', assay: 'Renal and biliary clearance; transporter assays', qty: 'CLr, CLbile', where: 'Tab 05; not predicted' }];
 function ivPts(D, V, CL, T, step){ var k = CL / V, pts = [], t; for (t = 0; t <= T + 1e-9; t += step) pts.push([t, D / V * Math.exp(-k * t)]); return pts; }
-ELIM.add({ short: 'Intravenous profile', level: 'foundations', ord: 30, title: 'Concentration after an intravenous dose',
-  build: function(api){
-    var D = 100, V = 50, CL = 10, ax = 'lin';
-    var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-    var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var c1 = api.addControl('Dose <input type="range" class="d" min="10" max="500" step="10" value="' + D + '" style="width:90px"> <b class="dv"></b> mg'), c2 = api.addControl('V <input type="range" class="v" min="5" max="300" step="5" value="' + V + '" style="width:90px"> <b class="vv"></b> L'), c3 = api.addControl('CL <input type="range" class="c" min="1" max="50" step="1" value="' + CL + '" style="width:90px"> <b class="cv"></b> L/h'), c4 = api.addControl('Axis <select class="a">' + hepOpts([['lin', 'Concentration'], ['log', 'log10 concentration']], ax) + '</select>');
-    function draw(){
-      qs('.dv', c1).textContent = D; qs('.vv', c2).textContent = V; qs('.cv', c3).textContent = CL;
-      var k = CL / V, th = 0.693 / k, T = Math.max(4 * th, 4), pts = ivPts(D, V, CL, T, T / 80), c0 = D / V, g, x = cvs.getContext('2d');
-      if (ax === 'lin') g = lineChart(cvs, [{ pts: pts, color: C.red, nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: c0 * 1.1 });
-      else { var lp = pts.map(function(p){ return [p[0], Math.log10(p[1])]; }); g = lineChart(cvs, [{ pts: lp, color: C.red, nodot: true }], { xl: 'Time (h)', yl: 'log10 of concentration (mg/L)', x0: 0, x1: T, y0: Math.log10(c0) - 1.6, y1: Math.log10(c0) + 0.1 }); }
-      fMarks(g, g.x, [th, 2 * th, 3 * th].filter(function(t){ return t <= T; }), ['50%', '25%', '12.5%'], C.char);
-      qs('.tl', side).innerHTML = fTile('Half-life', th.toFixed(1) + ' h', '0.693 x V / CL') + fRows([['C0 = dose / V', c0.toFixed(2) + ' mg/L'], ['k = CL / V', k.toFixed(3) + ' per h'], ['AUC = dose / CL', (D / CL).toFixed(1) + ' mg x h/L'], ['Concentration at 24 h', (c0 * Math.exp(-k * 24)).toFixed(3) + ' mg/L']]);
-      api.stat('Half-life ' + th.toFixed(1) + ' h, AUC ' + (D / CL).toFixed(1) + ' mg x h/L');
-    }
-    qs('.d', c1).addEventListener('input', function(){ D = +this.value; draw(); }); qs('.v', c2).addEventListener('input', function(){ V = +this.value; draw(); }); qs('.c', c3).addEventListener('input', function(){ CL = +this.value; draw(); }); qs('.a', c4).addEventListener('change', function(){ ax = this.value; draw(); });
-    return { render: draw };
-  } });
-
 ORAL.add({ short: 'Oral profile', level: 'foundations', ord: 10, title: 'Concentration after an oral dose',
   build: function(api){
     var F = 0.5, CL = 10, V = 50, ka = 1, D = 100;
@@ -72,70 +53,6 @@ MET.add({ short: 'Clearance and extraction', level: 'foundations', ord: 40, titl
     }
     qs('.q', c1).addEventListener('input', function(){ Q = +this.value; draw(); }); qs('.e', c2).addEventListener('input', function(){ E = +this.value; draw(); });
     qs('.d', c3).addEventListener('change', function(){ var d = OBACH99.filter(function(z){ return z.name === this.value; }.bind(this))[0]; if (d) { Q = 21; E = Math.min(1, d.obs / 21); qs('.q', c1).value = Q; qs('.e', c2).value = E; draw(); } });
-    return { render: draw };
-  } });
-
-ELIM.add({ short: 'Volume and half-life', level: 'foundations', ord: 40, title: 'Volume of distribution and half-life',
-  build: function(api){
-    var CL = 10, V1 = 40, V2 = 160, D = 100;
-    var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-    var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var c1 = api.addControl('CL <input type="range" class="c" min="1" max="50" step="1" value="' + CL + '" style="width:90px"> <b class="cv"></b> L/h'), c2 = api.addControl('V, drug A <input type="range" class="a" min="5" max="300" step="5" value="' + V1 + '" style="width:90px"> <b class="av"></b> L'), c3 = api.addControl('V, drug B <input type="range" class="b" min="5" max="300" step="5" value="' + V2 + '" style="width:90px"> <b class="bv"></b> L');
-    function draw(){
-      qs('.cv', c1).textContent = CL; qs('.av', c2).textContent = V1; qs('.bv', c3).textContent = V2;
-      var t1 = 0.693 * V1 / CL, t2 = 0.693 * V2 / CL, T = Math.max(4 * Math.max(t1, t2), 6);
-      lineChart(cvs, [{ pts: ivPts(D, V1, CL, T, T / 90), color: C.red, label: 'Drug A', nodot: true }, { pts: ivPts(D, V2, CL, T, T / 90), color: C.mid, label: 'Drug B', nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: D / Math.min(V1, V2) * 1.1 });
-      qs('.tl', side).innerHTML = fTile('Half-life, drug A', t1.toFixed(1) + ' h', 'V = ' + V1 + ' L') + fTile('Half-life, drug B', t2.toFixed(1) + ' h', 'V = ' + V2 + ' L') + fRows([['Starting concentration, A', (D / V1).toFixed(2) + ' mg/L'], ['Starting concentration, B', (D / V2).toFixed(2) + ' mg/L'], ['AUC, both', (D / CL).toFixed(1) + ' mg x h/L'], ['Half-life ratio B / A', (t2 / t1).toFixed(2)]]);
-      api.stat('Half-lives ' + t1.toFixed(1) + ' h and ' + t2.toFixed(1) + ' h');
-    }
-    qs('.c', c1).addEventListener('input', function(){ CL = +this.value; draw(); }); qs('.a', c2).addEventListener('input', function(){ V1 = +this.value; draw(); }); qs('.b', c3).addEventListener('input', function(){ V2 = +this.value; draw(); });
-    return { render: draw };
-  } });
-
-ELIM.add({ short: 'Repeat dosing', level: 'foundations', ord: 50, title: 'Accumulation on repeat dosing',
-  build: function(api){
-    var tau = 12, CL = 10, V = 50, D = 100;
-    var pn = api.el('pn', 'left:28px;top:16px;width:640px;height:508px;padding:8px', '<canvas width="624" height="490" style="width:624px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-    var side = api.el('pn', 'left:684px;top:16px;width:248px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var c1 = api.addControl('Interval <input type="range" class="t" min="2" max="48" step="1" value="' + tau + '" style="width:90px"> <b class="tv"></b> h'), c2 = api.addControl('CL <input type="range" class="c" min="1" max="50" step="1" value="' + CL + '" style="width:90px"> <b class="cv"></b> L/h'), c3 = api.addControl('V <input type="range" class="v" min="10" max="300" step="5" value="' + V + '" style="width:90px"> <b class="vv"></b> L');
-    function draw(){
-      qs('.tv', c1).textContent = tau; qs('.cv', c2).textContent = CL; qs('.vv', c3).textContent = V;
-      var k = CL / V, th = 0.693 / k, T = Math.min(Math.max(8 * th, 5 * tau), 400), pts = [], t, n, c, css = D / (CL * tau), R = 1 / (1 - Math.exp(-k * tau)), cmaxss = D / V * R, cmin = cmaxss * Math.exp(-k * tau), peak = 0;
-      for (t = 0; t <= T + 1e-9; t += T / 400) { c = 0; for (n = 0; n * tau <= t + 1e-9; n++) c += D / V * Math.exp(-k * (t - n * tau)); pts.push([t, c]); if (c > peak) peak = c; }
-      var g = lineChart(cvs, [{ pts: pts, color: C.red, nodot: true }], { xl: 'Time (h)', yl: 'Plasma concentration (mg/L)', x0: 0, x1: T, y0: 0, y1: peak * 1.1 }), ctx = g.x;
-      ctx.strokeStyle = C.char; ctx.lineWidth = 1.4; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(g.box.l, g.sy(css)); ctx.lineTo(g.box.r, g.sy(css)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = C.char; ctx.font = '600 11px Aptos, "Segoe UI", sans-serif'; ctx.textAlign = 'right'; ctx.fillText('Css,avg = ' + css.toFixed(2) + ' mg/L', g.box.r - 6, g.sy(css) - 5);
-      qs('.tl', side).innerHTML = fTile('Accumulation ratio R', R.toFixed(2), '1 / (1 - exp(-k x interval))') + fRows([['Half-life', th.toFixed(1) + ' h'], ['Interval / half-life', (tau / th).toFixed(2)], ['Css,avg = dose / (CL x interval)', css.toFixed(2) + ' mg/L'], ['Peak at steady state', cmaxss.toFixed(2) + ' mg/L'], ['Trough at steady state', cmin.toFixed(2) + ' mg/L'], ['Time to 90 percent of steady state', (3.32 * th).toFixed(0) + ' h']]);
-      api.stat('R = ' + R.toFixed(2) + ', Css,avg = ' + css.toFixed(2) + ' mg/L');
-    }
-    qs('.t', c1).addEventListener('input', function(){ tau = +this.value; draw(); }); qs('.c', c2).addEventListener('input', function(){ CL = +this.value; draw(); }); qs('.v', c3).addEventListener('input', function(){ V = +this.value; draw(); });
-    return { render: draw };
-  } });
-
-ELIM.add({ short: 'Checking a record', level: 'foundations', ord: 60, title: 'Consistency of pharmacokinetic records',
-  build: function(api){
-    var cur = 'Verapamil', named = OBACH08.filter(function(d){ return d.name && d.cl > 0 && d.vss > 0 && d.mrt > 0 && d.t12 > 0; }).sort(function(a, b){ return a.name < b.name ? -1 : 1; });
-    var all = OBACH08.filter(function(d){ return d.cl > 0 && d.vss > 0 && d.mrt > 0 && d.t12 > 0; });
-    var pn = api.el('pn', 'left:28px;top:16px;width:300px;height:508px;overflow:auto', '<div class="tl"></div>');
-    var pn2 = api.el('pn', 'left:344px;top:16px;width:588px;height:508px;padding:8px', '<canvas class="a" width="572" height="240" style="width:572px;height:240px"></canvas><canvas class="b" width="572" height="240" style="width:572px;height:240px"></canvas>');
-    var ca = qs('.a', pn2), cb = qs('.b', pn2);
-    var c1 = api.addControl('Drug <select class="d">' + named.map(function(d){ return '<option' + (d.name === cur ? ' selected' : '') + '>' + d.name + '</option>'; }).join('') + '</select>');
-    function hist(el, vals, mark, lo, hi, nb, title, xl){
-      var g = cv(el), x = g.x, box = { l: 40, r: g.w - 12, t: 26, b: g.h - 40 }, cnt = new Array(nb).fill(0), bw = (box.r - box.l) / nb, i;
-      vals.forEach(function(v){ var k = Math.floor((Math.log10(v) - lo) / (hi - lo) * nb); if (k >= 0 && k < nb) cnt[k]++; });
-      var ym = Math.max.apply(null, cnt) * 1.1; x.fillStyle = C.char; x.font = '600 12px Aptos, "Segoe UI", sans-serif'; x.textAlign = 'left'; x.fillText(title, box.l, 16); x.font = '12px Aptos, "Segoe UI", sans-serif';
-      cnt.forEach(function(c, k){ var hg = c / ym * (box.b - box.t); x.fillStyle = C.red; x.globalAlpha = 0.8; x.fillRect(box.l + k * bw + 1, box.b - hg, bw - 2, hg); x.globalAlpha = 1; });
-      x.strokeStyle = C.silver; x.fillStyle = C.mid; x.textAlign = 'center'; [0.25, 0.5, 1, 2, 4].filter(function(v){ return Math.log10(v) >= lo && Math.log10(v) <= hi; }).forEach(function(v){ var xp = box.l + (Math.log10(v) - lo) / (hi - lo) * (box.r - box.l); x.beginPath(); x.moveTo(xp, box.b); x.lineTo(xp, box.b + 4); x.stroke(); x.fillText(String(v), xp, box.b + 16); });
-      var xm = box.l + (Math.log10(mark) - lo) / (hi - lo) * (box.r - box.l); x.strokeStyle = C.char; x.lineWidth = 2; x.beginPath(); x.moveTo(xm, box.t); x.lineTo(xm, box.b); x.stroke(); x.fillStyle = C.char; x.font = '600 11px Aptos, "Segoe UI", sans-serif'; x.fillText('selected', xm, box.t - 2); x.font = '12px Aptos, "Segoe UI", sans-serif';
-      x.fillText(xl, (box.l + box.r) / 2, g.h - 6);
-    }
-    function draw(){
-      var d = named.filter(function(z){ return z.name === cur; })[0], mrtc = d.vss / d.cl * 1000 / 60, r1 = mrtc / d.mrt, r2 = 0.693 * d.mrt / d.t12;
-      qs('.tl', pn).innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:6px">' + d.name + '</div><div class="ol">Reported</div>' + fRows([['CL', hfx(d.cl) + ' mL/min/kg'], ['Vss', hfx(d.vss) + ' L/kg'], ['MRT', hfx(d.mrt) + ' h'], ['Half-life', hfx(d.t12) + ' h'], ['CL for a 70 kg adult', hfx(d.cl * 70 * 60 / 1000) + ' L/h'], ['Vss for a 70 kg adult', hfx(d.vss * 70) + ' L']]) + '<div class="ol" style="margin-top:12px">Calculated</div>' + fRows([['MRT = Vss / CL x 1000 / 60', hfx(mrtc) + ' h'], ['Calculated over reported MRT', r1.toFixed(3)], ['0.693 x reported MRT', hfx(0.693 * d.mrt) + ' h'], ['That value over the half-life', r2.toFixed(2)]]);
-      hist(ca, all.map(function(z){ return (z.vss / z.cl * 1000 / 60) / z.mrt; }), r1, Math.log10(0.8), Math.log10(1.25), 28, 'Calculated MRT over reported MRT', 'Ratio');
-      hist(cb, all.map(function(z){ return 0.693 * z.mrt / z.t12; }), r2, Math.log10(0.25), Math.log10(2), 28, '0.693 x reported MRT over reported half-life', 'Ratio');
-      api.stat(cur);
-    }
-    qs('.d', c1).addEventListener('change', function(){ cur = this.value; draw(); });
     return { render: draw };
   } });
 

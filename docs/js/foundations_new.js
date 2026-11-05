@@ -15,45 +15,6 @@
     x.fillStyle = C.char; x.fillText(xl, (box.l + box.r) / 2, g.h - 6);
   }
 
-  /* ===== tab 03, step 1: first-order elimination ===== */
-  ELIM.add({ short: 'First-order elimination', level: 'foundations', ord: 10, title: 'First-order elimination',
-    build: function(api){
-      var th = 6, A0 = 100;
-      var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-      var side = api.el('pn', 'left:604px;top:16px;width:328px;height:508px;overflow:auto', '<div class="tl"></div>');
-      var c1 = api.addControl(sld('h', 'Half-life', 1, 48, 1, th, 'h'));
-      function draw(){
-        qs('.hv', c1).textContent = th; var k = 0.693 / th, T = 5.5 * th, pts = [], i;
-        for (i = 0; i <= 100; i++) { var t = T * i / 100; pts.push([t, A0 * Math.exp(-k * t)]); }
-        var g = lineChart(cvs, [{ pts: pts, color: C.red, nodot: true }], { xl: 'Time (h)', yl: 'Amount in the body (mg)', x0: 0, x1: T, y0: 0, y1: 105 });
-        fMarks(g, g.x, [1, 2, 3, 4, 5].map(function(n){ return n * th; }), ['50', '25', '12.5', '6.3', '3.1'], C.char);
-        var rows = [0, 1, 2, 3, 4, 5].map(function(n){ return '<tr><td>' + n + '</td><td>' + (n * th) + ' h</td><td>' + (A0 / Math.pow(2, n)).toFixed(1) + ' mg</td><td>' + (k * A0 / Math.pow(2, n)).toFixed(2) + '</td></tr>'; }).join('');
-        qs('.tl', side).innerHTML = fTile('Rate constant k', k.toFixed(3) + ' per h', '0.693 / half-life') + fRows([['Removed per hour', (100 * (1 - Math.exp(-k))).toFixed(1) + ' percent of what is present'], ['Rate at time 0', (k * A0).toFixed(2) + ' mg/h']]) + '<table style="width:100%;font-size:12px;border-collapse:collapse;margin-top:8px"><tr style="text-align:left;color:' + C.mid + '"><th>Half-lives</th><th>Time</th><th>Amount</th><th>Rate, mg/h</th></tr>' + rows + '</table>';
-        api.stat('k = ' + k.toFixed(3) + ' per h');
-      }
-      qs('.h', c1).addEventListener('input', function(){ th = +this.value; draw(); });
-      return { render: draw };
-    } });
-
-  /* ===== tab 03, step 2: clearance defined ===== */
-  ELIM.add({ short: 'Clearance', level: 'foundations', ord: 20, title: 'Clearance',
-    build: function(api){
-      var C0 = 2, CLa = 10, CLb = 25, V = 50;
-      var pn = api.el('pn', 'left:28px;top:16px;width:560px;height:508px;padding:8px', '<canvas width="544" height="490" style="width:544px;height:490px"></canvas>'), cvs = qs('canvas', pn);
-      var side = api.el('pn', 'left:604px;top:16px;width:328px;height:508px;overflow:auto', '<div class="tl"></div>');
-      var c1 = api.addControl(sld('c', 'Concentration', 0.2, 10, 0.2, C0, 'mg/L')), c2 = api.addControl(sld('a', 'CL, drug A', 2, 50, 1, CLa, 'L/h')), c3 = api.addControl(sld('b', 'CL, drug B', 2, 50, 1, CLb, 'L/h')), c4 = api.addControl(sld('v', 'V', 10, 300, 5, V, 'L'));
-      function draw(){
-        qs('.cv', c1).textContent = C0.toFixed(1); qs('.av', c2).textContent = CLa; qs('.bv', c3).textContent = CLb; qs('.vv', c4).textContent = V;
-        var ymax = 50 * 10 * 1.0, g = lineChart(cvs, [{ pts: [[0, 0], [10, CLa * 10]], color: C.red, label: 'Drug A', nodot: true, l: true }, { pts: [[0, 0], [10, CLb * 10]], color: C.mid, label: 'Drug B', nodot: true }], { xl: 'Plasma concentration (mg/L)', yl: 'Elimination rate (mg/h)', x0: 0, x1: 10, y0: 0, y1: Math.max(CLa, CLb) * 10 * 1.05 }), x = g.x;
-        [[CLa, C.red], [CLb, C.mid]].forEach(function(r){ x.fillStyle = r[1]; x.beginPath(); x.arc(g.sx(C0), g.sy(r[0] * C0), 6, 0, 6.3); x.fill(); });
-        function blk(n, CL){ var k = CL / V, A = V * C0; return fRows([['Amount in the body, A = V x C', A.toFixed(0) + ' mg'], ['Rate = CL x C', (CL * C0).toFixed(1) + ' mg/h'], ['Check: k x A', (k * A).toFixed(1) + ' mg/h'], ['k = CL / V', k.toFixed(3) + ' per h'], ['Half-life', (0.693 / k).toFixed(1) + ' h']]).replace(/^/, '<div class="ol" style="margin-top:8px">Drug ' + n + '</div>'); }
-        qs('.tl', side).innerHTML = blk('A', CLa) + blk('B', CLb) + '<div class="hint" style="font-size:11.5px;margin-top:8px">The slope of each line is the clearance.</div>';
-        api.stat('Rates ' + (CLa * C0).toFixed(1) + ' and ' + (CLb * C0).toFixed(1) + ' mg/h');
-      }
-      qs('.c', c1).addEventListener('input', function(){ C0 = +this.value; draw(); }); qs('.a', c2).addEventListener('input', function(){ CLa = +this.value; draw(); }); qs('.b', c3).addEventListener('input', function(){ CLb = +this.value; draw(); }); qs('.v', c4).addEventListener('input', function(){ V = +this.value; draw(); });
-      return { render: draw };
-    } });
-
   /* ===== tab 04, step 2: bioavailability from the areas ===== */
   ORAL.add({ short: 'Bioavailability from AUCs', level: 'foundations', ord: 20, title: 'Bioavailability from AUC',
     build: function(api){
