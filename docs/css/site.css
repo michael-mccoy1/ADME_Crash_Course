@@ -103,7 +103,7 @@ nav.toc + .step{border-top:0;padding-top:14px}
 .pbar{height:9px;border-radius:5px;background:var(--silver);position:relative;overflow:hidden;margin:3px 0 7px}
 .pbar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;transition:width 1s cubic-bezier(.2,.8,.2,1)}
 .struct svg{display:block;width:100%;height:100%}
-.score{background:#fff;border:1px solid var(--silver);border-radius:6px;padding:10px 12px;animation:pop .45s both}
+.score{background:#fff;border:1px solid var(--silver);border-radius:6px;padding:10px 12px}
 .score b{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);font-weight:600}
 .score .v{font-size:1.8rem;font-weight:700;color:var(--char);line-height:1.15;font-variant-numeric:tabular-nums}
 .score .s{font-size:.74rem;color:var(--mid);line-height:1.35}
@@ -395,4 +395,3 @@ nav.tabs button.qzt b,nav.tabs button.qzt[aria-selected="true"] b{color:inherit}
 @media(max-width:760px){.intro dl.nt{grid-template-columns:minmax(0,1fr)}.intro dl.nt dd{margin-bottom:4px}}
 
 .legend{margin:8px 0 0;max-width:62rem;font-size:.84rem;line-height:1.5;color:var(--mid)}.legend b{color:var(--char)}
-.sd .score{animation:none}

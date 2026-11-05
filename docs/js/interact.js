@@ -66,3 +66,33 @@ IX.tools = function(api, o){
 IX.state = function(key, def){ try { var v = new URLSearchParams(location.hash.slice(1)).get(key); if (v) return Object.assign({}, def, JSON.parse(v)); } catch (e) {} return Object.assign({}, def); };
 IX.save = function(key, obj){ try { var h = new URLSearchParams(location.hash.slice(1)); h.set(key, JSON.stringify(obj)); history.replaceState(null, '', '#' + h.toString()); } catch (e) {} };
 IX.slider = function(cls, label, min, max, step, val, unit){ return label + ' <input type="range" class="' + cls + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:96px"> <b class="' + cls + 'v"></b>' + (unit ? ' ' + unit : ''); };
+
+/* Side panels are rewritten while simulations run. Update changed text in place instead of replacing the nodes, so nothing is recreated or repainted when only numbers change. */
+(function(){
+  var d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+  if (!d || !d.set) return;
+  function morph(a, b){
+    if (a.childNodes.length !== b.childNodes.length) return false;
+    for (var i = 0; i < a.childNodes.length; i++) {
+      var x = a.childNodes[i], y = b.childNodes[i];
+      if (x.nodeType !== y.nodeType || x.nodeName !== y.nodeName) return false;
+      if (x.nodeType === 3) { if (x.data !== y.data) x.data = y.data; }
+      else if (x.nodeType === 1) {
+        var s = y.getAttribute('style') || '', c = y.getAttribute('class') || '';
+        if ((x.getAttribute('style') || '') !== s) x.setAttribute('style', s);
+        if ((x.getAttribute('class') || '') !== c) x.setAttribute('class', c);
+        if (!morph(x, y)) return false;
+      }
+    }
+    return true;
+  }
+  Object.defineProperty(Element.prototype, 'innerHTML', { get: d.get, configurable: true, set: function(h){
+    var cl = this.classList;
+    if (cl && (cl.contains('sd') || cl.contains('tl') || cl.contains('det')) && typeof h === 'string') {
+      if (this.__h === h) return;
+      if (this.firstChild) { var t = document.createElement('div'); d.set.call(t, h); if (morph(this, t)) { this.__h = h; return; } }
+      this.__h = h;
+    }
+    d.set.call(this, h);
+  } });
+})();
